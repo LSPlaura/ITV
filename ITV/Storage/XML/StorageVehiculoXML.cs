@@ -1,0 +1,96 @@
+using System.IO;
+using System.Text;
+using System.Xml;
+using System.Xml.Serialization;
+using CSharpFunctionalExtensions;
+using ITV.Config;
+using ITV.Dto;
+using ITV.Error.Common;
+using ITV.Error.Storage;
+using ITV.Error.Vehiculos;
+using ITV.Mappers;
+using ITV.Models;
+using ITV.Storage.Common;
+using Serilog;
+
+namespace ITV.Storage.XML;
+
+public class StorageVehiculoXml : IStorageVehiculo
+{
+    private readonly ILogger _logger = Log.ForContext<StorageVehiculoXml>();
+    private readonly XmlSerializerNamespaces _xmlSerializerNamespaces = new();
+    private readonly XmlWriterSettings _xmlWriterSettings = new() {
+        Indent = true,
+        Encoding = Encoding.UTF8
+    };
+
+    public Result<bool, DomainError> Salvar(IEnumerable<Vehiculo> items, string path)
+    {
+        _logger.Information("Iniciando exportación de datos a XML en: {Path}", path);
+        
+        try
+        {
+            var dtos = items.Select(p => p.ToDto()).ToList();
+            var serializer = new XmlSerializer(typeof(List<VehiculoDto>));
+
+            using var streamWriter = new StreamWriter(path, false, Encoding.UTF8);
+            using var xmlWriter = XmlWriter.Create(streamWriter, _xmlWriterSettings);
+            serializer.Serialize(xmlWriter, dtos, _xmlSerializerNamespaces);
+            
+            return Result.Success<bool, DomainError>(true).Tap(l =>  _logger.Information("Exportación XML finalizada con éxito. Registros procesados: {Count}", dtos.Count));
+        }
+        catch (Exception ex)
+        {
+            return Result.Failure<bool, DomainError>(new StorageError(ex.Message))
+                .TapError(err => _logger.Error(ex, "Error crítico al intentar salvar el archivo XML en {Path}", path));
+        }
+    }
+    
+    public Result<IEnumerable<Vehiculo>, DomainError> Cargar(string path)
+    {
+        _logger.Information("Iniciando carga de datos desde XML: {Path}", path);
+
+        if (!File.Exists(path))
+            return Result.Failure<IEnumerable<Vehiculo>, DomainError>(new StorageError(($"El archivo {path} no existe")))
+                .TapError(l => _logger.Error("No se pudo cargar el XML: El archivo no existe en la ruta {Path}", path));
+
+        try
+        {
+            var serializer = new XmlSerializer(typeof(List<VehiculoDto>));
+            using var stream = File.OpenRead(path);
+            var dtos = serializer.Deserialize(stream) as List<VehiculoDto>;
+            
+            if (dtos == null) 
+                return Result.Failure<IEnumerable<Vehiculo>, DomainError>(new StorageError("No se pudieron deserializar los DTOs."))
+                    .TapError(l => _logger.Error("Deserialización fallida: El archivo en {Path} devolvió una lista nula o incompatible.", path));
+
+            var resultado = dtos.Select(dto => dto.ToModel()).ToList();
+            
+            return Result.Success<IEnumerable<Vehiculo>, DomainError>(resultado).Tap(l => _logger.Information("Carga XML completada. Se han recuperado {Count} registros", resultado.Count));
+        }
+        catch (Exception ex)
+        {
+            return Result.Failure<IEnumerable<Vehiculo>, DomainError>(new StorageError(ex.Message))
+                .TapError(l =>_logger.Error(ex, "Error crítico durante el procesamiento del archivo XML en {Path}", path));
+        }
+    }
+    
+    /// <summary>
+    /// Crea la carpeta en la que se guardan los ficheros, en el caso de que no existiese
+    /// </summary>
+    private void Init()
+    {
+        if (!Directory.Exists(Configuracion.StorageFolder)) 
+        {
+            _logger.Information("Directorio de datos no detectado. Creando carpeta para XML en: {Ruta}", Configuracion.StorageFolder);
+            Directory.CreateDirectory(Configuracion.StorageFolder);
+        }
+    }
+    /// <summary>
+    /// Constructor para implementar la creacion de la carpeta, si fuese necesario
+    /// </summary>
+    public StorageVehiculoXml()
+    {
+        Init();
+    }
+}
