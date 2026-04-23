@@ -38,6 +38,76 @@ public class RepositorioEnMemoriaTests
             result.Value.IsDeleted.Should().Be(false);
             
         }
+        
+        [Test]
+        public void Borrar_MarcaElimnado()
+        {
+            var vehiculo = new  Vehiculo("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
+            var agregado = _repositorio.Agregar(vehiculo);
+
+            var result = _repositorio.Borrar(agregado.Value.Id);
+            result.Should().NotBeNull();
+            result.IsSuccess.Should().BeTrue();
+            result.Value.IsDeleted.Should().Be(true);
+        }
+        
+        [Test]
+        public void Borrar_ObjetoElimnado()
+        {
+            var vehiculo = new  Vehiculo("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
+            var agregado = _repositorio.Agregar(vehiculo);
+
+            var result = _repositorio.Borrar(agregado.Value.Id, false);
+            result.Should().NotBeNull();
+            result.IsSuccess.Should().BeTrue();
+            result.Value.IsDeleted.Should().Be(false);
+            
+            var comprobacion =  _repositorio.Borrar(agregado.Value.Id, false);
+            comprobacion.Should().NotBeNull();
+            comprobacion.IsFailure.Should().BeTrue();
+        }
+        
+        [Test]
+        public void BuscarId_vehiculo()
+        { 
+            var vehiculo = new  Vehiculo("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
+
+            var agregado = _repositorio.Agregar(vehiculo);
+            
+            var result = _repositorio.BuscarId(agregado.Value.Id);
+          
+            result.Should().NotBeNull();
+            result.IsSuccess.Should().BeTrue();
+            result.Value.Id.Should().Be(agregado.Value.Id);
+        }
+
+        [Test]
+        public void BuscarMatricula_Vehiculo()
+        { 
+            var vehiculo = new  Vehiculo("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
+
+            var agregado = _repositorio.Agregar(vehiculo);
+            
+            var result = _repositorio.BuscarMatricula(agregado.Value.Matricula);
+          
+            result.Should().NotBeNull();
+            result.IsSuccess.Should().BeTrue();
+            result.Value.Matricula.Should().Be(agregado.Value.Matricula);
+        }
+        
+        [Test]
+        public void Actualizar_VehiculoActualizadoo()
+        {
+            var vehiculoAntiguo = new  Vehiculo("3333BBB", "JKASD", "ElMejor", 3.3, Motor.Electrico, "12345678Z");
+            var agregado = _repositorio.Agregar(vehiculoAntiguo);
+            var vehiculoNuevo = new  Vehiculo("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
+            var result = _repositorio.Actualizar(agregado.Value.Id, vehiculoNuevo);
+
+            result.Should().NotBeNull();
+            result.IsSuccess.Should().BeTrue();
+            result.Value.Matricula.Should().Be(agregado.Value.Matricula);
+            result.Value.Id.Should().Be(agregado.Value.Id);
+        }
     }
     
     [TestFixture]
@@ -72,7 +142,7 @@ public class RepositorioEnMemoriaTests
             
             result2.Should().NotBeNull();
             result2.IsFailure.Should().BeTrue();
-            result2.Should().BeOfType<VehiculoError.VehiculoAlredyExist.MatriculaAlreadyExists>();
+            result2.Error.Should().BeOfType<VehiculoError.VehiculoAlredyExist.MatriculaAlreadyExists>();
         }
         
         [Test]
@@ -102,7 +172,48 @@ public class RepositorioEnMemoriaTests
             
             result4.Should().NotBeNull();
             result4.IsFailure.Should().BeTrue();
-            result4.Should().BeOfType<VehiculoError.OwnerWithThreeOrMoreVehiculos>();
+            result4.Error.Should().BeOfType<VehiculoError.OwnerWithThreeOrMoreVehiculos>();
         }
-    }
+       
+        [Test]
+        public void Borrar_ErrorEncontrarId()
+        {
+            var result = _repositorio.Borrar(20);
+            result.Should().NotBeNull();
+            result.IsFailure.Should().BeTrue();
+            result.Error.Should().BeOfType<VehiculoError.VehiculoNotFoundId>();
+        }
+        
+        [Test]
+        public void BuscarId_Error()
+        { 
+            var result = _repositorio.BuscarId(0);
+
+            result.Should().NotBeNull();
+            result.IsFailure.Should().BeTrue();
+            result.Error.Should().BeOfType<VehiculoError.VehiculoNotFoundId>();
+        }
+
+        [Test]
+        public void BuscarMatricula_Error()
+        { 
+            var result = _repositorio.BuscarMatricula("1111BBB");
+
+            result.Should().NotBeNull();
+            result.IsFailure.Should().BeTrue();
+            result.Error.Should().BeOfType<VehiculoError.VehiculoNotFoundMatricula>();
+        }
+
+        [Test]
+        public void Actualizar_ErrorVehiculoNoEncontrado()
+        {
+            var id = 10;
+            var vehiculoNuevo = new  Vehiculo("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
+            var result = _repositorio.Actualizar(id, vehiculoNuevo);
+
+            result.Should().NotBeNull();
+            result.IsFailure.Should().BeTrue();
+            result.Error.Should().BeOfType<VehiculoError.VehiculoNotFoundId>();
+        }
+    }   
 }
