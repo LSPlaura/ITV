@@ -1,16 +1,16 @@
+using System.IO;
+using FluentAssertions;
 using ITV.Models;
 using ITV.Storage.Common;
+using ITV.Storage.CSV;
+using ITV.Storage.XML;
 
 namespace ITV.Test.Storage;
 
-using System.IO;
-using FluentAssertions;
-
-[TestFixture]
-public class StorageJsonTests
+public class StorageCsvTests
 {
     [TestFixture]
-    public class ValidadorStorageJsonTests
+    public class ValidadorStorageCsvTests
     {
         [TestFixture]
         public class CasosValidos
@@ -22,7 +22,7 @@ public class StorageJsonTests
             [SetUp]
             public void SetUp()
             {
-                _storage = new StorageVehiculoJson(_filePath, _directoryPath);
+                _storage = new StorageVehiculoCsv(_filePath, _directoryPath);
             }
 
             [TearDown]
