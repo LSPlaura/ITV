@@ -11,7 +11,6 @@ using ITV.Repository.Memory;
 using ITV.Service;
 using ITV.Storage.Common;
 using ITV.Storage.CSV;
-using ITV.Storage.JSON;
 using ITV.Storage.XML;
 using ITV.Validador;
 using Microsoft.Extensions.DependencyInjection;
@@ -58,10 +57,10 @@ public static class DependenciesProvider
             var repository = Configuracion.RepositoryType.ToLower();
             return repository switch
             {
-                "csv" => new StorageVehiculoCsv(),
-                "json" => new StorageVehiculoJson(),
-                "xml" => new StorageVehiculoXml(),
-                _ => new StorageVehiculoJson()
+                "csv" => new StorageVehiculoCsv(Configuracion.StorageFile, Configuracion.StorageFolder),
+                "json" => new StorageVehiculoJson(Configuracion.StorageFile, Configuracion.StorageFolder),
+                "xml" => new StorageVehiculoXml(Configuracion.StorageFile, Configuracion.StorageFolder),
+                _ => new StorageVehiculoJson(Configuracion.StorageFile, Configuracion.StorageFolder)
             };
         });
     }

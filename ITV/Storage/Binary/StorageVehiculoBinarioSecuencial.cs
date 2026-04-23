@@ -16,14 +16,24 @@ namespace ITV.Storage.Binary;
 public class StorageVehiculoBinarioSecuencial : IStorageVehiculo
 {
     private readonly ILogger _logger = Log.ForContext<StorageVehiculoBinarioSecuencial>();
+    private string _filePath;
+    private string _directoryPath;
+    private string _fullPath;
     
-    public  Result<bool, DomainError> Salvar(IEnumerable<Vehiculo> items, string path)
+    public StorageVehiculoBinarioSecuencial(string filePath, string directoryPath)
     {
-        _logger.Information("Iniciando guardado binario en: {Path}", path);
+        Init();
+        _filePath = filePath;
+        _directoryPath = directoryPath;
+        _fullPath = Path.Combine(directoryPath, filePath + ".bin");
+    }
+    public  Result<bool, DomainError> Salvar(IEnumerable<Vehiculo> items)
+    {
+        _logger.Information("Iniciando guardado binario en: {Path}", _fullPath);
         
         try
         {
-            using var stream = File.Create(path);
+            using var stream = File.Create(_fullPath);
             using var writer = new BinaryWriter(stream, Encoding.UTF8);
             var lista = items.ToList();
             writer.Write(lista.Count);
@@ -46,23 +56,23 @@ public class StorageVehiculoBinarioSecuencial : IStorageVehiculo
         catch (Exception ex)
         {
             return Result.Failure<bool, DomainError>(new StorageError(ex.Message))
-                .TapError(err => _logger.Error(ex, "Error crítico no esperado al salvar vehículos en {Path}", path));
+                .TapError(err => _logger.Error(ex, "Error crítico no esperado al salvar vehículos en {Path}", _fullPath));
         }
     }
 
-    public Result<IEnumerable<Vehiculo>, DomainError> Cargar(string path)
+    public Result<IEnumerable<Vehiculo>, DomainError> Cargar()
     {
-        _logger.Information("Leyendo archivo binario desde: {Path}", path);
+        _logger.Information("Leyendo archivo binario desde: {Path}", _fullPath);
         
-        if (!File.Exists(path))
+        if (!File.Exists(_fullPath))
         {
-            return Result.Failure<IEnumerable<Vehiculo>, DomainError>(new StorageError(($"El archivo {path} no existe")))
-                .TapError(l => _logger.Error("El archivo no existe en la ruta especificada: {Path}", path));
+            return Result.Failure<IEnumerable<Vehiculo>, DomainError>(new StorageError(($"El archivo {_fullPath} no existe")))
+                .TapError(l => _logger.Error("El archivo no existe en la ruta especificada: {Path}", _fullPath));
         }
 
         try
         {
-            using var stream = File.OpenRead(path);
+            using var stream = File.OpenRead(_fullPath);
             using var reader = new BinaryReader(stream, Encoding.UTF8);
             var count = reader.ReadInt32();
             var vehiculos = new List<Vehiculo>();
@@ -89,21 +99,16 @@ public class StorageVehiculoBinarioSecuencial : IStorageVehiculo
         catch (Exception ex)
         {
             return Result.Failure<IEnumerable<Vehiculo>, DomainError>(new StorageError(ex.Message))
-                .TapError(l => _logger.Error(ex, "Error crítico no esperado al cargar vehículos en {Path}", path));
+                .TapError(l => _logger.Error(ex, "Error crítico no esperado al cargar vehículos en {Path}", _fullPath));
         }
     }
 
     private void Init()
     {
-        if (!Directory.Exists(Configuracion.StorageFolder))
+        if (!Directory.Exists(_directoryPath))
         {
-            _logger.Information("Directorio de datos no detectado. Creando: {Path}", Configuracion.StorageFolder);
-            Directory.CreateDirectory(Configuracion.StorageFolder);
+            _logger.Information("Directorio de datos no detectado. Creando: {Path}", _directoryPath);
+            Directory.CreateDirectory(_directoryPath);
         }
-    }
-
-    public StorageVehiculoBinarioSecuencial()
-    {
-        Init();
     }
 }

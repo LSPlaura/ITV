@@ -82,7 +82,7 @@ public class ServiceVehiculos (
     public Result<int, DomainError> Importar()
     {
         _logger.Information("Iniciando proceso de importación desde {Ruta}", Configuracion.StorageFilePath);
-        return storage.Cargar(Configuracion.StorageFilePath).Tap(_ => repositorio.DeleteAll()).Bind(AgregarColeccion)
+        return storage.Cargar().Tap(_ => repositorio.DeleteAll()).Bind(AgregarColeccion)
             .Tap(l => _logger.Information("Importación finalizada con éxito. Total: {Count} registros", l));
     }
 
@@ -90,7 +90,7 @@ public class ServiceVehiculos (
     {
         _logger.Information("Iniciando exportación de datos a {Ruta}", Configuracion.StorageFilePath);
         var lista = repositorio.GetAll().ToList();
-        return storage.Salvar(lista, Configuracion.StorageFilePath).Map(_ => lista.Count)
+        return storage.Salvar(lista).Map(_ => lista.Count)
             .Tap(l =>_logger.Information("Exportación completada correctamente. Total: {Count}", l));
     }
 

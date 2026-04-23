@@ -14,11 +14,11 @@ public interface IStorage<T>
     /// </summary>
     /// <param name="items">Coleccion de datos a guardar</param>
     /// <param name="path">True si se ha podido salvar los datos o el error correspondiente</param>
-    Result<bool, DomainError> Salvar(IEnumerable<T> items, string path);
+    Result<bool, DomainError> Salvar(IEnumerable<T> items);
     /// <summary>
     /// Exporta los datos de un fichero
     /// </summary>
     /// <param name="path">La ruta al fichero</param>
     /// <returns>Coleccion de los datos mapeados o el error correspondiente</returns>
-   Result<IEnumerable<T>, DomainError> Cargar(string path);
+   Result<IEnumerable<T>, DomainError> Cargar();
 }

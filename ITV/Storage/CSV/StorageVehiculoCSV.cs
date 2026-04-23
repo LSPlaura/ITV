@@ -16,15 +16,29 @@ namespace ITV.Storage.CSV;
 public class StorageVehiculoCsv : IStorageVehiculo
 {
     private readonly ILogger _logger = Log.ForContext<StorageVehiculoCsv>();
+    private string _filePath;
+    private string _directoryPath;
+    private string _fullPath;
+    
+    /// <summary>
+    /// Constructor para implementar la creacion de la carpeta, si fuese necesario
+    /// </summary>
+    public StorageVehiculoCsv(string filePath, string directoryPath)
+    {
+        Init();
+        _filePath = filePath;
+        _directoryPath = directoryPath;
+        _fullPath = Path.Combine(directoryPath, filePath + ".csv");
+    }
 
     /// <inheritdoc/>
-    public Result<bool, DomainError> Salvar(IEnumerable<Vehiculo> items, string path)
+    public Result<bool, DomainError> Salvar(IEnumerable<Vehiculo> items)
     {
         try
         {
-            _logger.Information("Iniciando exportación de datos a CSV en la ruta: {Path}", path);
+            _logger.Information("Iniciando exportación de datos a CSV en la ruta: {Path}", _fullPath);
 
-            using var writer = new StreamWriter(path, false, Encoding.UTF8);
+            using var writer = new StreamWriter(_fullPath, false, Encoding.UTF8);
             writer.WriteLine("Id;Matrícula;Marca;Modelo;Cilíndrica;Motor;DniDueño;IsDeleted");
             
             var lista = items.Select(p => p.ToDto()).ToList();
@@ -39,25 +53,25 @@ public class StorageVehiculoCsv : IStorageVehiculo
         catch (Exception ex)
         {
             return Result.Failure<bool, DomainError>(new StorageError(ex.Message))
-                .TapError(err => _logger.Error(ex, "Error crítico al intentar salvar el archivo CSV en {Path}", path));
+                .TapError(err => _logger.Error(ex, "Error crítico al intentar salvar el archivo CSV en {Path}", _fullPath));
         }
     }
 
     /// <inheritdoc/>
-    public Result<IEnumerable<Vehiculo>, DomainError> Cargar(string path)
+    public Result<IEnumerable<Vehiculo>, DomainError> Cargar()
     {
-        if (!File.Exists(path))
+        if (!File.Exists(_fullPath))
             return Result
                 .Failure<IEnumerable<Vehiculo>, DomainError>(
-                    new StorageError(($"El archivo {path} no existe")))
+                    new StorageError(($"El archivo {_fullPath} no existe")))
                 .TapError(l =>
-                    _logger.Error("No se puede cargar el CSV: El archivo no existe en la ruta {Path}", path));
+                    _logger.Error("No se puede cargar el CSV: El archivo no existe en la ruta {Path}", _fullPath));
 
         try
         {
-            _logger.Information("Iniciando lectura de datos desde CSV: {Path}", path);
+            _logger.Information("Iniciando lectura de datos desde CSV: {Path}", _fullPath);
 
-            var resultado = File.ReadLines(path)
+            var resultado = File.ReadLines(_fullPath)
                 .Skip(1)
                 .Select(l => l.Split(";"))
                 .Select(campos => new VehiculoDto(
@@ -80,7 +94,7 @@ public class StorageVehiculoCsv : IStorageVehiculo
         {
             return Result.Failure<IEnumerable<Vehiculo>, DomainError>(new StorageError(ex.Message))
                 .TapError(l =>
-                    _logger.Error(ex, "Error crítico durante el procesamiento del archivo CSV en {Path}", path));
+                    _logger.Error(ex, "Error crítico durante el procesamiento del archivo CSV en {Path}", _fullPath));
         }
     }
     /// <summary>
@@ -88,18 +102,10 @@ public class StorageVehiculoCsv : IStorageVehiculo
     /// </summary>
     private void Init()
     {
-        if (!Directory.Exists(Configuracion.StorageFolder)) 
+        if (!Directory.Exists(_directoryPath)) 
         {
-            _logger.Information("Directorio base no encontrado. Creando carpeta para CSV en: {Path}", Configuracion.StorageFolder);
-            Directory.CreateDirectory(Configuracion.StorageFolder);
+            _logger.Information("Directorio base no encontrado. Creando carpeta para CSV en: {Path}", _directoryPath);
+            Directory.CreateDirectory(_directoryPath);
         }
-    }
-
-    /// <summary>
-    /// Constructor para implementar la creacion de la carpeta, si fuese necesario
-    /// </summary>
-    public StorageVehiculoCsv()
-    {
-        Init();
     }
 }

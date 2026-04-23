@@ -30,7 +30,7 @@ public class BackupService(IStorage<Vehiculo> storage) : IBuckUpServiceVehiculos
             string tempFile = Path.Combine(tempDirectory, _tempName);
             
             _logger.Information("Exportando datos temporales para compresión");
-            storage.Salvar(lista, tempFile);
+            storage.Salvar(lista);
            
             // Ruta del zip
             var zipPath = Path.Combine(_finalFolderName, _finalFileName);
@@ -69,7 +69,7 @@ public class BackupService(IStorage<Vehiculo> storage) : IBuckUpServiceVehiculos
             
             string tempPath = Path.Combine(tempDirectory, _tempName);
 
-            var vehiculos = storage.Cargar(tempPath);
+            var vehiculos = storage.Cargar();
             
             // Limpieza
             Directory.Delete(tempDirectory, true);
