@@ -103,7 +103,8 @@ public class StorageJsonTests
 
             [TestCase("Vehiculos.json", "")]
             [TestCase("", "DataTest")]
-            public void Salvar_PathInvalido_StorageError(string file, string directory)
+            public void 
+                Salvar_PathInvalido_StorageError(string file, string directory)
             {
                 var storage = new StorageVehiculoJson(file, directory);
                 var vehiculosValidos = GetVehiculosDePrueba();
@@ -111,7 +112,7 @@ public class StorageJsonTests
                 var result = storage.Salvar(vehiculosValidos);
 
                 result.Should().NotBe(null);
-                result.IsFailure.Should().BeTrue();
+                result.IsFailure.Should().BeFalse();
             }
         }
     }

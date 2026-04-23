@@ -2,6 +2,7 @@ using System.IO;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using CSharpFunctionalExtensions;
+using ITV.Config;
 using ITV.Dto;
 using ITV.Error.Common;
 using ITV.Error.Storage;
@@ -28,9 +29,9 @@ public class StorageVehiculoJson : IStorageVehiculo
    /// </summary>
    public StorageVehiculoJson(string filePath, string directoryPath)
    {
-       Init();
        _filePath = filePath;
        _directoryPath = directoryPath;
+       Init();
        _fullPath = Path.Combine(directoryPath, filePath + ".json");
    }
 
@@ -61,8 +62,7 @@ public class StorageVehiculoJson : IStorageVehiculo
            return Result.Failure<IEnumerable<Vehiculo>, DomainError>(new StorageError(($"El archivo {_fullPath} no existe")))
                .TapError(l => _logger.Error("No se encontró el archivo JSON para cargar en la ruta: {Path}", _fullPath));
        }
-
-
+       
        try
        {
            _logger.Information("Iniciando lectura de datos desde JSON: {Path}", _fullPath);
@@ -91,10 +91,12 @@ public class StorageVehiculoJson : IStorageVehiculo
    /// </summary>
    private void Init()
    {
+       if (string.IsNullOrEmpty(_directoryPath)) _directoryPath = Configuracion.StorageFolder;
        if (!Directory.Exists(_directoryPath))
        {
            _logger.Information("Configurando entorno de datos. Creando directorio: {Path}", _directoryPath);
            Directory.CreateDirectory(_directoryPath);
        }
+       if (string.IsNullOrEmpty(_filePath)) _directoryPath = Configuracion.StorageFolder;
    }
 }
