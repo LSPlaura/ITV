@@ -22,9 +22,9 @@ public class StorageVehiculoBinarioSecuencial : IStorageVehiculo
     
     public StorageVehiculoBinarioSecuencial(string filePath, string directoryPath)
     {
-        Init();
         _filePath = filePath;
         _directoryPath = directoryPath;
+        Init();
         _fullPath = Path.Combine(directoryPath, filePath + ".bin");
     }
     public  Result<bool, DomainError> Salvar(IEnumerable<Vehiculo> items)
@@ -105,10 +105,12 @@ public class StorageVehiculoBinarioSecuencial : IStorageVehiculo
 
     private void Init()
     {
+        if (string.IsNullOrEmpty(_directoryPath)) _directoryPath = Configuracion.StorageFolder;
         if (!Directory.Exists(_directoryPath))
         {
-            _logger.Information("Directorio de datos no detectado. Creando: {Path}", _directoryPath);
+            _logger.Information("Configurando entorno de datos. Creando directorio: {Path}", _directoryPath);
             Directory.CreateDirectory(_directoryPath);
         }
+        if (string.IsNullOrEmpty(_filePath)) _directoryPath = Configuracion.StorageFolder;
     }
 }

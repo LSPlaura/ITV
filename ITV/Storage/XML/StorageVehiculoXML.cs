@@ -32,9 +32,9 @@ public class StorageVehiculoXml : IStorageVehiculo
     /// </summary>
     public StorageVehiculoXml(string filePath, string directoryPath)
     {
-        Init();
         _filePath = filePath;
         _directoryPath = directoryPath;
+        Init();
         _fullPath = Path.Combine(directoryPath, filePath + ".xml");
     }
 
@@ -94,10 +94,12 @@ public class StorageVehiculoXml : IStorageVehiculo
     /// </summary>
     private void Init()
     {
-        if (!Directory.Exists(_directoryPath)) 
+        if (string.IsNullOrEmpty(_directoryPath)) _directoryPath = Configuracion.StorageFolder;
+        if (!Directory.Exists(_directoryPath))
         {
-            _logger.Information("Directorio de datos no detectado. Creando carpeta para XML en: {Ruta}", _directoryPath);
+            _logger.Information("Configurando entorno de datos. Creando directorio: {Path}", _directoryPath);
             Directory.CreateDirectory(_directoryPath);
         }
+        if (string.IsNullOrEmpty(_filePath)) _directoryPath = Configuracion.StorageFolder;
     }
 }
