@@ -18,7 +18,7 @@ public class StorageJsonTests
         public class CasosValidos
         {
             private IStorageVehiculo _storage = null!;
-            private string _filePath = "VehiculosTest.json";
+            private string _filePath = "VehiculosTest";
             private string _directoryPath = "DataTest";
 
             [SetUp]
@@ -61,7 +61,7 @@ public class StorageJsonTests
                 result.Value.Should().HaveCount(5);
             }
 
-            [TestCase("VehiculosTest.json", "DataTest")]
+            [TestCase("VehiculosTest", "DataTest")]
             public void Init_Exist_True(string file, string directory)
             {
                 var storage = new StorageVehiculoJson(file, directory);
@@ -75,7 +75,7 @@ public class StorageJsonTests
         public class CasosInvalidos
         {
             private IStorageVehiculo _storage = null!;
-            private string _filePath = "VehiculosTest.json";
+            private string _filePath = "VehiculosTest";
             private string _directoryPath = "DataTest";
 
             [SetUp]
@@ -101,7 +101,7 @@ public class StorageJsonTests
                 result.IsFailure.Should().BeTrue();
             }
 
-            [TestCase("Vehiculos.json", "")]
+            [TestCase("Vehiculos", "")]
             [TestCase("", "DataTest")]
             public void 
                 Salvar_PathInvalido_StorageError(string file, string directory)
