@@ -81,7 +81,7 @@ public static class DependenciesProvider
     
     private static void RegisterCache(IServiceCollection services)
     {
-        services.AddTransient<ICache<string, Vehiculo>, LruCache>(sp => new LruCache());
+        services.AddTransient<ICache<string, Vehiculo>, LruCache>(sp => new LruCache(Configuracion.Cache));
     }
 
     private static void RegisterServices(IServiceCollection services)
