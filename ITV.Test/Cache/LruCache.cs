@@ -4,29 +4,21 @@ using ITV.Models;
 
 namespace ITV.Test.Cache;
 
+[TestFixture]
 public class CacheLruTest
 {
-   private LruCache _cache = null!;
-  
-   [SetUp]
-   public void SetUp()
-   {
-       _cache = new LruCache(2);
-   }
-
-
    [TestFixture]
-   public class CasosValidos()
+   public class CasosValidos
    {
        private LruCache _cache = null!;
-
-
+       
        [SetUp]
        public void SetUp()
        {
            _cache = new LruCache(2);
        }
       
+       [Test]
        public void Añadir_MaxCache_SeEliminaMenosUsado()
        {
            var vehiculo1 = new Vehiculo(
@@ -71,6 +63,7 @@ public class CacheLruTest
            _cache.Agregar(vehiculo3.Matricula, vehiculo3);
        }
       
+       [Test]
        public void Añadir_VehiculoYaAgregado_SeActualizaPosicion()
        {
            var vehiculo1 = new Vehiculo(
@@ -112,6 +105,7 @@ public class CacheLruTest
 
 
        //misma comprobación para agregar simple
+       [Test]
        public void Obtener_SeObtieneVehiculo()
        {
            var vehiculo = new Vehiculo("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
@@ -123,6 +117,7 @@ public class CacheLruTest
            obtenido.Matricula.Should().Be(vehiculo.Matricula);
        }
       
+       [Test]
        public void Obtener_SeActualizaPosicion()
        {
            var vehiculo1 = new Vehiculo(
@@ -162,6 +157,7 @@ public class CacheLruTest
        }
 
 
+       [Test]
        public void Actualizar_ActualizaOrden()
        {
            var vehiculo1 = new Vehiculo(
@@ -200,6 +196,7 @@ public class CacheLruTest
            _cache.Obtener(vehiculo1.Matricula).Should().NotBeNull().And.BeSameAs(vehiculo1);
        }
       
+       [Test]
        public void Borrar_SeBorrar()
        {
            var vehiculo = new Vehiculo(
@@ -216,8 +213,9 @@ public class CacheLruTest
            _cache.Obtener(vehiculo.Matricula).Should().BeNull();
        }
    }
-  
-   public class CasosInvalidos()
+   
+   [TestFixture]
+   public class CasosInvalidos
    {
        private LruCache _cache = null!;
 
@@ -228,6 +226,7 @@ public class CacheLruTest
            _cache = new LruCache(2);
        }
       
+       [Test]
        public void Agregar_NoSeAgregaSiKeyYMatriculaDiferentes()
        {
            var vehiculo = new Vehiculo("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
@@ -237,21 +236,23 @@ public class CacheLruTest
            var obtenido = _cache.Obtener(vehiculo.Matricula);
            obtenido.Should().NotBeNull();
        }
-
-
+       
+       [Test]
        public void Obtener_NoAgregado_Null()
        {
            var vehiculo = new Vehiculo("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
            _cache.Obtener(vehiculo.Matricula).Should().BeNull();
        }
-      
+       
+       [Test]
        public void Actualizar_NoAgregado_Null()
        {
            var vehiculo = new Vehiculo("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
            _cache.Actualizar(vehiculo.Matricula);
            _cache.Obtener(vehiculo.Matricula).Should().BeNull();
        }
-      
+       
+       [Test]
        public void Borrar_NoAgregado_Null()
        {
            var vehiculo = new Vehiculo("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");

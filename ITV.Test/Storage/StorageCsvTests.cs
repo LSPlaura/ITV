@@ -3,116 +3,111 @@ using FluentAssertions;
 using ITV.Models;
 using ITV.Storage.Common;
 using ITV.Storage.CSV;
-using ITV.Storage.XML;
 
 namespace ITV.Test.Storage;
 
+[TestFixture]
 public class StorageCsvTests
 {
     [TestFixture]
-    public class ValidadorStorageCsvTests
+    public class CasosValidos
     {
-        [TestFixture]
-        public class CasosValidos
+        private IStorageVehiculo _storage = null!;
+        private string _filePath = "VehiculosTest";
+        private string _directoryPath = "DataTest";
+
+        [SetUp]
+        public void SetUp()
         {
-            private IStorageVehiculo _storage = null!;
-            private string _filePath = "VehiculosTest";
-            private string _directoryPath = "DataTest";
+            _storage = new StorageVehiculoCsv(_filePath, _directoryPath);
+        }
 
-            [SetUp]
-            public void SetUp()
+        [TearDown]
+        public void SetDown()
+        {
+            if (Directory.Exists(_directoryPath))
             {
-                _storage = new StorageVehiculoCsv(_filePath, _directoryPath);
-            }
-
-            [TearDown]
-            public void SetDown()
-            {
-                if (Directory.Exists(_directoryPath))
-                {
-                    Directory.Delete(_directoryPath, true);
-                }
-            }
-
-            [Test]
-            public void Salvar_True()
-            {
-                var vehiculosValidos = GetVehiculosDePrueba();
-                var result = _storage.Salvar(vehiculosValidos);
-
-                result.Should().NotBe(null);
-                result.IsSuccess.Should().BeTrue();
-                result.Value.Should().Be(true);
-            }
-
-            [Test]
-            public void Cargar_EnumerableVehiculos()
-            {
-                var vehiculosValidos = GetVehiculosDePrueba();
-                _storage.Salvar(vehiculosValidos);
-
-                var result = _storage.Cargar();
-                
-                result.Should().NotBe(null);
-                result.IsSuccess.Should().BeTrue();
-                result.Value.Should().HaveCount(5);
-            }
-
-            [TestCase("VehiculosTest", "DataTest")]
-            public void Init_Exist_True(string file, string directory)
-            {
-                var storage = new StorageVehiculoJson(file, directory);
-                var result = Directory.Exists(directory);
-                result.Should().BeTrue();
+                Directory.Delete(_directoryPath, true);
             }
         }
-        
-        [TestFixture]
-        public class CasosInvalidos
+
+        [Test]
+        public void Salvar_True()
         {
-            private IStorageVehiculo _storage = null!;
-            private string _filePath = "VehiculosTest";
-            private string _directoryPath = "DataTest";
+            var vehiculosValidos = GetVehiculosDePrueba();
+            var result = _storage.Salvar(vehiculosValidos);
 
-            [SetUp]
-            public void SetUp()
-            {
-                _storage = new StorageVehiculoJson(_filePath, _directoryPath);
-            }
+            result.Should().NotBe(null);
+            result.IsSuccess.Should().BeTrue();
+            result.Value.Should().Be(true);
+        }
 
-            [TearDown]
-            public void SetDown()
-            {
-                if (Directory.Exists(_directoryPath))
-                {
-                    Directory.Delete(_directoryPath, true);
-                }
-            }
+        [Test]
+        public void Cargar_EnumerableVehiculos()
+        {
+            var vehiculosValidos = GetVehiculosDePrueba();
+            _storage.Salvar(vehiculosValidos);
 
-            [Test]
-            public void Cargar_DeserializacionFallida_StorageError()
-            {
-                var result = _storage.Cargar();
-                result.Should().NotBe(null);
-                result.IsFailure.Should().BeTrue();
-            }
+            var result = _storage.Cargar();
 
-            [TestCase("Vehiculos", "")]
-            [TestCase("", "DataTest")]
-            public void 
-                Salvar_PathInvalido_StorageError(string file, string directory)
-            {
-                var storage = new StorageVehiculoJson(file, directory);
-                var vehiculosValidos = GetVehiculosDePrueba();
+            result.Should().NotBe(null);
+            result.IsSuccess.Should().BeTrue();
+            result.Value.Should().HaveCount(5);
+        }
 
-                var result = storage.Salvar(vehiculosValidos);
-
-                result.Should().NotBe(null);
-                result.IsFailure.Should().BeFalse();
-            }
+        [TestCase("VehiculosTest", "DataTest")]
+        public void Init_Exist_True(string file, string directory)
+        {
+            var storage = new StorageVehiculoJson(file, directory);
+            var result = Directory.Exists(directory);
+            result.Should().BeTrue();
         }
     }
-    
+
+    [TestFixture]
+    public class CasosInvalidos
+    {
+        private IStorageVehiculo _storage = null!;
+        private string _filePath = "VehiculosTest";
+        private string _directoryPath = "DataTest";
+
+        [SetUp]
+        public void SetUp()
+        {
+            _storage = new StorageVehiculoJson(_filePath, _directoryPath);
+        }
+
+        [TearDown]
+        public void SetDown()
+        {
+            if (Directory.Exists(_directoryPath))
+            {
+                Directory.Delete(_directoryPath, true);
+            }
+        }
+
+        [Test]
+        public void Cargar_DeserializacionFallida_StorageError()
+        {
+            var result = _storage.Cargar();
+            result.Should().NotBe(null);
+            result.IsFailure.Should().BeTrue();
+        }
+
+        [TestCase("Vehiculos", "")]
+        [TestCase("", "DataTest")]
+        public void Salvar_PathInvalido_StorageError(string file, string directory)
+        {
+            var storage = new StorageVehiculoJson(file, directory);
+            var vehiculosValidos = GetVehiculosDePrueba();
+
+            var result = storage.Salvar(vehiculosValidos);
+
+            result.Should().NotBe(null);
+            result.IsFailure.Should().BeFalse();
+        }
+    }
+
     private static List<Vehiculo> GetVehiculosDePrueba()
     {
         return new List<Vehiculo>

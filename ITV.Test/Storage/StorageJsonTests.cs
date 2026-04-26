@@ -9,9 +9,6 @@ using FluentAssertions;
 [TestFixture]
 public class StorageJsonTests
 {
-    [TestFixture]
-    public class ValidadorStorageJsonTests
-    {
         [TestFixture]
         public class CasosValidos
         {
@@ -111,7 +108,6 @@ public class StorageJsonTests
                 result.IsFailure.Should().BeFalse();
             }
         }
-    }
     
     private static List<Vehiculo> GetVehiculosDePrueba()
     {

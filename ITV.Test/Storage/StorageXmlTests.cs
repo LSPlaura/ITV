@@ -6,11 +6,9 @@ using ITV.Storage.XML;
 
 namespace ITV.Test.Storage;
 
+[TestFixture]
 public class StorageXmlTests
 {
-    [TestFixture]
-    public class ValidadorStorageXmlTests
-    {
         [TestFixture]
         public class CasosValidos
         {
@@ -110,17 +108,17 @@ public class StorageXmlTests
                 result.IsFailure.Should().BeFalse();
             }
         }
-    }
-    
-    private static List<Vehiculo> GetVehiculosDePrueba()
-    {
-        return new List<Vehiculo>
+
+        private static List<Vehiculo> GetVehiculosDePrueba()
         {
-            new Vehiculo("1234BBB", "Seat", "Ibiza", 1200.0, Motor.Gasolina, "12345678Z"),
-            new Vehiculo("9876FGH", "Aston Martin", "Vantage", 4000.0, Motor.Gasolina, "00000000T"),
-            new Vehiculo("0000DWX", "Yamaha", "MT Zero", 600.0, Motor.Gasolina, "99999999R"),
-            new Vehiculo("5544LNP", "Tesla", "Model Three", 0.0, Motor.Electrico, "54321098B"),
-            new Vehiculo("8210ZRT", "Peugeot", "Dos mil ocho", 1500.0, Motor.Diesel, "11111111H")
-        };
-    }
+            return new List<Vehiculo>
+            {
+                new Vehiculo("1234BBB", "Seat", "Ibiza", 1200.0, Motor.Gasolina, "12345678Z"),
+                new Vehiculo("9876FGH", "Aston Martin", "Vantage", 4000.0, Motor.Gasolina, "00000000T"),
+                new Vehiculo("0000DWX", "Yamaha", "MT Zero", 600.0, Motor.Gasolina, "99999999R"),
+                new Vehiculo("5544LNP", "Tesla", "Model Three", 0.0, Motor.Electrico, "54321098B"),
+                new Vehiculo("8210ZRT", "Peugeot", "Dos mil ocho", 1500.0, Motor.Diesel, "11111111H")
+            };
+        }
 }
+
