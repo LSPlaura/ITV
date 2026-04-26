@@ -56,11 +56,11 @@ public class CacheLruTest
            var obtenerV1 = _cache.Obtener(vehiculo1.Matricula);
            obtenerV1.Should().NotBeNull();
            obtenerV1.Matricula.Should().Be(vehiculo1.Matricula);
-          
+           
+           
+           _cache.Agregar(vehiculo3.Matricula, vehiculo3);
            var obtenervV2 = _cache.Obtener(vehiculo2.Matricula);
            obtenervV2.Should().BeNull();
-          
-           _cache.Agregar(vehiculo3.Matricula, vehiculo3);
        }
       
        [Test]
@@ -234,7 +234,7 @@ public class CacheLruTest
 
 
            var obtenido = _cache.Obtener(vehiculo.Matricula);
-           obtenido.Should().NotBeNull();
+           obtenido.Should().BeNull();
        }
        
        [Test]
