@@ -25,7 +25,7 @@ public class RepositorioEnMemoria : IRepositorioVehiculos
     {
         vehiculo = vehiculo with
         {
-            Id = _counter++
+            Id = ++_counter
         };
         
         if (ExistId(vehiculo.Id)) 
