@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using System.Text.RegularExpressions;
 using CSharpFunctionalExtensions;
 using ITV.Error.Common;
@@ -21,7 +19,7 @@ public class ValidadorVehiculo : IValidate<Vehiculo>
     
     public Result<bool, DomainError> Validar(Vehiculo item)
     {
-        if (!_matriculaRegex.IsMatch(item.Matricula))
+        if (string.IsNullOrEmpty(item.Matricula) || !_matriculaRegex.IsMatch(item.Matricula))
         {
             Logger.Warning("Validación fallida: Matrícula incorrecta {Matricula}", item.Matricula);
             return Result.Failure<bool, DomainError>(
@@ -29,7 +27,7 @@ public class ValidadorVehiculo : IValidate<Vehiculo>
                 .TapError(v => _logger.Error("El vehiculo no tiene una matricula {Matricula} valida", item.Matricula));
         }
         
-        if (!_marcaModeloRegex.IsMatch(item.Marca))
+        if (string.IsNullOrEmpty(item.Marca) || !_marcaModeloRegex.IsMatch(item.Marca) || item.Marca.Contains("  "))
         {
             Logger.Warning("Validación fallida: Marca no permitida {Marca}", item.Marca);
             return Result.Failure<bool, DomainError>(
@@ -37,7 +35,7 @@ public class ValidadorVehiculo : IValidate<Vehiculo>
                 .TapError(v => _logger.Error("El vehiculo no tiene una marca {Marca} valida", item.Marca));
         }
         
-        if (!_marcaModeloRegex.IsMatch(item.Modelo))
+        if (string.IsNullOrEmpty(item.Modelo) || !_marcaModeloRegex.IsMatch(item.Modelo) || item.Modelo.Contains("  "))
         {
             Logger.Warning("Validación fallida: Modelo no permitido {Modelo}", item.Modelo);
             return Result.Failure<bool, DomainError>(
@@ -61,7 +59,7 @@ public class ValidadorVehiculo : IValidate<Vehiculo>
                 .TapError(v => _logger.Error("El vehiculo no tiene el tipo de motor {Motor} adecuado", item.Motor));
         }
         
-        if (!ValidarDni(item.DniDueño))
+        if (string.IsNullOrEmpty(item.DniDueño) || !ValidarDni(item.DniDueño))
         {
             Logger.Warning("Validación fallida: DNI inválido o letra incorrecta {Dni}", item.DniDueño);
             return Result.Failure<bool, DomainError>(
