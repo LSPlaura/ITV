@@ -119,7 +119,7 @@ public class RepositorioBinarioSecuencial : IRepositorioVehiculos
         if (ExistId(vehiculo.Id)) 
             return Result.Failure<Vehiculo, DomainError>(new VehiculoError.VehiculoAlredyExist.IdAlreadyExists(vehiculo.Id))
                 .TapError(v => _logger.Error("Fallo al agregar: El ID {Id} ya existe en el sistema", vehiculo.Id));
-            
+                
         if (ExistMatricula(vehiculo.Matricula))
             return Result.Failure<Vehiculo, DomainError>(new VehiculoError.VehiculoAlredyExist.MatriculaAlreadyExists(vehiculo.Matricula))
                 .TapError(v => _logger.Error("Fallo al agregar: La matricula {Matricula} ya está registrada", vehiculo.Matricula));
