@@ -1,3 +1,4 @@
+using System.IO;
 using FluentAssertions;
 using ITV.Config;
 using ITV.Error.Vehiculos;
@@ -5,7 +6,6 @@ using ITV.Models;
 using ITV.Repository.Common;
 using ITV.Repository.JSON;
 using ITV.Repository.Memory;
-using NUnit.Framework.Internal;
 
 namespace ITV.Test.Repository;
 
@@ -16,17 +16,73 @@ public class RepositorioJsonTests
     public class CasosValidos()
     {
         private IRepositorioVehiculos _repositorio = null!;
-
+        private readonly string _directory = Configuracion.RepositoryFolder;
         [SetUp]
         public void SetUp()
         {
-            _repositorio = new RepositorioJson(Configuracion.RepositoryFolder);
-        }
+            _repositorio = new RepositorioJson(_directory);
+        }   
 
         [TearDown]
         public void TearDown()
         {
             _repositorio.DeleteAll();
+            Directory.Delete(_directory, true);
+        }
+
+        [Test]
+        public void EnsureDirectory_CreaDirectorio()
+        {
+            Directory.Delete(_directory, true);
+            Directory.Exists(_directory).Should().BeFalse();
+            _repositorio = new RepositorioJson(_directory);
+            Directory.Exists(_directory).Should().BeTrue();
+        }
+        
+        [Test]
+        public void Load_SiNoExisteNoCarga()
+        {
+            Directory.Delete(_directory, true);
+            _repositorio = new RepositorioJson(_directory);
+            _repositorio.GetAll().Count().Should().Be(0);
+        }
+        
+        [Test]
+        public void Load_CargaVehiculos()
+        {
+            _repositorio.GetAll().Count().Should().Be(0);
+            
+            var vehiculo1 = new  Vehiculo("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
+            var vehiculo2 = new  Vehiculo("2222BBB", "AAA", "ElMejor", 3.3, Motor.Gasolina, "12345678Z");
+            var vehiculo3 = new  Vehiculo("3333BBB", "JKASD", "ElMejor", 3.3, Motor.Electrico, "12345678Z");
+            
+            _repositorio.Agregar(vehiculo1);
+            _repositorio.Agregar(vehiculo2);
+            _repositorio.Agregar(vehiculo3);
+
+            _repositorio = new RepositorioJson(_directory);
+            _repositorio.GetAll().Count().Should().Be(3);
+        }
+        
+        [Test]
+        public void Load_ObtieneElSiguienteId()
+        {
+            _repositorio.GetAll().Count().Should().Be(0);
+            
+            var vehiculo1 = new  Vehiculo(1, "1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z", false);
+            var vehiculo2 = new  Vehiculo(2, "2222BBB", "AAA", "ElMejor", 3.3, Motor.Gasolina, "12345678Z", false);
+            var vehiculo3 = new  Vehiculo(10, "3333BBB", "JKASD", "ElMejor", 3.3, Motor.Electrico, "12345678Z", false);
+            
+            _repositorio.Agregar(vehiculo1);
+            _repositorio.Agregar(vehiculo2);
+            _repositorio.Agregar(vehiculo3);
+
+            _repositorio = new RepositorioJson(_directory);
+            var vehiculo4 = new  Vehiculo("4444BBB", "NKNN", "ElMejor", 3.3, Motor.Hidrogeno, "11111111H");
+            var result = _repositorio.Agregar(vehiculo4);
+
+            result.IsSuccess.Should().BeTrue();
+            result.Value.Id.Should().Be(11);
         }
 
         [Test]
