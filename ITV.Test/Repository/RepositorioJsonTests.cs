@@ -44,7 +44,7 @@ public class RepositorioJsonTests
         {
             Directory.Delete(_directory, true);
             _repositorio = new RepositorioJson(_directory);
-            _repositorio.GetAll().Count().Should().Be(0);
+            _repositorio.GetAll().Any().Should().BeFalse();
         }
         
         [Test]
