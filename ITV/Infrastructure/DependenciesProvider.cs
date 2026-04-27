@@ -41,7 +41,7 @@ public static class DependenciesProvider
             return repository switch
             {
                 "memory" => new RepositorioEnMemoria(),
-                "json" => new RepositorioJson(),
+                "json" => new RepositorioJson(Configuracion.RepositoryFolder),
                 "dapper" => new DapperRepository(),
                 "efcore" => new EfCoreRepository(new AppDbContext(Configuracion.DataBaseString)),
                 "ado" => new AdoRepository(),

@@ -29,9 +29,9 @@ public class RepositorioJson : IRepositorioVehiculos
         Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
     };
 
-    public RepositorioJson()
+    public RepositorioJson(string directory, string file = "repositorio.json")
     {
-        _filePath = Path.Combine(Configuracion.RepositoryFolder, "repositorio.json");
+        _filePath = Path.Combine(directory, file);
         EnsureDirectory();
         Load();
     }
