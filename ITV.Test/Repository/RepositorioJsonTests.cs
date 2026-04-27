@@ -167,6 +167,23 @@ public class RepositorioJsonTests
             result.Value.Matricula.Should().Be(agregado.Value.Matricula);
             result.Value.Id.Should().Be(agregado.Value.Id);
         }
+
+        [Test]
+        public void BorrarRepositorio()
+        {
+            var vehiculo1 = new  Vehiculo("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
+            var vehiculo2 = new  Vehiculo("2222BBB", "AAA", "ElMejor", 3.3, Motor.Gasolina, "12345678Z");
+            var vehiculo3 = new  Vehiculo("3333BBB", "JKASD", "ElMejor", 3.3, Motor.Electrico, "12345678Z");
+            var vehiculo4 = new  Vehiculo("4444BBB", "NKNN", "ElMejor", 3.3, Motor.Hidrogeno, "12345678Z");
+            
+            var result1 = _repositorio.Agregar(vehiculo1);
+            var result2 = _repositorio.Agregar(vehiculo2);
+            var result3 = _repositorio.Agregar(vehiculo3);
+            var result4 = _repositorio.Agregar(vehiculo4);
+            
+            _repositorio.DeleteAll();
+            _repositorio.GetAll().Any().Should().BeFalse();
+        }
     }
     
     [TestFixture]
