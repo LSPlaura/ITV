@@ -21,9 +21,9 @@ public class RepositorioBinarioSecuencial : IRepositorioVehiculos
     private readonly int _limiteVehciulos = 3;
     private readonly string _filePath;
 
-    public RepositorioBinarioSecuencial()
+    public RepositorioBinarioSecuencial(string directory, string file = "repositorio.bin")
     {
-        _filePath = Path.Combine(Configuracion.RepositoryFolder, "repositorio.bin");
+        _filePath = Path.Combine(directory, file);
         EnsureDirectory();
         Load();
     }
@@ -31,7 +31,7 @@ public class RepositorioBinarioSecuencial : IRepositorioVehiculos
     private void EnsureDirectory() {
         var dir = Path.GetDirectoryName(_filePath);
         if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir)) {
-            _logger.Information("Creando directorio para almacenar el archivo del repositorio en la {Ruta}]", Configuracion.RepositoryFolder);
+            _logger.Information("Creando directorio para almacenar el archivo del repositorio en la {Ruta}]", dir);
             Directory.CreateDirectory(dir);
         }
     }
@@ -52,8 +52,7 @@ public class RepositorioBinarioSecuencial : IRepositorioVehiculos
             }
             //en caso de que los vehiculos exportados no sigan un orden especifico de ids, de esta manera que el contador
             //por el siguiente número al ID más alto para que no haya errores de duplicación de IDs
-            var idMayor = _ids.Keys.MaxBy(k => k);
-            _counter = _vehiculos.Values.First(v => v.Id == idMayor).Id;
+            _counter = _ids.Keys.Any() ? _ids.Keys.Max(): 0;
         }
         catch (Exception ex)
         {
@@ -114,10 +113,8 @@ public class RepositorioBinarioSecuencial : IRepositorioVehiculos
 
     public Result<Vehiculo, DomainError> Agregar(Vehiculo vehiculo)
     {
-        vehiculo = vehiculo with
-        {
-            Id = ++_counter
-        };
+        if (vehiculo.Id == 0)
+            vehiculo = vehiculo with { Id = ++_counter };
         
         if (ExistId(vehiculo.Id)) 
             return Result.Failure<Vehiculo, DomainError>(new VehiculoError.VehiculoAlredyExist.IdAlreadyExists(vehiculo.Id))
