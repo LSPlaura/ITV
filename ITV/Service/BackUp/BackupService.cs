@@ -10,13 +10,21 @@ using Serilog;
 
 namespace ITV.Service;
 
-public class BackupService(IStorage<Vehiculo> storage) : IBuckUpServiceVehiculos
+public class BackupService : IBuckUpServiceVehiculos
 {
     private readonly ILogger _logger = Log.ForContext<BackupService>();
     private static readonly string _fecha = DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss");
-    private readonly string _finalFileName = _fecha + Configuracion.BackUpFile + "." + Configuracion.StorageType.ToLower();
-    private readonly string _finalFolderName = _fecha + Configuracion.BackUpFolder;
+    private readonly string _finalFileName;
+    private readonly string _finalFolderName;
     private readonly string _tempName = "tempBackup";
+    private readonly IStorage<Vehiculo> _storage;
+
+    public BackupService(IStorage<Vehiculo> storage, string file, string directory)
+    {
+        _finalFileName = _fecha + file + "." + Configuracion.StorageType.ToLower();
+        _finalFolderName = _fecha + directory;
+        _storage = storage;
+    }
     
 
     public Result<string, DomainError> Guardar(IEnumerable<Vehiculo> lista)
@@ -27,10 +35,9 @@ public class BackupService(IStorage<Vehiculo> storage) : IBuckUpServiceVehiculos
             
             // Directorio temporal
             string tempDirectory = Directory.CreateDirectory(_tempName).FullName;
-            string tempFile = Path.Combine(tempDirectory, _tempName);
             
             _logger.Information("Exportando datos temporales para compresión");
-            storage.Salvar(lista);
+            _storage.Salvar(lista);
            
             // Ruta del zip
             var zipPath = Path.Combine(_finalFolderName, _finalFileName);
@@ -66,10 +73,8 @@ public class BackupService(IStorage<Vehiculo> storage) : IBuckUpServiceVehiculos
             
             _logger.Information("Extrayendo contenido del backup...");
             ZipFile.ExtractToDirectory(path, tempDirectory);
-            
-            string tempPath = Path.Combine(tempDirectory, _tempName);
 
-            var vehiculos = storage.Cargar();
+            var vehiculos = _storage.Cargar();
             
             // Limpieza
             Directory.Delete(tempDirectory, true);
