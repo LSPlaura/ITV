@@ -17,13 +17,14 @@ namespace ITV.Repository.Dapper;
 public class DapperRepository : IRepositorioVehiculos
 {
     private readonly ILogger _logger = Log.ForContext<DapperRepository>();
-    private readonly string _connection = Configuracion.DataBaseString;
+    private readonly string _connection;
     private readonly int _limiteVehciulos = 3;
     
     private SqliteConnection CreateConnection() => new(_connection);
     
-    public DapperRepository()
+    public DapperRepository(string connection)
     {
+        _connection = connection;
         EnsureDirectory();
         CreateTable();
     }
@@ -49,7 +50,7 @@ public class DapperRepository : IRepositorioVehiculos
                 Marca VARCHAR(100) NOT NULL,
                 Motor INTEGER NOT NULL,
                 Cilindrada REAL CHECK ( Cilindrada > 0) NOT NULL,
-                DniDueño VARCHAR(9) NOT NULL,
+                DniDueno VARCHAR(9) NOT NULL,
                 IsDeleted INTEGER DEFAULT 0
                 )");
         _logger.Debug("Se ha creado la tabla, creo");
@@ -58,7 +59,7 @@ public class DapperRepository : IRepositorioVehiculos
     public IEnumerable<Vehiculo> GetAll()
     {
         using var connection = CreateConnection();
-        var sql = "SELECT * FROM Vehiculo";
+        var sql = "SELECT Id, Matricula, Modelo, Marca, Motor, Cilindrada, DniDueno AS DniDueño, IsDeleted FROM Vehiculo";
         var entities = connection.Query<VehiculoEntity>(sql).ToList();
         return VehiculoMapper.ToModel(entities);
     }
@@ -78,7 +79,7 @@ public class DapperRepository : IRepositorioVehiculos
                 return Result.Failure<Vehiculo, DomainError>(new VehiculoError.OwnerWithThreeOrMoreVehiculos(entity.DniDueño))
                     .TapError(v => _logger.Error("Límite alcanzado: El dueño con DNI {Dni} no puede tener más vehículos", entity.DniDueño));
             
-            var sql = @"INSERT INTO Vehiculo(Matricula, Modelo, Marca, Motor, Cilindrada, DniDueño)
+            var sql = @"INSERT INTO Vehiculo(Matricula, Modelo, Marca, Motor, Cilindrada, DniDueno)
                         VALUES (@Matricula, @Modelo, @Marca, @Motor, @Cilindrada, @DniDueño);
                          SELECT last_insert_rowid()";
 
@@ -129,7 +130,7 @@ public class DapperRepository : IRepositorioVehiculos
         try
         {
             using var connection = CreateConnection();
-            var sql = "SELECT * FROM Vehiculo WHERE Id = @Id";
+            var sql = "SELECT Id, Matricula, Modelo, Marca, Motor, Cilindrada, DniDueno AS DniDueño, IsDeleted FROM Vehiculo WHERE Id = @Id";
             var entity = connection.QueryFirstOrDefault<VehiculoEntity>(sql, new { Id = key });
         
             return entity == null ? 
@@ -150,7 +151,7 @@ public class DapperRepository : IRepositorioVehiculos
         try
         {
             using var connection = CreateConnection();
-            var sql = "SELECT * FROM Vehiculo WHERE Matricula = @Matricula";
+            var sql = "SELECT Id, Matricula, Modelo, Marca, Motor, Cilindrada, DniDueno AS DniDueño, IsDeleted FROM Vehiculo WHERE Matricula = @Matricula";
             var entity = connection.QueryFirstOrDefault<VehiculoEntity>(sql, new { Matricula = key });
         
             return entity == null ? 

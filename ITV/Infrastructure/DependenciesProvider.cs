@@ -42,9 +42,9 @@ public static class DependenciesProvider
             {
                 "memory" => new RepositorioEnMemoria(),
                 "json" => new RepositorioJson(Configuracion.RepositoryFolder),
-                "dapper" => new DapperRepository(),
+                "dapper" => new DapperRepository(Configuracion.DataBaseString),
                 "efcore" => new EfCoreRepository(new AppDbContext(Configuracion.DataBaseString)),
-                "ado" => new AdoRepository(),
+                "ado" => new AdoRepository(Configuracion.DataBaseString),
                 _ => new RepositorioEnMemoria()
             };
         });
