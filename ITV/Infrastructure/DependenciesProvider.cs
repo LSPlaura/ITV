@@ -67,12 +67,12 @@ public static class DependenciesProvider
     
     private static void RegisterValidador(IServiceCollection services)
     {
-        services.AddTransient<IBuckUpServiceVehiculos, BackupService>(sp => 
+        services.AddTransient<IBackUpServiceVehiculos, BackupService>(sp => 
             new BackupService(sp.GetRequiredService<IStorage<Vehiculo>>(), Configuracion.BackUpFile, Configuracion.BackUpFolder));
 
         services.AddTransient<IService<string, Vehiculo>, ServiceVehiculos>(sp => new ServiceVehiculos(
             sp.GetRequiredService<IRepositorioVehiculos>(),
-            sp.GetRequiredService<IBuckUpServiceVehiculos>(),
+            sp.GetRequiredService<IBackUpServiceVehiculos>(),
             sp.GetRequiredService<IStorage<Vehiculo>>(),
             sp.GetRequiredService<ICache<string, Vehiculo>>(),
             sp.GetRequiredService<IValidate<Vehiculo>>()

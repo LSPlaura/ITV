@@ -4,7 +4,7 @@ using ITV.Error.Common;
 
 namespace ITV.Service;
 
-public interface IBuckUpService <T>
+public interface IBackUpService <T>
 {
     /// <summary>
     /// Crea un directorio que almacena directorios comprimidos en .zip con archivos buckup de los datos que en el momento tenga el repositorio
@@ -17,7 +17,7 @@ public interface IBuckUpService <T>
     /// </summary>
     /// <param name="path">Ruta de la que extraer los datos</param>
     /// <returns>Lista de vehiculos restaurados</returns>
-    Result<IEnumerable<T>, DomainError> Resturar(string path);
+    Result<IEnumerable<T>, DomainError> Restuarar(string path);
     /// <summary>
     /// Obtiene todos los directorios comprimidos con sus respectivos archivos buckup
     /// </summary>

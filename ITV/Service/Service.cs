@@ -13,7 +13,7 @@ namespace ITV.Service;
 
 public class ServiceVehiculos (
     IRepositorioVehiculos repositorio,
-    IBuckUpService<Vehiculo> buckUpService,
+    IBackUpService<Vehiculo> backUpService,
     IStorage<Vehiculo> storage,
     ICache<string, Vehiculo> cache,
     IValidate<Vehiculo> validador) : IService<string, Vehiculo>
@@ -98,14 +98,14 @@ public class ServiceVehiculos (
     public Result<string, DomainError> GuardarBuckUp()
     {
         _logger.Information("Generando copia de seguridad (BackUp)");
-        return buckUpService.Guardar(repositorio.GetAll())
+        return backUpService.Guardar(repositorio.GetAll())
             .Tap(l =>  _logger.Information("Copia de seguridad guardada en: {Path}", l));
     }
 
     public Result<int, DomainError> RestaurarBuckUp(string path)
     {
         _logger.Information("Restaurando sistema desde BackUp: {Path}", path);
-        return buckUpService.Resturar(path).Tap(_ => repositorio.DeleteAll()).Bind(AgregarColeccion)
+        return backUpService.Restuarar(path).Tap(_ => repositorio.DeleteAll()).Bind(AgregarColeccion)
             .Tap(l => _logger.Information("Restauración completada satisfactoriamente. Total: {Count}", l));
     }
 

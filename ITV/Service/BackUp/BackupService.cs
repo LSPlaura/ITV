@@ -10,7 +10,7 @@ using Serilog;
 
 namespace ITV.Service;
 
-public class BackupService : IBuckUpServiceVehiculos
+public class BackupService : IBackUpServiceVehiculos
 {
     private readonly ILogger _logger = Log.ForContext<BackupService>();
     private static readonly string _fecha = DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss");
@@ -58,7 +58,7 @@ public class BackupService : IBuckUpServiceVehiculos
         }
     }
 
-    public Result<IEnumerable<Vehiculo>, DomainError> Resturar(string path)
+    public Result<IEnumerable<Vehiculo>, DomainError> Restuarar(string path)
     {
         try
         {
@@ -91,19 +91,15 @@ public class BackupService : IBuckUpServiceVehiculos
 
     public IEnumerable<string> Listar() 
     {
-        _logger.Information("Consultando lista de copias de seguridad disponibles");
-        
         if (!Directory.Exists(_finalFolderName)) 
         {
-            _logger.Warning("El directorio de backups {Directorio} no existe", _finalFolderName);
             return Enumerable.Empty<string>();
         }
-
-        var archivos = Directory.GetFiles(_finalFolderName, "*.zip")
+        
+        var archivos = Directory.GetFiles(_finalFolderName, "*.*") 
             .OrderByDescending(f => File.GetCreationTime(f))
             .ToList();
 
-        _logger.Information("Se han encontrado {Total} archivos de backup", archivos.Count);
         return archivos;
     }
 }
