@@ -55,7 +55,7 @@ public class ServiceVehiculos (
         _logger.Information("Buscando vehiculo con matricula: {Matricula}", key);
 
         var cacheado = cache.Obtener(key);
-        if (cacheado != null) Result.Success<Vehiculo, DomainError>(cacheado)
+        if (cacheado != null) return Result.Success<Vehiculo, DomainError>(cacheado)
             .Tap(v => _logger.Information("El vehiculo con la matricula {Matricula} encontrado", v.Matricula));
 
         return repositorio.BuscarMatricula(key).Tap(v => cache.Agregar(key, v));
@@ -65,9 +65,11 @@ public class ServiceVehiculos (
     {
         return Result.Success<Vehiculo, DomainError>(item).
             Tap(_ =>   _logger.Information("Actualizando datos del vehiculo: {Matricula}", key))
-            .Ensure(v => v.Matricula != key, new VehiculoError.InconsistentUpdate(key, item.Matricula))
+            .Ensure(v => v.Matricula.Equals(key, StringComparison.OrdinalIgnoreCase), 
+                new VehiculoError.InconsistentUpdate(key, item.Matricula))
             .Bind(v => validador.Validar(v).Map(_ => v))
             .Map(Estandarizar)
+            .Ensure(v => repositorio.ExistMatricula(key), new VehiculoError.VehiculoNotFoundMatricula(key))
             .Bind(v => repositorio.Actualizar(repositorio.BuscarMatricula(key).Value.Id, v))
             .Tap(_ => cache.Borrar(key));
     }
