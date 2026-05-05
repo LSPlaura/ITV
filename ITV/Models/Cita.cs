@@ -55,6 +55,7 @@ public record Cita
     /// Constructor para instanciar
     /// </summary>
     public Cita(
+        DateTime fechaMatriculacion,
         DateTime? fechaInspeccion,
         string matricula,
         string marca,
@@ -64,6 +65,7 @@ public record Cita
         string dniDueño
         )
     {
+        FechaMatriculacion = fechaMatriculacion;
         FechaInspeccion = fechaInspeccion;
         Matricula = matricula;
         Marca = marca;
