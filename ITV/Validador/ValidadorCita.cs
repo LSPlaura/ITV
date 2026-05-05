@@ -11,13 +11,13 @@ public class ValidadorCita : IValidate<Cita>
     private readonly ILogger _logger = Log.ForContext<ValidadorCita>();
 
     // Regex estáticos y compilados para máximo rendimiento
-    private static readonly Regex MatriculaRegex = new(@"^[0-9]{4}[B-DF-HJ-NPR-TV-Z]{3}$");
-    private static readonly Regex MarcaModeloRegex = new(@"^[A-Za-zÑñ ]{3,100}$");
-    private static readonly Regex DniRegex = new(@"^[0-9]{8}[A-Za-z]{1}$");
+    private static readonly Regex _matriculaRegex = new(@"^[0-9]{4}[B-DF-HJ-NPR-TV-Z]{3}$");
+    private static readonly Regex _marcaModeloRegex = new(@"^[A-Za-zÑñ ]{3,100}$");
+    private static readonly Regex _dniRegex = new(@"^[0-9]{8}[A-Za-z]{1}$");
 
     public Result<bool, DomainError> Validar(Cita item)
     {
-        if (string.IsNullOrWhiteSpace(item.Matricula) || !MatriculaRegex.IsMatch(item.Matricula))
+        if (string.IsNullOrWhiteSpace(item.Matricula) || !_matriculaRegex.IsMatch(item.Matricula))
             return Fail(new CitaError.ValidationError.ValidationMatricula(item.Matricula), "Matrícula no válida");
 
         if (item.FechaMatriculacion > DateTime.Today)
@@ -45,7 +45,7 @@ public class ValidadorCita : IValidate<Cita>
     }
     
     private bool EsTextoValido(string texto) => 
-        !string.IsNullOrWhiteSpace(texto) && MarcaModeloRegex.IsMatch(texto) && !texto.Contains("  ");
+        !string.IsNullOrWhiteSpace(texto) && _marcaModeloRegex.IsMatch(texto) && !texto.Contains("  ");
     
     private Result<bool, DomainError> Fail(DomainError error, string motivo)
     {
@@ -55,13 +55,20 @@ public class ValidadorCita : IValidate<Cita>
 
     public static bool ValidarDni(string dni)
     {
-        if (string.IsNullOrWhiteSpace(dni) || !DniRegex.IsMatch(dni)) return false;
-
-        const string letras = "TRWAGMYFPDXBNJZSQVHLCKE";
-        // Usamos Span o Substring de forma eficiente
-        if (int.TryParse(dni.AsSpan(0, dni.Length - 1), out var num))
+        var letras = "TRWAGMYFPDXBNJZSQVHLCKE";
+        var dividendo = 23;
+        
+        if (string.IsNullOrWhiteSpace(dni)) return false;
+        
+        if (_dniRegex.IsMatch(dni))
         {
-            return char.ToUpper(dni[^1]) == letras[num % 23];
+            if (int.TryParse(dni.Substring(0, dni.Length - 1), out var num))
+            {
+                if (dni.ToUpper().Last() == letras[num % dividendo]) 
+                {
+                    return true;
+                }
+            }
         }
         return false;
     }
