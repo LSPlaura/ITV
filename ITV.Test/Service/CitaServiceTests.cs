@@ -204,12 +204,19 @@ public class CitaServiceTests
         }
 
         [Test]
-        public void GetAll_ObtieneLista()
+        public void GetAll_ObtieneListaPaginada()
         {
-            var lista = new List<Cita>();
+            List<Cita> lista = [
+                new Cita(FechaMat, FechaInsp, "1111AAA", "Exito", "...", 1000, Motor.Gasolina, "123z"),
+                new Cita(FechaMat, FechaInsp, "2222BBB", "Error", "...", 1500, Motor.Diesel, "456x"),
+                new Cita(FechaMat, FechaInsp, "3333CCC", "NoLlega", "...", 1200, Motor.Gasolina, "789y")
+            ];
             _mockRepository.Setup(r => r.GetAll()).Returns(lista);
-            var result = _service.GetAll();
+            var result = _service.GetAll(1, 1);
             result.Should().NotBeNull();
+            
+            result.Should().HaveCount(1);
+            result.Should().Contain(lista[1]);
             _mockRepository.Verify(r => r.GetAll(), Times.Once);
         }
         
@@ -398,6 +405,22 @@ public class CitaServiceTests
             _mockCacheLru.Verify(r => r.Obtener(matricula), Times.Once);
             _mockRepository.Verify(r => r.BuscarMatricula(It.IsAny<string>()), Times.Once);
             _mockCacheLru.Verify(c => c.Agregar(matricula, vehiculoExistente), Times.Never); 
+        }
+        
+        [Test]
+        public void GetAll_PaginacionFueraDeRango_ListaVacia()
+        {
+            List<Cita> lista = [
+                new Cita(FechaMat, FechaInsp, "1111AAA", "Exito", "...", 1000, Motor.Gasolina, "123z"),
+                new Cita(FechaMat, FechaInsp, "2222BBB", "Error", "...", 1500, Motor.Diesel, "456x"),
+                new Cita(FechaMat, FechaInsp, "3333CCC", "NoLlega", "...", 1200, Motor.Gasolina, "789y")
+            ];
+            _mockRepository.Setup(r => r.GetAll()).Returns(lista);
+            var result = _service.GetAll(3, 1);
+            result.Should().NotBeNull();
+            
+            result.Should().BeEmpty();
+            _mockRepository.Verify(r => r.GetAll(), Times.Once);
         }
 
         [Test]

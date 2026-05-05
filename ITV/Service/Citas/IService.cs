@@ -43,7 +43,7 @@ public interface IService<TKey, TValue>
     /// <param name="cantidad">Numero de elementos a tomar</param>
     /// </summary>
     /// <returns>Lista de instancias</returns>
-    IEnumerable<TValue> GetAll(int pagina, int cantidad);
+    IEnumerable<TValue> GetAll(int pagina = 0, int cantidad = 10);
     
     /// <summary>
     /// Importa los datos almacenados en el tipo de archivo correspondiente mediante la ruta configurada y los almacena en el repositorio
