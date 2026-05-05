@@ -1,19 +1,12 @@
-using System.IO;
 using CSharpFunctionalExtensions;
 using FluentAssertions;
-using ITV.Config;
 using ITV.Entity;
-using ITV.Error.Common;
-using ITV.Error.DataBase;
 using ITV.Error.Vehiculos;
-using ITV.Mappers;
 using ITV.Models;
 using ITV.Repository.Common;
-using ITV.Repository.Dapper;
 using ITV.Repository.EFCore;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using Serilog;
 
 namespace ITV.Test.Repository;
 
@@ -28,6 +21,9 @@ public class RepositorioEfTests
         private IRepositorioVehiculos _repositorio = null!;
         private SqliteConnection _connection = null!;
         private AppDbContext _context = null!;
+        
+        private static readonly DateTime FechaMat = DateTime.Today.AddYears(-1);
+        private static readonly DateTime FechaInsp = DateTime.Today.AddDays(15);
 
         [SetUp]
         public void SetUp()
@@ -59,7 +55,7 @@ public class RepositorioEfTests
         [Test]
         public void Agregar_SinErrores()
             {
-                var vehiculo = new  Cita("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
+                var vehiculo = new  Cita(FechaMat, FechaInsp, "1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
     
                 var result = _repositorio.Agregar(vehiculo);
                 result.Should().NotBeNull();
@@ -72,7 +68,7 @@ public class RepositorioEfTests
             [Test]
             public void Borrar_MarcaElimnado()
             {
-                var vehiculo = new  Cita("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
+                var vehiculo = new  Cita(FechaMat, FechaInsp, "1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
                 var agregado = _repositorio.Agregar(vehiculo);
     
                 var result = _repositorio.Borrar(agregado.Value.Id);
@@ -84,7 +80,7 @@ public class RepositorioEfTests
             [Test]
             public void Borrar_ObjetoElimnado()
             {
-                var vehiculo = new  Cita("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
+                var vehiculo = new  Cita(FechaMat, FechaInsp, "1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
                 var agregado = _repositorio.Agregar(vehiculo);
     
                 var result = _repositorio.Borrar(agregado.Value.Id, false);
@@ -100,7 +96,7 @@ public class RepositorioEfTests
             [Test]
             public void BuscarId_vehiculo()
             { 
-                var vehiculo = new  Cita("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
+                var vehiculo = new  Cita(FechaMat, FechaInsp, "1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
     
                 var agregado = _repositorio.Agregar(vehiculo);
                 
@@ -114,7 +110,7 @@ public class RepositorioEfTests
             [Test]
             public void BuscarMatricula_Vehiculo()
             { 
-                var vehiculo = new  Cita("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
+                var vehiculo = new  Cita(FechaMat, FechaInsp, "1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
     
                 var agregado = _repositorio.Agregar(vehiculo);
                 
@@ -128,9 +124,9 @@ public class RepositorioEfTests
             [Test]
             public void Actualizar_VehiculoActualizadoo()
             {
-                var vehiculoAntiguo = new  Cita("3333BBB", "JKASD", "ElMejor", 3.3, Motor.Electrico, "12345678Z");
+                var vehiculoAntiguo = new  Cita(FechaMat, FechaInsp, "3333BBB", "JKASD", "ElMejor", 3.3, Motor.Electrico, "12345678Z");
                 var agregado = _repositorio.Agregar(vehiculoAntiguo);
-                var vehiculoNuevo = new  Cita("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
+                var vehiculoNuevo = new  Cita(FechaMat, FechaInsp, "1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
                 var result = _repositorio.Actualizar(agregado.Value.Id, vehiculoNuevo);
     
                 result.Should().NotBeNull();
@@ -142,9 +138,9 @@ public class RepositorioEfTests
             [Test]
             public void BorrarRepositorio()
             {
-                var vehiculo1 = new  Cita("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
-                var vehiculo2 = new  Cita("2222BBB", "AAA", "ElMejor", 3.3, Motor.Gasolina, "12345678Z");
-                var vehiculo3 = new  Cita("3333BBB", "JKASD", "ElMejor", 3.3, Motor.Electrico, "12345678Z");
+                var vehiculo1 = new  Cita(FechaMat, FechaInsp, "1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
+                var vehiculo2 = new  Cita(FechaMat, FechaInsp, "2222BBB", "AAA", "ElMejor", 3.3, Motor.Gasolina, "12345678Z");
+                var vehiculo3 = new  Cita(FechaMat, FechaInsp, "3333BBB", "JKASD", "ElMejor", 3.3, Motor.Electrico, "12345678Z");
                 
                 _repositorio.Agregar(vehiculo1);
                 _repositorio.Agregar(vehiculo2);
@@ -160,6 +156,9 @@ public class RepositorioEfTests
             private IRepositorioVehiculos _repositorio = null!;
             private SqliteConnection _connection = null!;
             private AppDbContext _context = null!;
+
+            private static readonly DateTime FechaMat = DateTime.Today.AddYears(-1);
+            private static readonly DateTime FechaInsp = DateTime.Today.AddDays(15);
 
             [SetUp]
             public void SetUp()
@@ -191,8 +190,8 @@ public class RepositorioEfTests
             [Test]
             public void Agregar_ErrorMatricula()
             {
-                var vehiculo1 = new  Cita("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
-                var vehiculo2 = new  Cita("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
+                var vehiculo1 = new  Cita(FechaMat, FechaInsp, "1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
+                var vehiculo2 = new  Cita(FechaMat, FechaInsp, "1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
                 
                 var result1 = _repositorio.Agregar(vehiculo1);
                 var result2 = _repositorio.Agregar(vehiculo2);
@@ -209,10 +208,10 @@ public class RepositorioEfTests
             [Test]
             public void Agregar_ErrorOwnerCon3Vehiculos()
             {
-                var vehiculo1 = new  Cita("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
-                var vehiculo2 = new  Cita("2222BBB", "AAA", "ElMejor", 3.3, Motor.Gasolina, "12345678Z");
-                var vehiculo3 = new  Cita("3333BBB", "JKASD", "ElMejor", 3.3, Motor.Electrico, "12345678Z");
-                var vehiculo4 = new  Cita("4444BBB", "NKNN", "ElMejor", 3.3, Motor.Hidrogeno, "12345678Z");
+                var vehiculo1 = new  Cita(FechaMat, FechaInsp, "1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
+                var vehiculo2 = new  Cita(FechaMat, FechaInsp, "2222BBB", "AAA", "ElMejor", 3.3, Motor.Gasolina, "12345678Z");
+                var vehiculo3 = new  Cita(FechaMat, FechaInsp, "3333BBB", "JKASD", "ElMejor", 3.3, Motor.Electrico, "12345678Z");
+                var vehiculo4 = new  Cita(FechaMat, FechaInsp, "4444BBB", "NKNN", "ElMejor", 3.3, Motor.Hidrogeno, "12345678Z");
                 
                 var result1 = _repositorio.Agregar(vehiculo1);
                 var result2 = _repositorio.Agregar(vehiculo2);
@@ -269,7 +268,7 @@ public class RepositorioEfTests
             public void Actualizar_ErrorVehiculoNoEncontrado()
             {
                 var id = 10;
-                var vehiculoNuevo = new Cita("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
+                var vehiculoNuevo = new Cita(FechaMat, FechaInsp, "1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
                 var result = _repositorio.Actualizar(id, vehiculoNuevo);
     
                 result.Should().NotBeNull();

@@ -110,13 +110,16 @@ public class StorageCsvTests
 
     private static List<Cita> GetVehiculosDePrueba()
     {
+        DateTime fechaMat = DateTime.Today.AddYears(-2);
+        DateTime fechaInsp = DateTime.Today.AddDays(15);
+
         return new List<Cita>
         {
-            new Cita("1234BBB", "Seat", "Ibiza", 1200.0, Motor.Gasolina, "12345678Z"),
-            new Cita("9876FGH", "Aston Martin", "Vantage", 4000.0, Motor.Gasolina, "00000000T"),
-            new Cita("0000DWX", "Yamaha", "MT Zero", 600.0, Motor.Gasolina, "99999999R"),
-            new Cita("5544LNP", "Tesla", "Model Three", 0.0, Motor.Electrico, "54321098B"),
-            new Cita("8210ZRT", "Peugeot", "Dos mil ocho", 1500.0, Motor.Diesel, "11111111H")
+            new Cita(fechaMat, fechaInsp, "1234BBB", "Seat", "Ibiza", 1200.0, Motor.Gasolina, "12345678Z"),
+            new Cita(fechaMat, fechaInsp, "9876FGH", "Aston Martin", "Vantage", 4000.0, Motor.Gasolina, "00000000T"),
+            new Cita(fechaMat, fechaInsp, "0000DWX", "Yamaha", "MT Zero", 600.0, Motor.Gasolina, "99999999R"),
+            new Cita(fechaMat, fechaInsp, "5544LNP", "Tesla", "Model Three", 0.0, Motor.Electrico, "54321098B"),
+            new Cita(fechaMat, fechaInsp, "8210ZRT", "Peugeot", "Dos mil ocho", 1500.0, Motor.Diesel, "11111111H")
         };
     }
 }

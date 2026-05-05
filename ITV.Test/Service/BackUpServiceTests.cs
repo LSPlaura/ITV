@@ -9,7 +9,6 @@ using ITV.Storage.Common;
 
 namespace ITV.Test.Service;
 using Moq;
-
 [TestFixture]
 public class BackUpServiceTests
 {
@@ -20,6 +19,9 @@ public class BackUpServiceTests
       private IBackUpService<Cita> _backUpService = null!;
       private string _file = "VehiculosTest";
       private string _folder = "BackUpTest";
+      
+      private static readonly DateTime FechaMat = DateTime.Today.AddYears(-1);
+      private static readonly DateTime FechaInsp = DateTime.Today.AddDays(15);
 
       [SetUp]
       public void SetUp()
@@ -44,9 +46,9 @@ public class BackUpServiceTests
       [Test]
       public void GuardarBuckUp_Guarda_DevuelveRuta()
       {
-         var vehiculo1 = new Cita("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
-         var vehiculo2 = new Cita("2222BBB", "AAA", "ElMejor", 3.3, Motor.Gasolina, "12345678Z");
-         var vehiculo3 = new Cita("3333BBB", "JKASD", "ElMejor", 3.3, Motor.Electrico, "12345678Z");
+         var vehiculo1 = new Cita(FechaMat, FechaInsp, "1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
+         var vehiculo2 = new Cita(FechaMat, FechaInsp, "2222BBB", "AAA", "ElMejor", 3.3, Motor.Gasolina, "12345678Z");
+         var vehiculo3 = new Cita(FechaMat, FechaInsp, "3333BBB", "JKASD", "ElMejor", 3.3, Motor.Electrico, "12345678Z");
 
          var vehiculos = new List<Cita> { vehiculo1, vehiculo2, vehiculo3 };
 
@@ -63,9 +65,9 @@ public class BackUpServiceTests
       {
          var vehiculosOriginales = new List<Cita> 
          {
-            new("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z"),
-            new("2222BBB", "AAA", "ElMejor", 3.3, Motor.Gasolina, "12345678Z"),
-            new("3333BBB", "JKASD", "ElMejor", 3.3, Motor.Electrico, "12345678Z")
+            new(FechaMat, FechaInsp, "1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z"),
+            new(FechaMat, FechaInsp, "2222BBB", "AAA", "ElMejor", 3.3, Motor.Gasolina, "12345678Z"),
+            new(FechaMat, FechaInsp, "3333BBB", "JKASD", "ElMejor", 3.3, Motor.Electrico, "12345678Z")
          };
 
          var mocoResult = Result.Success<IEnumerable<Cita>, DomainError>(vehiculosOriginales.AsEnumerable());
@@ -83,7 +85,7 @@ public class BackUpServiceTests
       [Test]
       public void Listar_DebeRetornarAlMenosUnArchivo()
       {
-         var vehiculos = new List<Cita> { new("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z") };
+         var vehiculos = new List<Cita> { new(FechaMat, FechaInsp, "1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z") };
          _mockStorage.Setup(s => s.Salvar(It.IsAny<IEnumerable<Cita>>()));
     
          var guardarResult = _backUpService.Guardar(vehiculos);
@@ -112,6 +114,9 @@ public class BackUpServiceTests
       private string _file = "VehiculosTest";
       private string _folder = "BackUpTest";
 
+      private static readonly DateTime FechaMat = DateTime.Today.AddYears(-1);
+      private static readonly DateTime FechaInsp = DateTime.Today.AddDays(15);
+
       [SetUp]
       public void SetUp()
       {
@@ -135,7 +140,7 @@ public class BackUpServiceTests
       [Test]
       public void Guardar_CuandoStorageFalla_RetornaFailure()
       {
-         var vehiculos = new List<Cita> { new("1111BBB", "Toyota", "Malo", 1.0, Motor.Diesel, "12345678Z") };
+         var vehiculos = new List<Cita> { new(FechaMat, FechaInsp, "1111BBB", "Toyota", "Malo", 1.0, Motor.Diesel, "12345678Z") };
 
          _mockStorage.Setup(s => s.Salvar(It.IsAny<IEnumerable<Cita>>()))
             .Throws(new Exception("Error de escritura en disco"));
