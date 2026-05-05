@@ -7,12 +7,6 @@ namespace ITV.Test.Validador;
 public class ValidadorCitaTests
 {
     
-    [SetUp]
-    public void SetUp()
-    {
-        _validador = new ValidadorCita();
-    }
-    
     [TestFixture]
     public class CasosValidos()
     {
@@ -24,10 +18,11 @@ public class ValidadorCitaTests
             _validador = new ValidadorCita();
         }
         
-        [Test]
-        public void Validar_VehiculoCorrecto_SinErrores()
+        [TestCase(null)]
+        [TestCase("2026-05-05")]
+        public void Validar_VehiculoCorrecto_SinErrores(DateTime? fechaInspeccion)
         {
-            var vehiculo = new Cita("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
+            var vehiculo = new Cita(DateTime.Today, fechaInspeccion, "1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
 
             var result = _validador.Validar(vehiculo);
             
@@ -35,7 +30,7 @@ public class ValidadorCitaTests
         }
     }
     
-    public class CasosInalidos()
+    public class CasosInvalidos()
     {
         private ValidadorCita _validador = null!;
     
@@ -53,7 +48,7 @@ public class ValidadorCitaTests
         [TestCase("BBBB111")]
         public void Validar_MatriculaIncorrecta_Errores(string? matricula)
         {
-            var vehiculo = new Cita(matricula, "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
+            var vehiculo = new Cita(DateTime.Today, DateTime.Today, matricula, "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
 
             var result = _validador.Validar(vehiculo);
             
@@ -67,7 +62,7 @@ public class ValidadorCitaTests
         [TestCase("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")]
         public void Validar_MarcaIncorrecta_Errores(string? marca)
         {
-            var vehiculo = new Cita("1111BBB", marca, "ElMejor", 3.3, Motor.Diesel, "12345678Z");
+            var vehiculo = new Cita(DateTime.Today, DateTime.Today,"1111BBB", marca, "ElMejor", 3.3, Motor.Diesel, "12345678Z");
 
             var result = _validador.Validar(vehiculo);
             
@@ -77,7 +72,7 @@ public class ValidadorCitaTests
         [TestCase(-1.1)]
         public void Validar_CilindradaIncorrecta_Errores(double cilindrada)
         {
-            var vehiculo = new Cita("1111BBB", "Toyota", "ElMejor", cilindrada, Motor.Diesel, "12345678Z");
+            var vehiculo = new Cita(DateTime.Today, DateTime.Today, "1111BBB", "Toyota", "ElMejor", cilindrada, Motor.Diesel, "12345678Z");
 
             var result = _validador.Validar(vehiculo);
             
@@ -88,7 +83,7 @@ public class ValidadorCitaTests
         [TestCase(4)]
         public void Validar_MotorIncorrecta_Errores(int motor)
         {
-            var vehiculo = new Cita("1111BBB", "Toyota", "ElMejor", 3.3, (Motor)motor, "12345678Z");
+            var vehiculo = new Cita(DateTime.Today, DateTime.Today,"1111BBB", "Toyota", "ElMejor", 3.3, (Motor)motor, "12345678Z");
 
             var result = _validador.Validar(vehiculo);
             
@@ -102,9 +97,39 @@ public class ValidadorCitaTests
         [TestCase("12345678A")]
         [TestCase("1234D45678")]
         [TestCase("1234456789")]
-        public void Validar_MotorIncorrecta_Errores(string? dni)
+        public void Validar_MotorIncorrecto_Errores(string? dni)
         {
-            var vehiculo = new Cita("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, dni);
+            var vehiculo = new Cita(DateTime.Today, DateTime.Today, "1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, dni);
+
+            var result = _validador.Validar(vehiculo);
+            
+            Assert.That(result.IsFailure, Is.True);
+        }
+        
+        [Test]
+        public void Validar_FechaMatriculacionIncorrecta_Error()
+        {
+            var vehiculo = new Cita(DateTime.Today.AddDays(1), DateTime.Today, "1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
+
+            var result = _validador.Validar(vehiculo);
+            
+            Assert.That(result.IsFailure, Is.True);
+        }
+        
+        [Test]
+        public void Validar_FechaInspeccionMenorQueHoy_Error()
+        {
+            var vehiculo = new Cita(DateTime.Today.AddDays(-1), DateTime.Today, "1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
+
+            var result = _validador.Validar(vehiculo);
+            
+            Assert.That(result.IsFailure, Is.True);
+        }
+        
+        [Test]
+        public void Validar_FechaInspeccionMayor30Dias_Error()
+        {
+            var vehiculo = new Cita(DateTime.Today.AddDays(31), DateTime.Today, "1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
 
             var result = _validador.Validar(vehiculo);
             

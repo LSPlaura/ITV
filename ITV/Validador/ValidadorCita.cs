@@ -23,7 +23,7 @@ public class ValidadorCita : IValidate<Cita>
         if (item.FechaMatriculacion > DateTime.Today)
             return Fail(new CitaError.ValidationError.ValidationMatricula(item.Matricula), "Fecha de matriculación fuera de rango (no puede ser mayor que la fecha actual");
         
-        if (item.FechaInspeccion <= DateTime.Today || item.FechaInspeccion >= DateTime.Today.AddDays(30))
+        if (item.FechaInspeccion < DateTime.Today || item.FechaInspeccion > DateTime.Today.AddDays(30))
             return Fail(new CitaError.ValidationError.ValidationMatricula(item.Matricula), "Fecha de inspección fuera de rango (1-30 días)");
         
         if (!EsTextoValido(item.Marca))
