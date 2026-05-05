@@ -11,9 +11,9 @@ using ITV.Models;
 using ITV.Storage.Common;
 using Serilog;
 
-public class StorageVehiculoJson : IStorageVehiculo
+public class StorageCitaJson : IStorageCita
 {
-   private readonly ILogger _logger = Log.ForContext<StorageVehiculoJson>();
+   private readonly ILogger _logger = Log.ForContext<StorageCitaJson>();
    private readonly JsonSerializerOptions _options = new()
    {
        WriteIndented = true,
@@ -27,7 +27,7 @@ public class StorageVehiculoJson : IStorageVehiculo
    /// <summary>
    /// Constructor para implementar la creacion de la carpeta, si fuese necesario
    /// </summary>
-   public StorageVehiculoJson(string filePath, string directoryPath)
+   public StorageCitaJson(string filePath, string directoryPath)
    {
        _filePath = filePath;
        _directoryPath = directoryPath;
@@ -35,7 +35,7 @@ public class StorageVehiculoJson : IStorageVehiculo
        _fullPath = Path.Combine(directoryPath, filePath + ".json");
    }
 
-   public Result<bool, DomainError> Salvar(IEnumerable<Vehiculo> items)
+   public Result<bool, DomainError> Salvar(IEnumerable<Cita> items)
    {
        try
        {
@@ -55,11 +55,11 @@ public class StorageVehiculoJson : IStorageVehiculo
    }
 
 
-   public Result<IEnumerable<Vehiculo>, DomainError> Cargar()
+   public Result<IEnumerable<Cita>, DomainError> Cargar()
    {
        if (!File.Exists(_fullPath))
        {
-           return Result.Failure<IEnumerable<Vehiculo>, DomainError>(new StorageError(($"El archivo {_fullPath} no existe")))
+           return Result.Failure<IEnumerable<Cita>, DomainError>(new StorageError(($"El archivo {_fullPath} no existe")))
                .TapError(l => _logger.Error("No se encontró el archivo JSON para cargar en la ruta: {Path}", _fullPath));
        }
        
@@ -68,20 +68,20 @@ public class StorageVehiculoJson : IStorageVehiculo
            _logger.Information("Iniciando lectura de datos desde JSON: {Path}", _fullPath);
           
            using var file = File.OpenRead(_fullPath);
-           var dtos = JsonSerializer.Deserialize<List<VehiculoDto>>(file, _options);
+           var dtos = JsonSerializer.Deserialize<List<CitaDto>>(file, _options);
            if (dtos == null)
-               return Result.Failure<IEnumerable<Vehiculo>, DomainError>(new StorageError("No se pudieron deserializar los DTOs."))
+               return Result.Failure<IEnumerable<Cita>, DomainError>(new StorageError("No se pudieron deserializar los DTOs."))
                    .TapError(l => _logger.Error("Deserialización fallida: El archivo en {Path} devolvió una lista nula o incompatible.", _fullPath));
 
 
            var result = dtos.Select(d => d.ToModel()).ToList();
-           return Result.Success<IEnumerable<Vehiculo>, DomainError>(result)
+           return Result.Success<IEnumerable<Cita>, DomainError>(result)
                .Tap(l => _logger.Information(
                    "Lectura JSON completada. Se han recuperado {Count} registros desde {Path}", result.Count, _fullPath));
        }
        catch (Exception ex)
        {
-           return Result.Failure<IEnumerable<Vehiculo>, DomainError>(new StorageError(ex.Message))
+           return Result.Failure<IEnumerable<Cita>, DomainError>(new StorageError(ex.Message))
                .TapError(l =>_logger.Error(ex, "Error crítico al intentar cargar el archivo JSON desde {Path}", _fullPath));
        }
    }

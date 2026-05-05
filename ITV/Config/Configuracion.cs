@@ -23,11 +23,11 @@ public static class Configuracion
     /// <summary>
     /// El tipo de repositorio configurado
     /// </summary>
-    public static string RepositoryType = Config.GetValue<string>("Repository:Type") ?? "memory";
+    public static string RepositoryType = Config.GetValue<string>("Repository:Type") ?? "efc";
     /// <summary>
     /// El fichero a usar cuando se use un repositorio conn una base de datos
     /// </summary>
-    public static string DataBaseString = Config.GetValue<string>("Repository:Database") ?? "Data Source=Repository/vehiculos.db";
+    public static string DataBaseString = Config.GetValue<string>("Repository:Database") ?? "Data Source=Repository/citas.db";
     /// <summary>
     /// EL directorio en el que irán los archivos que se guarden del repositorio
     /// </summary>

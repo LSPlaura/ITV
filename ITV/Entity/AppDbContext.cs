@@ -7,7 +7,7 @@ namespace ITV.Entity;
 /// </summary>
 public class AppDbContext : DbContext
 {
-    public DbSet<VehiculoEntity> Vehiculo {get; set; } = null!;
+    public DbSet<CitaEntity> Vehiculo {get; set; } = null!;
     private readonly string _connection;
     
     public AppDbContext(string connecion)

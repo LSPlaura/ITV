@@ -17,9 +17,9 @@ public class BackupService : IBackUpServiceVehiculos
     private readonly string _finalFileName;
     private readonly string _finalFolderName;
     private readonly string _tempName = "tempBackup";
-    private readonly IStorage<Vehiculo> _storage;
+    private readonly IStorage<Cita> _storage;
 
-    public BackupService(IStorage<Vehiculo> storage, string file, string directory)
+    public BackupService(IStorage<Cita> storage, string file, string directory)
     {
         _finalFileName = _fecha + file + "." + Configuracion.StorageType.ToLower();
         _finalFolderName = _fecha + directory;
@@ -27,7 +27,7 @@ public class BackupService : IBackUpServiceVehiculos
     }
     
 
-    public Result<string, DomainError> Guardar(IEnumerable<Vehiculo> lista)
+    public Result<string, DomainError> Guardar(IEnumerable<Cita> lista)
     {
         try
         {
@@ -58,13 +58,13 @@ public class BackupService : IBackUpServiceVehiculos
         }
     }
 
-    public Result<IEnumerable<Vehiculo>, DomainError> Restuarar(string path)
+    public Result<IEnumerable<Cita>, DomainError> Restuarar(string path)
     {
         try
         {
             if (!File.Exists(path))
             {
-                return Result.Failure<IEnumerable<Vehiculo>, DomainError>(new BackUpError.DirectoryNotFound(path))
+                return Result.Failure<IEnumerable<Cita>, DomainError>(new BackUpError.DirectoryNotFound(path))
                     .TapError(l => _logger.Error("El archivo no existe en la ruta especificada: {Path}", path));
             }
 
@@ -79,12 +79,12 @@ public class BackupService : IBackUpServiceVehiculos
             // Limpieza
             Directory.Delete(tempDirectory, true);
             
-            return Result.Success<IEnumerable<Vehiculo>, DomainError>(vehiculos.Value)
+            return Result.Success<IEnumerable<Cita>, DomainError>(vehiculos.Value)
                 .Tap(l => _logger.Information("Vehiculos cargados exitosamente desde la ruta: {Path}", path));
         }
         catch (Exception ex)
         {
-            return Result.Failure<IEnumerable<Vehiculo>, DomainError>(new BackUpError(ex.Message))
+            return Result.Failure<IEnumerable<Cita>, DomainError>(new BackUpError(ex.Message))
                 .TapError(l => _logger.Error(ex, "Error crítico al intentar restaurar el backup desde {Path}", path));
         }
     }

@@ -16,15 +16,15 @@ public class BackUpServiceTests
    [TestFixture]
    public class CasosValidos
    {
-      private Mock<IStorage<Vehiculo>> _mockStorage = null!;
-      private IBackUpService<Vehiculo> _backUpService = null!;
+      private Mock<IStorage<Cita>> _mockStorage = null!;
+      private IBackUpService<Cita> _backUpService = null!;
       private string _file = "VehiculosTest";
       private string _folder = "BackUpTest";
 
       [SetUp]
       public void SetUp()
       {
-         _mockStorage = new Mock<IStorage<Vehiculo>>();
+         _mockStorage = new Mock<IStorage<Cita>>();
          _backUpService = new BackupService(_mockStorage.Object, _file, _folder);
       }
 
@@ -44,31 +44,31 @@ public class BackUpServiceTests
       [Test]
       public void GuardarBuckUp_Guarda_DevuelveRuta()
       {
-         var vehiculo1 = new Vehiculo("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
-         var vehiculo2 = new Vehiculo("2222BBB", "AAA", "ElMejor", 3.3, Motor.Gasolina, "12345678Z");
-         var vehiculo3 = new Vehiculo("3333BBB", "JKASD", "ElMejor", 3.3, Motor.Electrico, "12345678Z");
+         var vehiculo1 = new Cita("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
+         var vehiculo2 = new Cita("2222BBB", "AAA", "ElMejor", 3.3, Motor.Gasolina, "12345678Z");
+         var vehiculo3 = new Cita("3333BBB", "JKASD", "ElMejor", 3.3, Motor.Electrico, "12345678Z");
 
-         var vehiculos = new List<Vehiculo> { vehiculo1, vehiculo2, vehiculo3 };
+         var vehiculos = new List<Cita> { vehiculo1, vehiculo2, vehiculo3 };
 
          var result = _backUpService.Guardar(vehiculos);
 
          result.IsSuccess.Should().BeTrue();
          result.Value.Should().BeOfType<string>();
     
-         _mockStorage.Verify(s => s.Salvar(It.Is<IEnumerable<Vehiculo>>(v => v.Count() == 3)), Times.Once);
+         _mockStorage.Verify(s => s.Salvar(It.Is<IEnumerable<Cita>>(v => v.Count() == 3)), Times.Once);
       }
 
       [Test]
       public void Restuarar()
       {
-         var vehiculosOriginales = new List<Vehiculo> 
+         var vehiculosOriginales = new List<Cita> 
          {
             new("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z"),
             new("2222BBB", "AAA", "ElMejor", 3.3, Motor.Gasolina, "12345678Z"),
             new("3333BBB", "JKASD", "ElMejor", 3.3, Motor.Electrico, "12345678Z")
          };
 
-         var mocoResult = Result.Success<IEnumerable<Vehiculo>, DomainError>(vehiculosOriginales.AsEnumerable());
+         var mocoResult = Result.Success<IEnumerable<Cita>, DomainError>(vehiculosOriginales.AsEnumerable());
          _mockStorage.Setup(s => s.Cargar()).Returns(mocoResult);
 
          var ruta = _backUpService.Guardar(vehiculosOriginales);
@@ -83,8 +83,8 @@ public class BackUpServiceTests
       [Test]
       public void Listar_DebeRetornarAlMenosUnArchivo()
       {
-         var vehiculos = new List<Vehiculo> { new("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z") };
-         _mockStorage.Setup(s => s.Salvar(It.IsAny<IEnumerable<Vehiculo>>()));
+         var vehiculos = new List<Cita> { new("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z") };
+         _mockStorage.Setup(s => s.Salvar(It.IsAny<IEnumerable<Cita>>()));
     
          var guardarResult = _backUpService.Guardar(vehiculos);
          var result = _backUpService.Listar();
@@ -92,7 +92,7 @@ public class BackUpServiceTests
          result.Should().NotBeEmpty();
          result.Should().Contain(guardarResult.Value);
     
-         _mockStorage.Verify(s => s.Salvar(It.IsAny<IEnumerable<Vehiculo>>()), Times.AtLeastOnce);
+         _mockStorage.Verify(s => s.Salvar(It.IsAny<IEnumerable<Cita>>()), Times.AtLeastOnce);
       }
 
       [Test]
@@ -107,15 +107,15 @@ public class BackUpServiceTests
    [TestFixture]
    public class CasosInvalidos
    {
-      private Mock<IStorage<Vehiculo>> _mockStorage = null!;
-      private IBackUpService<Vehiculo> _backUpService = null!;
+      private Mock<IStorage<Cita>> _mockStorage = null!;
+      private IBackUpService<Cita> _backUpService = null!;
       private string _file = "VehiculosTest";
       private string _folder = "BackUpTest";
 
       [SetUp]
       public void SetUp()
       {
-         _mockStorage = new Mock<IStorage<Vehiculo>>();
+         _mockStorage = new Mock<IStorage<Cita>>();
          _backUpService = new BackupService(_mockStorage.Object, _file, _folder);
       }
 
@@ -135,9 +135,9 @@ public class BackUpServiceTests
       [Test]
       public void Guardar_CuandoStorageFalla_RetornaFailure()
       {
-         var vehiculos = new List<Vehiculo> { new("1111BBB", "Toyota", "Malo", 1.0, Motor.Diesel, "12345678Z") };
+         var vehiculos = new List<Cita> { new("1111BBB", "Toyota", "Malo", 1.0, Motor.Diesel, "12345678Z") };
 
-         _mockStorage.Setup(s => s.Salvar(It.IsAny<IEnumerable<Vehiculo>>()))
+         _mockStorage.Setup(s => s.Salvar(It.IsAny<IEnumerable<Cita>>()))
             .Throws(new Exception("Error de escritura en disco"));
 
          var result = _backUpService.Guardar(vehiculos);
@@ -145,7 +145,7 @@ public class BackUpServiceTests
          result.IsFailure.Should().BeTrue();
          result.Error.Should().BeOfType<BackUpError>();
     
-         _mockStorage.Verify(s => s.Salvar(It.IsAny<IEnumerable<Vehiculo>>()), Times.Once);
+         _mockStorage.Verify(s => s.Salvar(It.IsAny<IEnumerable<Cita>>()), Times.Once);
       }
 
       [Test]
@@ -179,11 +179,11 @@ public class BackUpServiceTests
       [Test]
       public void Restuarar_CuandoStorageCargarFalla_RetornaFailure()
       {
-         var vehiculos = new List<Vehiculo>();
+         var vehiculos = new List<Cita>();
          var rutaResult = _backUpService.Guardar(vehiculos);
 
          _mockStorage.Setup(s => s.Cargar())
-            .Returns(Result.Failure<IEnumerable<Vehiculo>, DomainError>(new BackUpError("Error")));
+            .Returns(Result.Failure<IEnumerable<Cita>, DomainError>(new BackUpError("Error")));
     
          var result = _backUpService.Restuarar(rutaResult.Value);
     

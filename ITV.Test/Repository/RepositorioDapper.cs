@@ -37,7 +37,7 @@ public class RepositorioDapper
             anchor.Open();
             using var cmd = anchor.CreateCommand();
             cmd.CommandText = @"
-              CREATE TABLE IF NOT EXISTS Vehiculo(
+              CREATE TABLE IF NOT EXISTS Cita(
                 Id INTEGER PRIMARY KEY,
                 Matricula VARCHAR(9) NOT NULL UNIQUE,
                 Modelo  VARCHAR(100) NOT NULL,
@@ -84,7 +84,7 @@ public class RepositorioDapper
             [Test]
             public void Agregar_SinErrores()
             {
-                var vehiculo = new  Vehiculo("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
+                var vehiculo = new  Cita("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
     
                 var result = _repositorio.Agregar(vehiculo);
                 result.Should().NotBeNull();
@@ -97,7 +97,7 @@ public class RepositorioDapper
             [Test]
             public void Borrar_MarcaElimnado()
             {
-                var vehiculo = new  Vehiculo("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
+                var vehiculo = new  Cita("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
                 var agregado = _repositorio.Agregar(vehiculo);
     
                 var result = _repositorio.Borrar(agregado.Value.Id);
@@ -109,7 +109,7 @@ public class RepositorioDapper
             [Test]
             public void Borrar_ObjetoElimnado()
             {
-                var vehiculo = new  Vehiculo("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
+                var vehiculo = new  Cita("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
                 var agregado = _repositorio.Agregar(vehiculo);
     
                 var result = _repositorio.Borrar(agregado.Value.Id, false);
@@ -125,7 +125,7 @@ public class RepositorioDapper
             [Test]
             public void BuscarId_vehiculo()
             { 
-                var vehiculo = new  Vehiculo("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
+                var vehiculo = new  Cita("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
     
                 var agregado = _repositorio.Agregar(vehiculo);
                 
@@ -139,7 +139,7 @@ public class RepositorioDapper
             [Test]
             public void BuscarMatricula_Vehiculo()
             { 
-                var vehiculo = new  Vehiculo("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
+                var vehiculo = new  Cita("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
     
                 var agregado = _repositorio.Agregar(vehiculo);
                 
@@ -153,9 +153,9 @@ public class RepositorioDapper
             [Test]
             public void Actualizar_VehiculoActualizadoo()
             {
-                var vehiculoAntiguo = new  Vehiculo("3333BBB", "JKASD", "ElMejor", 3.3, Motor.Electrico, "12345678Z");
+                var vehiculoAntiguo = new  Cita("3333BBB", "JKASD", "ElMejor", 3.3, Motor.Electrico, "12345678Z");
                 var agregado = _repositorio.Agregar(vehiculoAntiguo);
-                var vehiculoNuevo = new  Vehiculo("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
+                var vehiculoNuevo = new  Cita("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
                 var result = _repositorio.Actualizar(agregado.Value.Id, vehiculoNuevo);
     
                 result.Should().NotBeNull();
@@ -167,9 +167,9 @@ public class RepositorioDapper
             [Test]
             public void BorrarRepositorio()
             {
-                var vehiculo1 = new  Vehiculo("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
-                var vehiculo2 = new  Vehiculo("2222BBB", "AAA", "ElMejor", 3.3, Motor.Gasolina, "12345678Z");
-                var vehiculo3 = new  Vehiculo("3333BBB", "JKASD", "ElMejor", 3.3, Motor.Electrico, "12345678Z");
+                var vehiculo1 = new  Cita("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
+                var vehiculo2 = new  Cita("2222BBB", "AAA", "ElMejor", 3.3, Motor.Gasolina, "12345678Z");
+                var vehiculo3 = new  Cita("3333BBB", "JKASD", "ElMejor", 3.3, Motor.Electrico, "12345678Z");
                 
                 _repositorio.Agregar(vehiculo1);
                 _repositorio.Agregar(vehiculo2);
@@ -205,7 +205,7 @@ public class RepositorioDapper
             anchor.Open();
             using var cmd = anchor.CreateCommand();
             cmd.CommandText = @"
-              CREATE TABLE IF NOT EXISTS Vehiculo(
+              CREATE TABLE IF NOT EXISTS Cita(
                 Id INTEGER PRIMARY KEY,
                 Matricula VARCHAR(9) NOT NULL UNIQUE,
                 Modelo  VARCHAR(100) NOT NULL,
@@ -252,8 +252,8 @@ public class RepositorioDapper
             [Test]
             public void Agregar_ErrorMatricula()
             {
-                var vehiculo1 = new  Vehiculo("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
-                var vehiculo2 = new  Vehiculo("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
+                var vehiculo1 = new  Cita("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
+                var vehiculo2 = new  Cita("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
                 
                 var result1 = _repositorio.Agregar(vehiculo1);
                 var result2 = _repositorio.Agregar(vehiculo2);
@@ -264,16 +264,16 @@ public class RepositorioDapper
                 
                 result2.Should().NotBeNull();
                 result2.IsFailure.Should().BeTrue();
-                result2.Error.Should().BeOfType<VehiculoError.VehiculoAlredyExist.MatriculaAlreadyExists>();
+                result2.Error.Should().BeOfType<CitaError.CitaAlredyExist.MatriculaAlreadyExists>();
             }
             
             [Test]
             public void Agregar_ErrorOwnerCon3Vehiculos()
             {
-                var vehiculo1 = new  Vehiculo("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
-                var vehiculo2 = new  Vehiculo("2222BBB", "AAA", "ElMejor", 3.3, Motor.Gasolina, "12345678Z");
-                var vehiculo3 = new  Vehiculo("3333BBB", "JKASD", "ElMejor", 3.3, Motor.Electrico, "12345678Z");
-                var vehiculo4 = new  Vehiculo("4444BBB", "NKNN", "ElMejor", 3.3, Motor.Hidrogeno, "12345678Z");
+                var vehiculo1 = new  Cita("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
+                var vehiculo2 = new  Cita("2222BBB", "AAA", "ElMejor", 3.3, Motor.Gasolina, "12345678Z");
+                var vehiculo3 = new  Cita("3333BBB", "JKASD", "ElMejor", 3.3, Motor.Electrico, "12345678Z");
+                var vehiculo4 = new  Cita("4444BBB", "NKNN", "ElMejor", 3.3, Motor.Hidrogeno, "12345678Z");
                 
                 var result1 = _repositorio.Agregar(vehiculo1);
                 var result2 = _repositorio.Agregar(vehiculo2);
@@ -294,7 +294,7 @@ public class RepositorioDapper
                 
                 result4.Should().NotBeNull();
                 result4.IsFailure.Should().BeTrue();
-                result4.Error.Should().BeOfType<VehiculoError.OwnerWithThreeOrMoreVehiculos>();
+                result4.Error.Should().BeOfType<CitaError.OwnerWithThreeOrMoreCitas>();
             }
            
             [Test]
@@ -303,7 +303,7 @@ public class RepositorioDapper
                 var result = _repositorio.Borrar(20);
                 result.Should().NotBeNull();
                 result.IsFailure.Should().BeTrue();
-                result.Error.Should().BeOfType<VehiculoError.VehiculoNotFoundId>();
+                result.Error.Should().BeOfType<CitaError.CitaNotFoundId>();
             }
             
             [Test]
@@ -313,7 +313,7 @@ public class RepositorioDapper
     
                 result.Should().NotBeNull();
                 result.IsFailure.Should().BeTrue();
-                result.Error.Should().BeOfType<VehiculoError.VehiculoNotFoundId>();
+                result.Error.Should().BeOfType<CitaError.CitaNotFoundId>();
             }
     
             [Test]
@@ -323,19 +323,19 @@ public class RepositorioDapper
     
                 result.Should().NotBeNull();
                 result.IsFailure.Should().BeTrue();
-                result.Error.Should().BeOfType<VehiculoError.VehiculoNotFoundMatricula>();
+                result.Error.Should().BeOfType<CitaError.CitaNotFoundMatricula>();
             }
     
             [Test]
             public void Actualizar_ErrorVehiculoNoEncontrado()
             {
                 var id = 10;
-                var vehiculoNuevo = new Vehiculo("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
+                var vehiculoNuevo = new Cita("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
                 var result = _repositorio.Actualizar(id, vehiculoNuevo);
     
                 result.Should().NotBeNull();
                 result.IsFailure.Should().BeTrue();
-                result.Error.Should().BeOfType<VehiculoError.VehiculoNotFoundId>();
+                result.Error.Should().BeOfType<CitaError.CitaNotFoundId>();
             }
         } 
 }

@@ -50,7 +50,7 @@ public class AdoRepository : IRepositorioVehiculos
         connection.Open();
         // Normalizamos el nombre de la columna: DniDueno (sin acento/ñ)
         connection.Execute(@"
-            CREATE TABLE IF NOT EXISTS Vehiculo(
+            CREATE TABLE IF NOT EXISTS Cita(
                 Id INTEGER PRIMARY KEY,
                 Matricula VARCHAR(9) NOT NULL UNIQUE,
                 Modelo  VARCHAR(100) NOT NULL,
@@ -63,30 +63,30 @@ public class AdoRepository : IRepositorioVehiculos
         _logger.Debug("Se ha creado la tabla, creo");
     }
     
-    public IEnumerable<Vehiculo> GetAll()
+    public IEnumerable<Cita> GetAll()
     {
-        var vehiculos = new List<Vehiculo>();
+        var vehiculos = new List<Cita>();
         using var connection = CreateConnection();
         connection.Open();
         using var command = connection.CreateCommand();
-        command.CommandText = "SELECT * FROM Vehiculo";
+        command.CommandText = "SELECT * FROM Cita";
         using var reader = command.ExecuteReader();
         while(reader.Read()) vehiculos.Add(MapVehiculo(reader).ToModel());
         return vehiculos;
     }
 
-    public Result<Vehiculo, DomainError> Agregar(Vehiculo value)
+    public Result<Cita, DomainError> Agregar(Cita value)
     {
         try
         {
             var entity = value.ToEntity();
             
             if (ExistMatricula(entity.Matricula))
-                return Result.Failure<Vehiculo, DomainError>(new VehiculoError.VehiculoAlredyExist.MatriculaAlreadyExists(entity.Matricula))
+                return Result.Failure<Cita, DomainError>(new CitaError.CitaAlredyExist.MatriculaAlreadyExists(entity.Matricula))
                     .TapError(v => _logger.Error("Fallo al agregar: La matricula {Matricula} ya está registrada", entity.Matricula));
             
             if (!ContarVehiculos(entity.DniDueño))
-                return Result.Failure<Vehiculo, DomainError>(new VehiculoError.OwnerWithThreeOrMoreVehiculos(entity.DniDueño))
+                return Result.Failure<Cita, DomainError>(new CitaError.OwnerWithThreeOrMoreCitas(entity.DniDueño))
                     .TapError(v => _logger.Error("Límite alcanzado: El dueño con DNI {Dni} no puede tener más vehículos", entity.DniDueño));
             
             using var connection = CreateConnection();
@@ -94,7 +94,7 @@ public class AdoRepository : IRepositorioVehiculos
 
             // Primero insert
             using var insertCmd = connection.CreateCommand();
-            insertCmd.CommandText = @"INSERT INTO Vehiculo(Matricula, Modelo, Marca, Motor, Cilindrada, DniDueno)
+            insertCmd.CommandText = @"INSERT INTO Cita(Matricula, Modelo, Marca, Motor, Cilindrada, DniDueno)
                         VALUES (@Matricula, @Modelo, @Marca, @Motor, @Cilindrada, @DniDueno)";
             insertCmd.Parameters.AddWithValue("@Matricula", entity.Matricula);
             insertCmd.Parameters.AddWithValue("@Modelo", entity.Modelo);
@@ -106,25 +106,25 @@ public class AdoRepository : IRepositorioVehiculos
 
             // Luego recuperamos la fila insertada
             using var selectCmd = connection.CreateCommand();
-            selectCmd.CommandText = "SELECT * FROM Vehiculo WHERE rowid = last_insert_rowid()";
+            selectCmd.CommandText = "SELECT * FROM Cita WHERE rowid = last_insert_rowid()";
             using var reader = selectCmd.ExecuteReader();
             var vehiculo = reader.Read() ? MapVehiculo(reader) : null;
             
             return vehiculo == null
-                ? Result.Failure<Vehiculo, DomainError>(new VehiculoError.VehiculoNotFoundId(entity.Id))
+                ? Result.Failure<Cita, DomainError>(new CitaError.CitaNotFoundId(entity.Id))
                     .TapError(l => _logger.Error("No se ha encontrado el vehiculo con el Id {Id}", entity.Id))
-                : Result.Success<Vehiculo, DomainError>(vehiculo.ToModel())
+                : Result.Success<Cita, DomainError>(vehiculo.ToModel())
                     .Tap((l => _logger.Information("Se ha creado el vehiculo con el ID {Id}", l.Id)));
         }
         catch (Exception ex)
         {
             _logger.Fatal(ex, "Error en la base de datos al agregar");
-            return Result.Failure<Vehiculo, DomainError>(new DataBaseError(ex.ToString()))
+            return Result.Failure<Cita, DomainError>(new DataBaseError(ex.ToString()))
                 .TapError(l => _logger.Fatal("Error en la base de datos al agregar"));
         }
     }
 
-    public Result<Vehiculo, DomainError> Borrar(int key, bool isLogical = true)
+    public Result<Cita, DomainError> Borrar(int key, bool isLogical = true)
     {
         try
         {
@@ -138,7 +138,7 @@ public class AdoRepository : IRepositorioVehiculos
 
             if (isLogical)
             {
-                command.CommandText = "UPDATE Vehiculo SET IsDeleted = @IsDeleted WHERE Id = @Id";
+                command.CommandText = "UPDATE Cita SET IsDeleted = @IsDeleted WHERE Id = @Id";
                 command.Parameters.AddWithValue("@IsDeleted", 1);
                 command.Parameters.AddWithValue("@Id", key);
                 command.ExecuteNonQuery();
@@ -146,7 +146,7 @@ public class AdoRepository : IRepositorioVehiculos
                     .Tap((l => _logger.Information("Se ha borrado (lógico) el vehiculo con el ID {Id}", l.Id)));
                 
             }
-            command.CommandText = "DELETE FROM Vehiculo WHERE Id = @Id";
+            command.CommandText = "DELETE FROM Cita WHERE Id = @Id";
             command.Parameters.AddWithValue("@Id", key);
             return command.ExecuteNonQuery() > 0 ? 
                 encontrado.Tap((l => _logger.Information("Se ha borrado (físico) el vehiculo con el ID {Id}", l.Id)))
@@ -155,64 +155,64 @@ public class AdoRepository : IRepositorioVehiculos
         catch (Exception ex)
         {
             _logger.Fatal(ex, "Error en la base de datos al borrar");
-            return Result.Failure<Vehiculo, DomainError>(new DataBaseError(ex.ToString()))
+            return Result.Failure<Cita, DomainError>(new DataBaseError(ex.ToString()))
                 .TapError(l => _logger.Fatal("Error en la base de datos al borrar"));
         }
     }
 
-    public Result<Vehiculo, DomainError> BuscarId(int key)
+    public Result<Cita, DomainError> BuscarId(int key)
     {
         try
         {
             using var connection = CreateConnection();
             connection.Open();
             using var command = connection.CreateCommand();
-            command.CommandText = "SELECT * FROM Vehiculo WHERE Id = @Id";
+            command.CommandText = "SELECT * FROM Cita WHERE Id = @Id";
             command.Parameters.AddWithValue("@Id", key);
             using var reader = command.ExecuteReader();
             var vehiculo = reader.Read() ? MapVehiculo(reader) : null;
             
             return vehiculo == null
-                ? Result.Failure<Vehiculo, DomainError>(new VehiculoError.VehiculoNotFoundId(key))
+                ? Result.Failure<Cita, DomainError>(new CitaError.CitaNotFoundId(key))
                     .TapError(l => _logger.Fatal("No se ha encontrado el vehiculo con el Id {Id}", key))
-                : Result.Success<Vehiculo, DomainError>(vehiculo.ToModel())
+                : Result.Success<Cita, DomainError>(vehiculo.ToModel())
                     .Tap((l => _logger.Information("Se ha encontrado el vehiculo con el ID {Id}", l.Id)));
         }
         catch (Exception ex)
         {
             _logger.Fatal(ex, "Error en la base de datos al buscar por id");
-            return Result.Failure<Vehiculo, DomainError>(new DataBaseError(ex.ToString()))
+            return Result.Failure<Cita, DomainError>(new DataBaseError(ex.ToString()))
                 .TapError(l => _logger.Fatal("Error en la base de datos al buscar por id"));
         }
     }
     
-    public Result<Vehiculo, DomainError> BuscarMatricula(string key)
+    public Result<Cita, DomainError> BuscarMatricula(string key)
     {
         try
         {
             using var connection = CreateConnection();
             connection.Open();
             using var command = connection.CreateCommand();
-            command.CommandText = "SELECT * FROM Vehiculo WHERE Matricula = @Matricula";
+            command.CommandText = "SELECT * FROM Cita WHERE Matricula = @Matricula";
             command.Parameters.AddWithValue("@Matricula", key);
             using var reader = command.ExecuteReader();
             var vehiculo = reader.Read() ? MapVehiculo(reader) : null;
             
             return vehiculo == null
-                ? Result.Failure<Vehiculo, DomainError>(new VehiculoError.VehiculoNotFoundMatricula(key))
+                ? Result.Failure<Cita, DomainError>(new CitaError.CitaNotFoundMatricula(key))
                     .TapError(l => _logger.Fatal("No se ha encontrado el vehiculo con la matricula {Matricula}", key))
-                : Result.Success<Vehiculo, DomainError>(vehiculo.ToModel())
+                : Result.Success<Cita, DomainError>(vehiculo.ToModel())
                     .Tap((l => _logger.Information("Se ha encontrado el vehiculo con la matricula {Matricula}", l.Matricula)));
         }
         catch (Exception ex)
         {
             _logger.Fatal(ex, "Error en la base de datos al buscar por matrícula");
-            return Result.Failure<Vehiculo, DomainError>(new DataBaseError(ex.ToString()))
+            return Result.Failure<Cita, DomainError>(new DataBaseError(ex.ToString()))
                 .TapError(l => _logger.Fatal("Error en la base de datos al buscar por matrícula"));
         }
     }
 
-    public Result<Vehiculo, DomainError> Actualizar(int key, Vehiculo value)
+    public Result<Cita, DomainError> Actualizar(int key, Cita value)
     {
         try
         {
@@ -220,7 +220,7 @@ public class AdoRepository : IRepositorioVehiculos
             using var connection = CreateConnection();
             connection.Open();
             using var command = connection.CreateCommand();
-            command.CommandText = @"UPDATE Vehiculo SET
+            command.CommandText = @"UPDATE Cita SET
                                     Matricula = @Matricula, Modelo = @Modelo, Marca = @Marca, Motor = @Motor,
                                     Cilindrada = @Cilindrada, DniDueno = @DniDueno, IsDeleted = @IsDeleted
                                     WHERE Id = @Id";
@@ -240,7 +240,7 @@ public class AdoRepository : IRepositorioVehiculos
         catch (Exception ex)
         {
             _logger.Fatal(ex, "Error en la base de datos al actualizar");
-            return Result.Failure<Vehiculo, DomainError>(new DataBaseError(ex.ToString()))
+            return Result.Failure<Cita, DomainError>(new DataBaseError(ex.ToString()))
                 .TapError(l => _logger.Fatal("Error en la base de datos al actualizar"));
         }
     }
@@ -250,7 +250,7 @@ public class AdoRepository : IRepositorioVehiculos
         using var connection = CreateConnection();
         connection.Open();
         using var command = connection.CreateCommand();
-        command.CommandText = "SELECT COUNT(1) FROM Vehiculo WHERE Id = @Id";
+        command.CommandText = "SELECT COUNT(1) FROM Cita WHERE Id = @Id";
         command.Parameters.AddWithValue("@Id", key);
         var val = command.ExecuteScalar();
         var numero = val == null ? 0 : Convert.ToInt32(val);
@@ -262,7 +262,7 @@ public class AdoRepository : IRepositorioVehiculos
         using var connection = CreateConnection();
         connection.Open();
         using var command = connection.CreateCommand();
-        command.CommandText = "SELECT COUNT(1) FROM Vehiculo WHERE Matricula = @Matricula";
+        command.CommandText = "SELECT COUNT(1) FROM Cita WHERE Matricula = @Matricula";
         command.Parameters.AddWithValue("@Matricula", key);
         var val = command.ExecuteScalar();
         var numero = val == null ? 0 : Convert.ToInt32(val);
@@ -275,12 +275,12 @@ public class AdoRepository : IRepositorioVehiculos
         using var connection = CreateConnection();
         connection.Open();
         using var command = connection.CreateCommand();
-        command.CommandText = @"DELETE FROM Vehiculo";
+        command.CommandText = @"DELETE FROM Cita";
         command.ExecuteNonQuery();
     }
-    private VehiculoEntity MapVehiculo(SqliteDataReader reader)
+    private CitaEntity MapVehiculo(SqliteDataReader reader)
     {
-        return new VehiculoEntity(
+        return new CitaEntity(
             reader.GetInt32(reader.GetOrdinal("Id")),
             reader.GetString(reader.GetOrdinal("Matricula")),
             reader.GetString(reader.GetOrdinal("Modelo")),
@@ -302,7 +302,7 @@ public class AdoRepository : IRepositorioVehiculos
         using var conn = CreateConnection();
         conn.Open();
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = "SELECT COUNT(1) FROM Vehiculo WHERE DniDueno = @Dni";
+        cmd.CommandText = "SELECT COUNT(1) FROM Cita WHERE DniDueno = @Dni";
         cmd.Parameters.AddWithValue("@Dni", key);
         var val = cmd.ExecuteScalar();
         var count = val == null ? 0 : Convert.ToInt32(val);

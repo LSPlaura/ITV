@@ -38,7 +38,7 @@ public class EfCoreRepository : IRepositorioVehiculos
     }
     
 
-    public IEnumerable<Vehiculo> GetAll()
+    public IEnumerable<Cita> GetAll()
     {
         try
         {
@@ -48,111 +48,111 @@ public class EfCoreRepository : IRepositorioVehiculos
         catch (Exception ex)
         {
             _logger.Error(ex, "Error al obtener los vehiculos");
-            return Enumerable.Empty<Vehiculo>();
+            return Enumerable.Empty<Cita>();
         }
     }
 
-    public Result<Vehiculo, DomainError> Agregar(Vehiculo value)
+    public Result<Cita, DomainError> Agregar(Cita value)
     {
         try
         {
             var entity = value.ToEntity();
             if (ExistMatricula(entity.Matricula))
-                return Result.Failure<Vehiculo, DomainError>(new VehiculoError.VehiculoAlredyExist.MatriculaAlreadyExists(entity.Matricula))
+                return Result.Failure<Cita, DomainError>(new CitaError.CitaAlredyExist.MatriculaAlreadyExists(entity.Matricula))
                     .TapError(v => _logger.Error("Fallo al agregar: La matricula {Matricula} ya está registrada", entity.Matricula));
             
             if (!ContarVehiculos(entity.DniDueño))
-                return Result.Failure<Vehiculo, DomainError>(new VehiculoError.OwnerWithThreeOrMoreVehiculos(entity.DniDueño))
+                return Result.Failure<Cita, DomainError>(new CitaError.OwnerWithThreeOrMoreCitas(entity.DniDueño))
                     .TapError(v => _logger.Error("Límite alcanzado: El dueño con DNI {Dni} no puede tener más vehículos", entity.DniDueño));
             
             _context.Vehiculo.Add(entity);
             _context.SaveChanges();
-            return Result.Success<VehiculoEntity, DomainError>(entity).Map(v => v.ToModel())
+            return Result.Success<CitaEntity, DomainError>(entity).Map(v => v.ToModel())
                 .Tap((l => _logger.Information("Se ha añadido el vehiculo con el ID {Id}", l.Id)));
         }
         catch (Exception ex)
         {
-            return Result.Failure<Vehiculo, DomainError>(new DataBaseError(ex.Message))
+            return Result.Failure<Cita, DomainError>(new DataBaseError(ex.Message))
                 .TapError(l => _logger.Fatal("Error en la base de datos al agregar"));
         }
     }
 
-    public Result<Vehiculo, DomainError> Borrar(int key, bool isLogical = true)
+    public Result<Cita, DomainError> Borrar(int key, bool isLogical = true)
     {
         try
         {
             var entity = _context.Vehiculo.Find(key);
             if (entity == null)
-                return Result.Failure<Vehiculo, DomainError>(new VehiculoError.VehiculoNotFoundId(key))
+                return Result.Failure<Cita, DomainError>(new CitaError.CitaNotFoundId(key))
                     .TapError((l => _logger.Error("No se ha encontrado el vehiculo con el ID al intentar borrarlo{Id}", key)));
 
             if (isLogical)
             {
                 entity.IsDeleted = 1;
                 _context.SaveChanges();
-                return Result.Success<Vehiculo, DomainError>(entity.ToModel())
+                return Result.Success<Cita, DomainError>(entity.ToModel())
                     .Tap(l => _logger.Information("Se ha borrado (lógico) el vehiculo con el ID {Id}", key));
             }
 
             _context.Vehiculo.Remove(entity);
             _context.SaveChanges();
-            return Result.Success<Vehiculo, DomainError>(entity.ToModel())
+            return Result.Success<Cita, DomainError>(entity.ToModel())
                 .Tap(l => _logger.Information("Se ha borrado (físico) el vehiculo con el ID {Id}", key));
         }
         catch (Exception ex)
         {
-            return Result.Failure<Vehiculo, DomainError>(new DataBaseError(ex.Message))
+            return Result.Failure<Cita, DomainError>(new DataBaseError(ex.Message))
                 .TapError(l => _logger.Fatal("Error en la base de datos al borrar"));
         }
     }
 
-    public Result<Vehiculo, DomainError> BuscarId(int key)
+    public Result<Cita, DomainError> BuscarId(int key)
     {
         try
         {
             var entity = _context.Vehiculo.Find(key);
             
             return entity == null
-                ? Result.Failure<Vehiculo, DomainError>(new VehiculoError.VehiculoNotFoundId(key))
+                ? Result.Failure<Cita, DomainError>(new CitaError.CitaNotFoundId(key))
                     .TapError((l => _logger.Error("No se ha encontrado el vehiculo con el ID {Id}", key)))
-                : Result.Success<VehiculoEntity, DomainError>(entity).Map(v => v.ToModel())
+                : Result.Success<CitaEntity, DomainError>(entity).Map(v => v.ToModel())
                     .Tap((l => _logger.Information("Se ha encontrado el vehiculo con el ID {Id}", l.Id)));
         }
         catch (Exception ex)
         {
-            return Result.Failure<Vehiculo, DomainError>(new DataBaseError(ex.Message))
+            return Result.Failure<Cita, DomainError>(new DataBaseError(ex.Message))
                 .TapError(l => _logger.Fatal("Error en la base de datos al buscar por id"));
         }
     }
 
-    public Result<Vehiculo, DomainError> BuscarMatricula(string key)
+    public Result<Cita, DomainError> BuscarMatricula(string key)
     {
         try
         {
             var entity = _context.Vehiculo.Find(key);
 
             return entity == null
-                ? Result.Failure<Vehiculo, DomainError>(new VehiculoError.VehiculoNotFoundMatricula(key))
+                ? Result.Failure<Cita, DomainError>(new CitaError.CitaNotFoundMatricula(key))
                     .TapError((l =>
                         _logger.Error("No se ha encontrado el vehiculo con la matricula {Matricula}", key)))
-                : Result.Success<VehiculoEntity, DomainError>(entity).Map(v => v.ToModel())
+                : Result.Success<CitaEntity, DomainError>(entity).Map(v => v.ToModel())
                     .Tap((l => _logger.Information("Se ha encontrado el vehiculo con la matricula {Matricula}",
                         l.Matricula)));
         }
         catch (Exception ex)
         {
-            return Result.Failure<Vehiculo, DomainError>(new DataBaseError(ex.Message))
+            return Result.Failure<Cita, DomainError>(new DataBaseError(ex.Message))
                 .TapError(l => _logger.Fatal("Error en la base de datos al buscar por matrícula"));
         }
     }
 
-    public Result<Vehiculo, DomainError> Actualizar(int key, Vehiculo value)
+    public Result<Cita, DomainError> Actualizar(int key, Cita value)
     {
         try
         {
             var existente = _context.Vehiculo.Find(key);
             if (existente == null)
-                return Result.Failure<Vehiculo, DomainError>(new VehiculoError.VehiculoNotFoundId(key))
+                return Result.Failure<Cita, DomainError>(new CitaError.CitaNotFoundId(key))
                     .TapError((l => _logger.Error("No se ha encontrado el vehiculo con el ID al intentar borrarlo{Id}", key)));
 
             var datosActualizados = value.ToEntity();
@@ -163,12 +163,12 @@ public class EfCoreRepository : IRepositorioVehiculos
             existente.DniDueño = datosActualizados.DniDueño;
             _context.SaveChanges(); 
             
-            return Result.Success<Vehiculo, DomainError>(existente.ToModel())
+            return Result.Success<Cita, DomainError>(existente.ToModel())
                 .Tap(l => _logger.Information("Se ha borrado (físico) el vehiculo con el ID {Id}", key));
         }
         catch (Exception ex)
         {
-            return Result.Failure<Vehiculo, DomainError>(new DataBaseError(ex.Message))
+            return Result.Failure<Cita, DomainError>(new DataBaseError(ex.Message))
                 .TapError(l => _logger.Fatal("Error en la base de datos al actualizar"));
         }
     }

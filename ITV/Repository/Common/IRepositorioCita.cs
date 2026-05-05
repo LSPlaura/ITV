@@ -4,7 +4,7 @@ using ITV.Models;
 
 namespace ITV.Repository.Common;
 
-public interface IRepositorioVehiculos : ICrud<int, Vehiculo>
+public interface IRepositorioVehiculos : ICrud<int, Cita>
 {
     /// <summary>
     /// Valida si la matricula de un vehiculo existe
@@ -17,5 +17,5 @@ public interface IRepositorioVehiculos : ICrud<int, Vehiculo>
     /// </summary>
     /// <param name="key">La matricula</param>
     /// <returns>El vehiculo, null si no ha sido encontrado</returns>
-    Result<Vehiculo, DomainError> BuscarMatricula(string key);
+    Result<Cita, DomainError> BuscarMatricula(string key);
 }

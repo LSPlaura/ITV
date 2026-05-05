@@ -13,9 +13,9 @@ using Serilog;
 
 namespace ITV.Storage.CSV;
 
-public class StorageVehiculoCsv : IStorageVehiculo
+public class StorageCitaCsv : IStorageCita
 {
-    private readonly ILogger _logger = Log.ForContext<StorageVehiculoCsv>();
+    private readonly ILogger _logger = Log.ForContext<StorageCitaCsv>();
     private string _filePath;
     private string _directoryPath;
     private string _fullPath;
@@ -23,7 +23,7 @@ public class StorageVehiculoCsv : IStorageVehiculo
     /// <summary>
     /// Constructor para implementar la creacion de la carpeta, si fuese necesario
     /// </summary>
-    public StorageVehiculoCsv(string filePath, string directoryPath)
+    public StorageCitaCsv(string filePath, string directoryPath)
     {
         _filePath = filePath;
         _directoryPath = directoryPath;
@@ -32,19 +32,19 @@ public class StorageVehiculoCsv : IStorageVehiculo
     }
 
     /// <inheritdoc/>
-    public Result<bool, DomainError> Salvar(IEnumerable<Vehiculo> items)
+    public Result<bool, DomainError> Salvar(IEnumerable<Cita> items)
     {
         try
         {
             _logger.Information("Iniciando exportación de datos a CSV en la ruta: {Path}", _fullPath);
 
             using var writer = new StreamWriter(_fullPath, false, Encoding.UTF8);
-            writer.WriteLine("Id;Matrícula;Marca;Modelo;Cilíndrica;Motor;DniDueño;IsDeleted");
+            writer.WriteLine("Id;FechaMatriculación;FechaInspeccion;Matrícula;Marca;Modelo;Cilíndrica;Motor;DniDueño;IsDeleted;CreatedAt;UpdatedAt");
             
             var lista = items.Select(p => p.ToDto()).ToList();
             lista.ForEach(c =>
                     writer.WriteLine(
-                        $"{c.Id};{c.Matricula};{c.Marca};{c.Modelo};{c.Cilindrada};{c.Motor};{c.DniDueño};{c.IsDeleted}"));
+                        $"{c.Id};{c.FechaMatriculacion};{c.FechaInspeccion};{c.Matricula};{c.Marca};{c.Modelo};{c.Cilindrada};{c.Motor};{c.DniDueño};{c.IsDeleted},{c.CreatedAt},{c.UpdatedAt}"));
 
             return Result.Success<bool, DomainError>(true).Tap(l =>
                 _logger.Information("Exportación a CSV finalizada con éxito. Registros guardados: {Count}",
@@ -58,11 +58,11 @@ public class StorageVehiculoCsv : IStorageVehiculo
     }
 
     /// <inheritdoc/>
-    public Result<IEnumerable<Vehiculo>, DomainError> Cargar()
+    public Result<IEnumerable<Cita>, DomainError> Cargar()
     {
         if (!File.Exists(_fullPath))
             return Result
-                .Failure<IEnumerable<Vehiculo>, DomainError>(
+                .Failure<IEnumerable<Cita>, DomainError>(
                     new StorageError(($"El archivo {_fullPath} no existe")))
                 .TapError(l =>
                     _logger.Error("No se puede cargar el CSV: El archivo no existe en la ruta {Path}", _fullPath));
@@ -74,25 +74,29 @@ public class StorageVehiculoCsv : IStorageVehiculo
             var resultado = File.ReadLines(_fullPath)
                 .Skip(1)
                 .Select(l => l.Split(";"))
-                .Select(campos => new VehiculoDto(
+                .Select(campos => new CitaDto(
                     int.Parse(campos[0]),
                     campos[1],
                     campos[2],
                     campos[3],
-                    double.Parse(campos[4]),
-                    int.Parse(campos[5]),
-                    campos[6],
-                    int.Parse(campos[7])
+                    campos[4],
+                    campos[5],
+                    double.Parse(campos[6]),
+                    int.Parse(campos[7]),
+                    campos[8],
+                    int.Parse(campos[9]),
+                    campos[10],
+                    campos[11]
                 ).ToModel())
                 .ToList(); // Lo pasamos a lista para confirmar la lectura antes de cerrar el bloque
 
-            return Result.Success<IEnumerable<Vehiculo>, DomainError>(resultado)
+            return Result.Success<IEnumerable<Cita>, DomainError>(resultado)
                 .Tap(l => _logger.Information(
                     "Carga de CSV completada satisfactoriamente. Registros recuperados: {Count}", resultado.Count));
         }
         catch (Exception ex)
         {
-            return Result.Failure<IEnumerable<Vehiculo>, DomainError>(new StorageError(ex.Message))
+            return Result.Failure<IEnumerable<Cita>, DomainError>(new StorageError(ex.Message))
                 .TapError(l =>
                     _logger.Error(ex, "Error crítico durante el procesamiento del archivo CSV en {Path}", _fullPath));
         }

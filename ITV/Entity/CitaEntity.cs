@@ -6,14 +6,20 @@ namespace ITV.Entity;
 /// <summary>
 /// Objeto de transferencia de datos para las bases de datos
 /// </summary>
-[Table("Vehiculo")]
+[Table("Cita")]
 [Index(nameof(Matricula), IsUnique = true)]
-public class VehiculoEntity
+public class CitaEntity
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
-
+    
+    [Required]
+    public string FechaMatriculacion { get; set; } = string.Empty;
+    
+    [Required]
+    public string FechaInspeccion { get; set; } = string.Empty;
+    
     [Required]
     public string Matricula { get; set; } = string.Empty;
 
@@ -34,21 +40,31 @@ public class VehiculoEntity
     
     public int IsDeleted { get; set; }
     
+    public string CreatedAt { get; init; } = string.Empty;
+    
+    public string UpdatedAt { get; init; } = string.Empty;
+    
     /// <summary>
     /// Constructor para usarlo con el mapper
     /// </summary>
-    public VehiculoEntity(
+    public CitaEntity(
         int id,
+        string fechaMatriculacion,
+        string fechaInsepccion,
         string matricula,
         string marca,
         string modelo,
         double cilindrada,
         int motor,
         string dniDueño,
-        int isDeleted
+        int isDeleted, 
+        string createdAt, 
+        string updatedAt
     )
     {
         Id = id;
+        FechaMatriculacion = fechaMatriculacion;
+        FechaInspeccion = fechaInsepccion;
         Matricula = matricula;
         Marca = marca;
         Modelo = modelo;
@@ -56,11 +72,13 @@ public class VehiculoEntity
         Motor = motor;
         DniDueño = dniDueño;
         IsDeleted = isDeleted;
+        CreatedAt = createdAt;
+        UpdatedAt = updatedAt;
     }
     
     /// <summary>
     ///El constructor vacío que se necesita
     /// </summary>
-    public VehiculoEntity(){}
+    public CitaEntity(){}
 
 }

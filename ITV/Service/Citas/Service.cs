@@ -13,24 +13,24 @@ namespace ITV.Service;
 
 public class ServiceVehiculos (
     IRepositorioVehiculos repositorio,
-    IBackUpService<Vehiculo> backUpService,
-    IStorage<Vehiculo> storage,
-    ICache<string, Vehiculo> cache,
-    IValidate<Vehiculo> validador) : IService<string, Vehiculo>
+    IBackUpService<Cita> backUpService,
+    IStorage<Cita> storage,
+    ICache<string, Cita> cache,
+    IValidate<Cita> validador) : IService<string, Cita>
 {
     private readonly ILogger _logger = Log.ForContext<ServiceVehiculos>();
     
     //Funciones Crud
-    public Result<Vehiculo, DomainError> Agregar(Vehiculo item)
+    public Result<Cita, DomainError> Agregar(Cita item)
     {
-        return Result.Success<Vehiculo, DomainError>(item).
+        return Result.Success<Cita, DomainError>(item).
             Tap(_ => _logger.Information("Agregando vehiculo con la matricula: {Matricula}", item.Matricula))
             .Bind(v => validador.Validar(v).Map(_ => v))
             .Map(Estandarizar)
             .Bind(repositorio.Agregar);
     }
 
-    private Vehiculo Estandarizar(Vehiculo item)
+    private Cita Estandarizar(Cita item)
     {
         var vehiculo = item with
         {
@@ -42,7 +42,7 @@ public class ServiceVehiculos (
         return vehiculo;
     }
 
-    public Result<Vehiculo, DomainError> Borrar(string key, bool isLogical = true)
+    public Result<Cita, DomainError> Borrar(string key, bool isLogical = true)
     {
         _logger.Information("Borrando vehiculo con la matrícula: {Matricula}", key);
         return repositorio.BuscarMatricula(key)
@@ -50,31 +50,31 @@ public class ServiceVehiculos (
             .Bind(v => repositorio.Borrar(v.Id, isLogical));
     }
     
-    public  Result<Vehiculo, DomainError> GetById(string key)
+    public  Result<Cita, DomainError> GetById(string key)
     {
         _logger.Information("Buscando vehiculo con matricula: {Matricula}", key);
 
         var cacheado = cache.Obtener(key);
-        if (cacheado != null) return Result.Success<Vehiculo, DomainError>(cacheado)
+        if (cacheado != null) return Result.Success<Cita, DomainError>(cacheado)
             .Tap(v => _logger.Information("El vehiculo con la matricula {Matricula} encontrado", v.Matricula));
 
         return repositorio.BuscarMatricula(key).Tap(v => cache.Agregar(key, v));
     }
     
-    public Result<Vehiculo, DomainError> Actualizar(string key, Vehiculo item)
+    public Result<Cita, DomainError> Actualizar(string key, Cita item)
     {
-        return Result.Success<Vehiculo, DomainError>(item).
+        return Result.Success<Cita, DomainError>(item).
             Tap(_ =>   _logger.Information("Actualizando datos del vehiculo: {Matricula}", key))
             .Ensure(v => v.Matricula.Equals(key, StringComparison.OrdinalIgnoreCase), 
-                new VehiculoError.InconsistentUpdate(key, item.Matricula))
+                new CitaError.InconsistentUpdate(key, item.Matricula))
             .Bind(v => validador.Validar(v).Map(_ => v))
             .Map(Estandarizar)
-            .Ensure(v => repositorio.ExistMatricula(key), new VehiculoError.VehiculoNotFoundMatricula(key))
+            .Ensure(v => repositorio.ExistMatricula(key), new CitaError.CitaNotFoundMatricula(key))
             .Bind(v => repositorio.Actualizar(repositorio.BuscarMatricula(key).Value.Id, v))
             .Tap(_ => cache.Borrar(key));
     }
 
-    public IEnumerable<Vehiculo> GetAll()
+    public IEnumerable<Cita> GetAll()
     {
         _logger.Debug("Obteniendo listado completo de vehículos");
         return repositorio.GetAll();
@@ -111,7 +111,7 @@ public class ServiceVehiculos (
             .Tap(l => _logger.Information("Restauración completada satisfactoriamente. Total: {Count}", l));
     }
 
-    private Result<int, DomainError> AgregarColeccion(IEnumerable<Vehiculo> coleccion)
+    private Result<int, DomainError> AgregarColeccion(IEnumerable<Cita> coleccion)
     {
         int contador = 0;
         foreach (var vehiculo in coleccion)

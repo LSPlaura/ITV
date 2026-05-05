@@ -43,7 +43,7 @@ public class DapperRepository : IRepositorioVehiculos
         using var connection = CreateConnection();
         connection.Open();
         connection.Execute(@"
-            CREATE TABLE IF NOT EXISTS Vehiculo(
+            CREATE TABLE IF NOT EXISTS Cita(
                 Id INTEGER PRIMARY KEY,
                 Matricula VARCHAR(9) NOT NULL UNIQUE,
                 Modelo  VARCHAR(100) NOT NULL,
@@ -56,15 +56,15 @@ public class DapperRepository : IRepositorioVehiculos
         _logger.Debug("Se ha creado la tabla, creo");
     }
     
-    public IEnumerable<Vehiculo> GetAll()
+    public IEnumerable<Cita> GetAll()
     {
         using var connection = CreateConnection();
-        var sql = "SELECT Id, Matricula, Modelo, Marca, Motor, Cilindrada, DniDueno AS DniDueño, IsDeleted FROM Vehiculo";
-        var entities = connection.Query<VehiculoEntity>(sql).ToList();
-        return VehiculoMapper.ToModel(entities);
+        var sql = "SELECT Id, Matricula, Modelo, Marca, Motor, Cilindrada, DniDueno AS DniDueño, IsDeleted FROM Cita";
+        var entities = connection.Query<CitaEntity>(sql).ToList();
+        return CitaMapper.ToModel(entities);
     }
 
-    public Result<Vehiculo, DomainError> Agregar(Vehiculo value)
+    public Result<Cita, DomainError> Agregar(Cita value)
     {
         try
         {
@@ -72,14 +72,14 @@ public class DapperRepository : IRepositorioVehiculos
             var entity = value.ToEntity();
             
             if (ExistMatricula(entity.Matricula))
-                return Result.Failure<Vehiculo, DomainError>(new VehiculoError.VehiculoAlredyExist.MatriculaAlreadyExists(entity.Matricula))
+                return Result.Failure<Cita, DomainError>(new CitaError.CitaAlredyExist.MatriculaAlreadyExists(entity.Matricula))
                     .TapError(v => _logger.Error("Fallo al agregar: La matricula {Matricula} ya está registrada", entity.Matricula));
             
             if (!ContarVehiculos(entity.DniDueño))
-                return Result.Failure<Vehiculo, DomainError>(new VehiculoError.OwnerWithThreeOrMoreVehiculos(entity.DniDueño))
+                return Result.Failure<Cita, DomainError>(new CitaError.OwnerWithThreeOrMoreCitas(entity.DniDueño))
                     .TapError(v => _logger.Error("Límite alcanzado: El dueño con DNI {Dni} no puede tener más vehículos", entity.DniDueño));
             
-            var sql = @"INSERT INTO Vehiculo(Matricula, Modelo, Marca, Motor, Cilindrada, DniDueno)
+            var sql = @"INSERT INTO Cita(Matricula, Modelo, Marca, Motor, Cilindrada, DniDueno)
                         VALUES (@Matricula, @Modelo, @Marca, @Motor, @Cilindrada, @DniDueño);
                          SELECT last_insert_rowid()";
 
@@ -90,12 +90,12 @@ public class DapperRepository : IRepositorioVehiculos
         }
         catch (Exception ex)
         {
-            return Result.Failure<Vehiculo, DomainError>(new DataBaseError(ex.Message))
+            return Result.Failure<Cita, DomainError>(new DataBaseError(ex.Message))
                 .TapError(l => _logger.Fatal("Error en la base de datos al agregar"));
         }
     }
 
-    public Result<Vehiculo, DomainError> Borrar(int key, bool isLogical = true)
+    public Result<Cita, DomainError> Borrar(int key, bool isLogical = true)
     {
         try
         {
@@ -113,71 +113,71 @@ public class DapperRepository : IRepositorioVehiculos
                     .Tap((l => _logger.Information("Se ha borrado (lógico) el vehiculo con el ID {Id}", l.Id)));
             }
 
-            var borradoFisico = "DELETE FROM Vehiculo WHERE Id = @Id";
+            var borradoFisico = "DELETE FROM Cita WHERE Id = @Id";
             connection.Execute(borradoFisico, new { Id = key });
 
             return encontrado.Tap((l => _logger.Information("Se ha borrado (físico) el vehiculo con el ID {Id}", l.Id)));
         }
         catch (Exception ex)
         {
-            return Result.Failure<Vehiculo, DomainError>(new DataBaseError(ex.Message))
+            return Result.Failure<Cita, DomainError>(new DataBaseError(ex.Message))
                 .TapError(l => _logger.Fatal("Error en la base de datos al borrar"));
         }
     }
 
-    public Result<Vehiculo, DomainError> BuscarId(int key)
+    public Result<Cita, DomainError> BuscarId(int key)
     {
         try
         {
             using var connection = CreateConnection();
-            var sql = "SELECT Id, Matricula, Modelo, Marca, Motor, Cilindrada, DniDueno AS DniDueño, IsDeleted FROM Vehiculo WHERE Id = @Id";
-            var entity = connection.QueryFirstOrDefault<VehiculoEntity>(sql, new { Id = key });
+            var sql = "SELECT Id, Matricula, Modelo, Marca, Motor, Cilindrada, DniDueno AS DniDueño, IsDeleted FROM Cita WHERE Id = @Id";
+            var entity = connection.QueryFirstOrDefault<CitaEntity>(sql, new { Id = key });
         
             return entity == null ? 
-                Result.Failure<Vehiculo, DomainError>(new VehiculoError.VehiculoNotFoundId(key))
+                Result.Failure<Cita, DomainError>(new CitaError.CitaNotFoundId(key))
                     .TapError((l => _logger.Information("No se ha encontrado el vehiculo con el ID {Id}", key)))
-                : Result.Success<VehiculoEntity, DomainError>(entity).Map(v => v.ToModel())
+                : Result.Success<CitaEntity, DomainError>(entity).Map(v => v.ToModel())
                     .Tap((l => _logger.Information("Se ha encontrado el vehiculo con el ID {Id}", l.Id)));
         }
         catch (Exception ex)
         {
-            return Result.Failure<Vehiculo, DomainError>(new DataBaseError(ex.Message))
+            return Result.Failure<Cita, DomainError>(new DataBaseError(ex.Message))
                 .TapError(l => _logger.Fatal("Error en la base de datos al buscar por id"));
         }
     }
     
-    public Result<Vehiculo, DomainError> BuscarMatricula(string key)
+    public Result<Cita, DomainError> BuscarMatricula(string key)
     {
         try
         {
             using var connection = CreateConnection();
-            var sql = "SELECT Id, Matricula, Modelo, Marca, Motor, Cilindrada, DniDueno AS DniDueño, IsDeleted FROM Vehiculo WHERE Matricula = @Matricula";
-            var entity = connection.QueryFirstOrDefault<VehiculoEntity>(sql, new { Matricula = key });
+            var sql = "SELECT Id, Matricula, Modelo, Marca, Motor, Cilindrada, DniDueno AS DniDueño, IsDeleted FROM Cita WHERE Matricula = @Matricula";
+            var entity = connection.QueryFirstOrDefault<CitaEntity>(sql, new { Matricula = key });
         
             return entity == null ? 
-                Result.Failure<Vehiculo, DomainError>(new VehiculoError.VehiculoNotFoundMatricula(key))
+                Result.Failure<Cita, DomainError>(new CitaError.CitaNotFoundMatricula(key))
                     .TapError((l => _logger.Information("No se ha encontrado el vehiculo con la matricula {Matricula}", key)))
-                : Result.Success<VehiculoEntity, DomainError>(entity).Map(v => v.ToModel())
+                : Result.Success<CitaEntity, DomainError>(entity).Map(v => v.ToModel())
                     .Tap((l => _logger.Information("Se ha encontrado el vehiculo con la matricula {Matricula}", l.Matricula)));
         }
         catch (Exception ex)
         {
-            return Result.Failure<Vehiculo, DomainError>(new DataBaseError(ex.Message))
+            return Result.Failure<Cita, DomainError>(new DataBaseError(ex.Message))
                 .TapError(l => _logger.Fatal("Error en la base de datos al buscar por matrícula"));
         }
     }
 
-    public Result<Vehiculo, DomainError> Actualizar(int key, Vehiculo value)
+    public Result<Cita, DomainError> Actualizar(int key, Cita value)
     {
         try
         {
             using var connection = CreateConnection();
         
-            var sqlBuscar = "SELECT * FROM Vehiculo WHERE Id = @Id";
-            var encontrado = connection.QueryFirstOrDefault<VehiculoEntity>(sqlBuscar, new { Id = key });
+            var sqlBuscar = "SELECT * FROM Cita WHERE Id = @Id";
+            var encontrado = connection.QueryFirstOrDefault<CitaEntity>(sqlBuscar, new { Id = key });
         
             if (encontrado == null) 
-                return Result.Failure<Vehiculo, DomainError>(new VehiculoError.VehiculoNotFoundId(key))
+                return Result.Failure<Cita, DomainError>(new CitaError.CitaNotFoundId(key))
                     .TapError( l => _logger.Error("No se ha encontrado el vehiculo con el ID {Id} para poder actualizarllo", key));
             //var desactualizado = encontrado.ToModel();
 
@@ -188,7 +188,7 @@ public class DapperRepository : IRepositorioVehiculos
             //
             // };
         
-            var sql = @"UPDATE Vehiculo SET 
+            var sql = @"UPDATE Cita SET 
                     Matricula = @Matricula, Modelo = @Modelo, Marca = @Marca, Motor = @Motor, Cilindrada = @Cilindrada,
                     IsDeleted = @IsDeleted WHERE Id = @Id";
             connection.Execute(sql, entity);
@@ -196,7 +196,7 @@ public class DapperRepository : IRepositorioVehiculos
         }
         catch (Exception ex)
         {
-            return Result.Failure<Vehiculo, DomainError>(new DataBaseError(ex.Message))
+            return Result.Failure<Cita, DomainError>(new DataBaseError(ex.Message))
                 .TapError(l => _logger.Fatal("Error en la base de datos al actualizar"));
         }
     }
@@ -204,14 +204,14 @@ public class DapperRepository : IRepositorioVehiculos
     public bool ExistId(int key)
     {
         using var connection = CreateConnection();
-        var sql = "SELECT COUNT(1) FROM Vehiculo WHERE Id = @Id";
+        var sql = "SELECT COUNT(1) FROM Cita WHERE Id = @Id";
         return connection.ExecuteScalar<int>(sql, new { Id = key }) > 0;
     }
     
     public bool ExistMatricula(string key)
     {
         using var connection = CreateConnection();
-        var sql = "SELECT COUNT(1) FROM Vehiculo WHERE Matricula = @Matricula";
+        var sql = "SELECT COUNT(1) FROM Cita WHERE Matricula = @Matricula";
         return connection.ExecuteScalar<int>(sql, new { Matricula = key }) > 0;
     }
 
@@ -219,7 +219,7 @@ public class DapperRepository : IRepositorioVehiculos
     {
         _logger.Warning("Eliminando permanentemente todas las personas");
         using var connection = CreateConnection();
-        connection.Execute("DELETE FROM Vehiculo");
+        connection.Execute("DELETE FROM Cita");
     }
     
     /// <summary>

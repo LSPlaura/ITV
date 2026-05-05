@@ -6,8 +6,6 @@ using ITV.Repository.Ado;
 using ITV.Repository.Common;
 using ITV.Repository.Dapper;
 using ITV.Repository.EFCore;
-using ITV.Repository.JSON;
-using ITV.Repository.Memory;
 using ITV.Service;
 using ITV.Storage.Common;
 using ITV.Storage.CSV;
@@ -40,27 +38,25 @@ public static class DependenciesProvider
             var repository = Configuracion.RepositoryType.ToLower();
             return repository switch
             {
-                "memory" => new RepositorioEnMemoria(),
-                "json" => new RepositorioJson(Configuracion.RepositoryFolder),
                 "dapper" => new DapperRepository(Configuracion.DataBaseString),
                 "efcore" => new EfCoreRepository(new AppDbContext(Configuracion.DataBaseString)),
                 "ado" => new AdoRepository(Configuracion.DataBaseString),
-                _ => new RepositorioEnMemoria()
+                _ => new EfCoreRepository(new AppDbContext(Configuracion.DataBaseString)),
             };
         });
     }
     
     private static void RegisterStorage(IServiceCollection services)
     {
-        services.AddTransient<IStorage<Vehiculo>>(sp =>
+        services.AddTransient<IStorage<Cita>>(sp =>
         {
             var repository = Configuracion.RepositoryType.ToLower();
             return repository switch
             {
-                "csv" => new StorageVehiculoCsv(Configuracion.StorageFile, Configuracion.StorageFolder),
-                "json" => new StorageVehiculoJson(Configuracion.StorageFile, Configuracion.StorageFolder),
-                "xml" => new StorageVehiculoXml(Configuracion.StorageFile, Configuracion.StorageFolder),
-                _ => new StorageVehiculoJson(Configuracion.StorageFile, Configuracion.StorageFolder)
+                "csv" => new StorageCitaCsv(Configuracion.StorageFile, Configuracion.StorageFolder),
+                "json" => new StorageCitaJson(Configuracion.StorageFile, Configuracion.StorageFolder),
+                "xml" => new StorageCitaXml(Configuracion.StorageFile, Configuracion.StorageFolder),
+                _ => new StorageCitaJson(Configuracion.StorageFile, Configuracion.StorageFolder)
             };
         });
     }
@@ -68,24 +64,24 @@ public static class DependenciesProvider
     private static void RegisterValidador(IServiceCollection services)
     {
         services.AddTransient<IBackUpServiceVehiculos, BackupService>(sp => 
-            new BackupService(sp.GetRequiredService<IStorage<Vehiculo>>(), Configuracion.BackUpFile, Configuracion.BackUpFolder));
+            new BackupService(sp.GetRequiredService<IStorage<Cita>>(), Configuracion.BackUpFile, Configuracion.BackUpFolder));
 
-        services.AddTransient<IService<string, Vehiculo>, ServiceVehiculos>(sp => new ServiceVehiculos(
+        services.AddTransient<IService<string, Cita>, ServiceVehiculos>(sp => new ServiceVehiculos(
             sp.GetRequiredService<IRepositorioVehiculos>(),
             sp.GetRequiredService<IBackUpServiceVehiculos>(),
-            sp.GetRequiredService<IStorage<Vehiculo>>(),
-            sp.GetRequiredService<ICache<string, Vehiculo>>(),
-            sp.GetRequiredService<IValidate<Vehiculo>>()
+            sp.GetRequiredService<IStorage<Cita>>(),
+            sp.GetRequiredService<ICache<string, Cita>>(),
+            sp.GetRequiredService<IValidate<Cita>>()
         ));
     }
     
     private static void RegisterCache(IServiceCollection services)
     {
-        services.AddTransient<ICache<string, Vehiculo>, LruCache>(sp => new LruCache(Configuracion.Cache));
+        services.AddTransient<ICache<string, Cita>, LruCache>(sp => new LruCache(Configuracion.Cache));
     }
 
     private static void RegisterServices(IServiceCollection services)
     {
-        services.AddTransient<IValidate<Vehiculo>, ValidadorVehiculo>(sp => new ValidadorVehiculo());
+        services.AddTransient<IValidate<Cita>, ValidadorCita>(sp => new ValidadorCita());
     }
 }

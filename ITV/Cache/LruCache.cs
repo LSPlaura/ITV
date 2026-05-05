@@ -6,14 +6,14 @@ using Serilog;
 namespace ITV.Cache;
 
 
-public class LruCache (int capacidadCache) : ILruVehiculo
+public class LruCache (int capacidadCache) : ILruCita
 {
    private int _max = capacidadCache;
-   private Dictionary<string, Vehiculo> _data = new Dictionary<string, Vehiculo>();
+   private Dictionary<string, Cita> _data = new Dictionary<string, Cita>();
    private LinkedList<string> _orderOfUsege = new LinkedList<string>();
    private readonly ILogger _logger = Log.ForContext<LruCache>();
   
-   public void Agregar(string key, Vehiculo value)
+   public void Agregar(string key, Cita value)
    {
        _logger.Debug("Intentando agregar vehículo a la caché. ID: {Key}", key);
       
@@ -47,7 +47,7 @@ public class LruCache (int capacidadCache) : ILruVehiculo
    }
 
 
-   public Vehiculo? Obtener(string key)
+   public Cita? Obtener(string key)
    {
        _logger.Debug("Buscando vehículo en caché. ID: {Key}", key);
       

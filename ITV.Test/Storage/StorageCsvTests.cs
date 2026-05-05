@@ -12,14 +12,14 @@ public class StorageCsvTests
     [TestFixture]
     public class CasosValidos
     {
-        private IStorageVehiculo _storage = null!;
+        private IStorageCita _storage = null!;
         private string _filePath = "VehiculosTest";
         private string _directoryPath = "DataTest";
 
         [SetUp]
         public void SetUp()
         {
-            _storage = new StorageVehiculoCsv(_filePath, _directoryPath);
+            _storage = new StorageCitaCsv(_filePath, _directoryPath);
         }
 
         [TearDown]
@@ -58,7 +58,7 @@ public class StorageCsvTests
         [TestCase("VehiculosTest", "DataTest")]
         public void Init_Exist_True(string file, string directory)
         {
-            var storage = new StorageVehiculoJson(file, directory);
+            var storage = new StorageCitaJson(file, directory);
             var result = Directory.Exists(directory);
             result.Should().BeTrue();
         }
@@ -67,14 +67,14 @@ public class StorageCsvTests
     [TestFixture]
     public class CasosInvalidos
     {
-        private IStorageVehiculo _storage = null!;
+        private IStorageCita _storage = null!;
         private string _filePath = "VehiculosTest";
         private string _directoryPath = "DataTest";
 
         [SetUp]
         public void SetUp()
         {
-            _storage = new StorageVehiculoJson(_filePath, _directoryPath);
+            _storage = new StorageCitaJson(_filePath, _directoryPath);
         }
 
         [TearDown]
@@ -98,7 +98,7 @@ public class StorageCsvTests
         [TestCase("", "DataTest")]
         public void Salvar_PathInvalido_StorageError(string file, string directory)
         {
-            var storage = new StorageVehiculoJson(file, directory);
+            var storage = new StorageCitaJson(file, directory);
             var vehiculosValidos = GetVehiculosDePrueba();
 
             var result = storage.Salvar(vehiculosValidos);
@@ -108,15 +108,15 @@ public class StorageCsvTests
         }
     }
 
-    private static List<Vehiculo> GetVehiculosDePrueba()
+    private static List<Cita> GetVehiculosDePrueba()
     {
-        return new List<Vehiculo>
+        return new List<Cita>
         {
-            new Vehiculo("1234BBB", "Seat", "Ibiza", 1200.0, Motor.Gasolina, "12345678Z"),
-            new Vehiculo("9876FGH", "Aston Martin", "Vantage", 4000.0, Motor.Gasolina, "00000000T"),
-            new Vehiculo("0000DWX", "Yamaha", "MT Zero", 600.0, Motor.Gasolina, "99999999R"),
-            new Vehiculo("5544LNP", "Tesla", "Model Three", 0.0, Motor.Electrico, "54321098B"),
-            new Vehiculo("8210ZRT", "Peugeot", "Dos mil ocho", 1500.0, Motor.Diesel, "11111111H")
+            new Cita("1234BBB", "Seat", "Ibiza", 1200.0, Motor.Gasolina, "12345678Z"),
+            new Cita("9876FGH", "Aston Martin", "Vantage", 4000.0, Motor.Gasolina, "00000000T"),
+            new Cita("0000DWX", "Yamaha", "MT Zero", 600.0, Motor.Gasolina, "99999999R"),
+            new Cita("5544LNP", "Tesla", "Model Three", 0.0, Motor.Electrico, "54321098B"),
+            new Cita("8210ZRT", "Peugeot", "Dos mil ocho", 1500.0, Motor.Diesel, "11111111H")
         };
     }
 }

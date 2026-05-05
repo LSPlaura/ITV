@@ -21,7 +21,7 @@ public class CacheLruTest
        [Test]
        public void Añadir_MaxCache_SeEliminaMenosUsado()
        {
-           var vehiculo1 = new Vehiculo(
+           var vehiculo1 = new Cita(
                "1234BBB",
                "Seat",
                "Ibiza",
@@ -31,7 +31,7 @@ public class CacheLruTest
            );
 
 
-           var vehiculo2 = new Vehiculo(
+           var vehiculo2 = new Cita(
                "9876FGH",
                "Aston Martin",
                "Vantage",
@@ -41,7 +41,7 @@ public class CacheLruTest
            );
 
 
-           var vehiculo3 = new Vehiculo(
+           var vehiculo3 = new Cita(
                "0000DWX",
                "Yamaha",
                "MT Zero",
@@ -66,7 +66,7 @@ public class CacheLruTest
        [Test]
        public void Añadir_VehiculoYaAgregado_SeActualizaPosicion()
        {
-           var vehiculo1 = new Vehiculo(
+           var vehiculo1 = new Cita(
                "1234BBB",
                "Seat",
                "Ibiza",
@@ -76,7 +76,7 @@ public class CacheLruTest
            );
 
 
-           var vehiculo2 = new Vehiculo(
+           var vehiculo2 = new Cita(
                "9876FGH",
                "Aston Martin",
                "Vantage",
@@ -86,7 +86,7 @@ public class CacheLruTest
            );
 
 
-           var vehiculo3 = new Vehiculo(
+           var vehiculo3 = new Cita(
                "0000DWX",
                "Yamaha",
                "MT Zero",
@@ -108,7 +108,7 @@ public class CacheLruTest
        [Test]
        public void Obtener_SeObtieneVehiculo()
        {
-           var vehiculo = new Vehiculo("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
+           var vehiculo = new Cita("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
            _cache.Agregar(vehiculo.Matricula, vehiculo);
 
 
@@ -120,7 +120,7 @@ public class CacheLruTest
        [Test]
        public void Obtener_SeActualizaPosicion()
        {
-           var vehiculo1 = new Vehiculo(
+           var vehiculo1 = new Cita(
                "1234BBB",
                "Seat",
                "Ibiza",
@@ -130,7 +130,7 @@ public class CacheLruTest
            );
 
 
-           var vehiculo2 = new Vehiculo(
+           var vehiculo2 = new Cita(
                "9876FGH",
                "Aston Martin",
                "Vantage",
@@ -140,7 +140,7 @@ public class CacheLruTest
            );
 
 
-           var vehiculo3 = new Vehiculo(
+           var vehiculo3 = new Cita(
                "0000DWX",
                "Yamaha",
                "MT Zero",
@@ -160,7 +160,7 @@ public class CacheLruTest
        [Test]
        public void Actualizar_ActualizaOrden()
        {
-           var vehiculo1 = new Vehiculo(
+           var vehiculo1 = new Cita(
                "1234BBB",
                "Seat",
                "Ibiza",
@@ -170,7 +170,7 @@ public class CacheLruTest
            );
 
 
-           var vehiculo2 = new Vehiculo(
+           var vehiculo2 = new Cita(
                "9876FGH",
                "Aston Martin",
                "Vantage",
@@ -180,7 +180,7 @@ public class CacheLruTest
            );
 
 
-           var vehiculo3 = new Vehiculo(
+           var vehiculo3 = new Cita(
                "0000DWX",
                "Yamaha",
                "MT Zero",
@@ -199,7 +199,7 @@ public class CacheLruTest
        [Test]
        public void Borrar_SeBorrar()
        {
-           var vehiculo = new Vehiculo(
+           var vehiculo = new Cita(
                "1234BBB",
                "Seat",
                "Ibiza",
@@ -229,7 +229,7 @@ public class CacheLruTest
        [Test]
        public void Agregar_NoSeAgregaSiKeyYMatriculaDiferentes()
        {
-           var vehiculo = new Vehiculo("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
+           var vehiculo = new Cita("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
            _cache.Agregar("111BBB", vehiculo);
 
 
@@ -240,14 +240,14 @@ public class CacheLruTest
        [Test]
        public void Obtener_NoAgregado_Null()
        {
-           var vehiculo = new Vehiculo("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
+           var vehiculo = new Cita("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
            _cache.Obtener(vehiculo.Matricula).Should().BeNull();
        }
        
        [Test]
        public void Actualizar_NoAgregado_Null()
        {
-           var vehiculo = new Vehiculo("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
+           var vehiculo = new Cita("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
            _cache.Actualizar(vehiculo.Matricula);
            _cache.Obtener(vehiculo.Matricula).Should().BeNull();
        }
@@ -255,7 +255,7 @@ public class CacheLruTest
        [Test]
        public void Borrar_NoAgregado_Null()
        {
-           var vehiculo = new Vehiculo("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
+           var vehiculo = new Cita("1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
            _cache.Borrar(vehiculo.Matricula).Should().BeFalse();
            _cache.Obtener(vehiculo.Matricula).Should().BeNull();
        }
