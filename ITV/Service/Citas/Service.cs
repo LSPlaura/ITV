@@ -74,10 +74,12 @@ public class ServiceVehiculos (
             .Tap(_ => cache.Borrar(key));
     }
 
-    public IEnumerable<Cita> GetAll()
+    public IEnumerable<Cita> GetAll(int pagina = 0, int cantidad = 10)
     {
         _logger.Debug("Obteniendo listado completo de vehículos");
-        return repositorio.GetAll();
+        return repositorio.GetAll()
+            .Skip(pagina * cantidad) 
+            .Take(cantidad);
     }
 
     //Funciones Storage

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Windows.Documents;
 using CSharpFunctionalExtensions;
 using ITV.Error.Common;
 
@@ -37,10 +38,12 @@ public interface IService<TKey, TValue>
     Result<TValue, DomainError> Actualizar(TKey key, TValue item);
     
     /// <summary>
-    /// Obtiene una lista con todas las instancias almacenadas en el repositorio
+    /// Obtiene una lista con todas las instancias almacenadas en el repositorio con paginación
+    /// <param name="pagina">índice de la pagina</param>
+    /// <param name="cantidad">Numero de elementos a tomar</param>
     /// </summary>
     /// <returns>Lista de instancias</returns>
-    IEnumerable<TValue> GetAll();
+    IEnumerable<TValue> GetAll(int pagina, int cantidad);
     
     /// <summary>
     /// Importa los datos almacenados en el tipo de archivo correspondiente mediante la ruta configurada y los almacena en el repositorio
