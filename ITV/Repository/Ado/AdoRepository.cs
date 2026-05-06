@@ -45,24 +45,28 @@ public class AdoRepository : IRepositorioVehiculos
 
     private void CreateTable()
     {
-        _logger.Debug("Creando la tabla");
+        _logger.Debug("Creando la tabla Cita");
         using var connection = CreateConnection();
         connection.Open();
-        // Normalizamos el nombre de la columna: DniDueno (sin acento/ñ)
+
         connection.Execute(@"
-            CREATE TABLE IF NOT EXISTS Cita(
-                Id INTEGER PRIMARY KEY,
-                Matricula VARCHAR(9) NOT NULL UNIQUE,
-                Modelo  VARCHAR(100) NOT NULL,
-                Marca VARCHAR(100) NOT NULL,
-                Motor INTEGER NOT NULL,
-                Cilindrada REAL CHECK (Cilindrada > 0) NOT NULL,
-                DniDueno VARCHAR(9) NOT NULL,
-                IsDeleted INTEGER DEFAULT 0
-                )");
-        _logger.Debug("Se ha creado la tabla, creo");
+        CREATE TABLE IF NOT EXISTS Cita (
+            Id                 INTEGER PRIMARY KEY AUTOINCREMENT,
+            Matricula          VARCHAR(9) NOT NULL UNIQUE,
+            Marca              VARCHAR(100) NOT NULL,
+            Modelo             VARCHAR(100) NOT NULL,
+            Cilindrada         REAL NOT NULL CHECK (Cilindrada > 0),
+            Motor              INTEGER NOT NULL,
+            DniDueno           VARCHAR(9) NOT NULL,
+            FechaMatriculacion DATETIME NOT NULL,
+            FechaInspeccion    DATETIME NULL,
+            CreatedAt          DATETIME DEFAULT CURRENT_TIMESTAMP,
+            UpdatedAt          DATETIME DEFAULT CURRENT_TIMESTAMP,
+            IsDeleted          INTEGER DEFAULT 0
+        )");
+
+        _logger.Debug("Tabla Cita verificada/creada correctamente");
     }
-    
     public IEnumerable<Cita> GetAll()
     {
         var vehiculos = new List<Cita>();
@@ -282,13 +286,17 @@ public class AdoRepository : IRepositorioVehiculos
     {
         return new CitaEntity(
             reader.GetInt32(reader.GetOrdinal("Id")),
+            reader.GetString(reader.GetOrdinal("FechaMatriculacion")),
+            reader.GetString(reader.GetOrdinal("FechaInspeccion")),
             reader.GetString(reader.GetOrdinal("Matricula")),
             reader.GetString(reader.GetOrdinal("Modelo")),
             reader.GetString(reader.GetOrdinal("Marca")),
             reader.GetDouble(reader.GetOrdinal("Cilindrada")),
             reader.GetInt32(reader.GetOrdinal("Motor")),
             reader.GetString(reader.GetOrdinal("DniDueno")),
-            reader.GetInt32(reader.GetOrdinal("IsDeleted"))
+            reader.GetInt32(reader.GetOrdinal("IsDeleted")),
+            reader.GetString(reader.GetOrdinal("CreatedUp")),
+            reader.GetString(reader.GetOrdinal("UpdatedAt"))
         );
     }
     

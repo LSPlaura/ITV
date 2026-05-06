@@ -43,8 +43,8 @@ public class StorageCitaCsv : IStorageCita
             
             var lista = items.Select(p => p.ToDto()).ToList();
             lista.ForEach(c =>
-                    writer.WriteLine(
-                        $"{c.Id};{c.FechaMatriculacion};{c.FechaInspeccion};{c.Matricula};{c.Marca};{c.Modelo};{c.Cilindrada};{c.Motor};{c.DniDueño};{c.IsDeleted},{c.CreatedAt},{c.UpdatedAt}"));
+                writer.WriteLine(
+                    $"{c.Id};{c.FechaMatriculacion};{c.FechaInspeccion};{c.Matricula};{c.Marca};{c.Modelo};{c.Cilindrada};{c.Motor};{c.DniDueño};{c.IsDeleted};{c.CreatedAt};{c.UpdatedAt}"));
 
             return Result.Success<bool, DomainError>(true).Tap(l =>
                 _logger.Information("Exportación a CSV finalizada con éxito. Registros guardados: {Count}",

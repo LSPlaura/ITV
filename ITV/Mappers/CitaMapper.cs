@@ -16,7 +16,7 @@ public static class CitaMapper
         return new CitaDto(
             cita.Id,
             cita.FechaMatriculacion.ToString(_isoFormat),
-            cita.ToString() ?? "Sin cita",
+            cita.FechaInspeccion.ToString() ?? "Sin cita",
             cita.Matricula, 
             cita.Marca,
             cita.Modelo,
