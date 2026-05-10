@@ -18,6 +18,11 @@ public static class Configuracion
     /// El máximo que puede ocupar la cache
     /// </summary>
     public static int Cache = Config.GetValue<int>("Cache:Max");
+    
+    /// <summary>
+    /// El tipo de borrado preestablecido
+    /// </summary>
+    public static bool DeleteType = Config.GetValue<bool>("Service:isLogical");
 
     //Repositorio
     /// <summary>

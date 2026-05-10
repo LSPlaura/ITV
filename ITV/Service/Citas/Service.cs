@@ -19,14 +19,21 @@ public class ServiceVehiculos (
     IValidate<Cita> validador) : IService<int, Cita>
 {
     private readonly ILogger _logger = Log.ForContext<ServiceVehiculos>();
+    private readonly int _limiteVehciulos = 3;
     
     //Funciones Crud
     public Result<Cita, DomainError> Agregar(Cita item)
     {
         return Result.Success<Cita, DomainError>(item).
-            Tap(_ => _logger.Information("Agregando vehiculo con la matricula: {Matricula}", item.Matricula))
+            Tap(_ => _logger.Information("Agregando cita con la matricula: {Matricula}", item.Matricula))
             .Bind(v => validador.Validar(v).Map(_ => v))
             .Map(Estandarizar)
+            .Ensure(v => VerificarFechaVehiculo(v.Matricula, v.FechaInspeccion, v.Id), 
+                v => new CitaError.FechaYaEstablecida(v.Matricula, v.FechaInspeccion))
+            .TapError(err => _logger.Warning("Error: {Error}", err.Message))
+            .Ensure(v => ContarVehiculos(v.DniDueño, v.FechaInspeccion, v.Id), 
+                v => new CitaError.OwnerWithThreeOrMoreCitas(v.DniDueño, v.FechaInspeccion))
+            .TapError(err => _logger.Warning("Error: {Error}", err.Message))
             .Bind(repositorio.Agregar);
     }
 
@@ -68,6 +75,8 @@ public class ServiceVehiculos (
             .Bind(v => validador.Validar(v).Map(_ => v))
             .Map(Estandarizar)
             .Ensure(v => repositorio.ExistId(key), new CitaError.CitaNotFoundId(key))
+            .Ensure(v => VerificarFechaVehiculo(v.Matricula, v.FechaInspeccion, key),v => new CitaError.FechaYaEstablecida(v.Matricula, v.FechaInspeccion))
+            .Ensure(v => ContarVehiculos(v.DniDueño, v.FechaInspeccion, key),v => new CitaError.OwnerWithThreeOrMoreCitas(v.DniDueño, v.FechaInspeccion))
             .Bind(v => repositorio.Actualizar(key, v))
             .Tap(_ => cache.Borrar(key));
     }
@@ -121,5 +130,41 @@ public class ServiceVehiculos (
             contador++;
         }
         return Result.Success<int, DomainError>(contador);
+    }
+    
+    /// <summary>
+    /// Restricción, busca las citas asocidos a un dni en especifico y verifica si no ha alcanzado el límite de citas para un mismo dni en la misma fecha
+    /// </summary>
+    /// <param name="dni">El dni</param>
+    /// <param name="fecha">La fecha</param>
+    /// <param name="id">El id de la cita que se está verificando para evitar incogruencias y fallas en las restricciones al actualizar</param>
+    /// <returns>True si se puede insertar (no ha llegado al límite)</returns>
+    private bool ContarVehiculos(string dni, DateTime fecha, int id)
+    {
+        var citas = repositorio.GetAll();
+        if (citas.Count(v => v.DniDueño == dni && v.FechaInspeccion == fecha && v.Id != id) >= _limiteVehciulos) 
+        {
+            _logger.Warning("Límite alcanzado: El cliente con DNI {Dni} ya tiene el máximo de vehículos permitidos para la fecha {Fecha}", dni, fecha);
+            return false;
+        }
+        return true;
+    }
+    
+    /// <summary>
+    /// Restricción, un mismo vehiculo no puede tener una cita programada para la misma fecha
+    /// </summary>
+    /// <param name="matricula">La clave para identificar un vehículo</param>
+    /// <param name="fecha">La fecha a corroborar</param>
+    /// <param name="id">El id de la cita que se está verificando para evitar incogruencias y fallas en las restricciones al actualizar</param>
+    /// <returns>True si se puede intertar (el vehículo no tiene una cita programada para esa fecha) (</returns>
+    private bool VerificarFechaVehiculo(string matricula, DateTime? fecha, int id)
+    {
+        var citas = repositorio.GetAll();
+        if (citas.Any(c => c.Matricula == matricula && c.FechaInspeccion == fecha && c.Id != id)) 
+        {
+            _logger.Warning("Límite alcanzado: Ya existe una cita programada para el vehiculo con la matricula {Matricula} con la misma fecha {Fecha}", matricula, fecha);
+            return false;
+        }
+        return true;
     }
 }

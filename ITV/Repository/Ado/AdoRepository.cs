@@ -18,7 +18,6 @@ public class AdoRepository : IRepositorioVehiculos
 {
     private readonly ILogger _logger = Log.ForContext<AdoRepository>();
     private readonly Func<SqliteConnection> _connectionFactory;
-    private readonly int _limiteVehciulos = 3;
     
     private SqliteConnection CreateConnection() => _connectionFactory();
 
@@ -84,10 +83,6 @@ public class AdoRepository : IRepositorioVehiculos
         try
         {
             var entity = value.ToEntity();
-            
-            if (!ContarVehiculos(entity.DniDueño))
-                return Result.Failure<Cita, DomainError>(new CitaError.OwnerWithThreeOrMoreCitas(entity.DniDueño))
-                    .TapError(v => _logger.Error("Límite alcanzado: El dueño con DNI {Dni} no puede tener más vehículos", entity.DniDueño));
             
             using var connection = CreateConnection();
             connection.Open();
@@ -299,27 +294,5 @@ public class AdoRepository : IRepositorioVehiculos
             reader.GetString(reader.GetOrdinal("CreatedAt")),
             reader.GetString(reader.GetOrdinal("UpdatedAt"))
         );
-    }
-    
-    /// <summary>
-    /// Busca los vehiculos asocidos a un dni en especifico y verifica si hay menos que el máximo configurado
-    /// </summary>
-    /// <param name="key">El dni</param>
-    /// <returns>True si hay menos que el máximo configurado</returns>
-    private bool ContarVehiculos(string key)
-    {
-        using var conn = CreateConnection();
-        conn.Open();
-        using var cmd = conn.CreateCommand();
-        cmd.CommandText = "SELECT COUNT(1) FROM Cita WHERE DniDueno = @Dni";
-        cmd.Parameters.AddWithValue("@Dni", key);
-        var val = cmd.ExecuteScalar();
-        var count = val == null ? 0 : Convert.ToInt32(val);
-        if (count >= _limiteVehciulos)
-        {
-            _logger.Warning("Límite alcanzado: El cliente con DNI {Dni} ya tiene el máximo de vehículos permitido", key);
-            return false;
-        }
-        return true;
     }
 }

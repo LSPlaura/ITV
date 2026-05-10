@@ -16,7 +16,6 @@ public class EfCoreRepository : IRepositorioVehiculos
 {
     private readonly ILogger _logger = Log.ForContext<EfCoreRepository>();
     private readonly AppDbContext _context;
-    private readonly int _limiteVehciulos = 3;
 
     public EfCoreRepository(AppDbContext context)
     {
@@ -57,10 +56,6 @@ public class EfCoreRepository : IRepositorioVehiculos
         try
         {
             var entity = value.ToEntity();
-            
-            if (!ContarVehiculos(entity.DniDueño))
-                return Result.Failure<Cita, DomainError>(new CitaError.OwnerWithThreeOrMoreCitas(entity.DniDueño))
-                    .TapError(v => _logger.Error("Límite alcanzado: El dueño con DNI {Dni} no puede tener más vehículos", entity.DniDueño));
             
             _context.Vehiculo.Add(entity);
             _context.SaveChanges();
@@ -185,21 +180,5 @@ public class EfCoreRepository : IRepositorioVehiculos
         _logger.Warning("Eliminando permanentemente todas las personas");
         _context.Vehiculo.RemoveRange(_context.Vehiculo);
         _context.SaveChanges();
-    }
-    
-    /// <summary>
-    /// Busca los vehiculos asocidos a un dni en especifico y verifica si hay menos que el máximo configurado
-    /// </summary>
-    /// <param name="key">El dni</param>
-    /// <returns>True si hay menos que el máximo configurado</returns>
-    private bool ContarVehiculos(string key)
-    {
-        var vehiculos = GetAll();
-        if (vehiculos.Count(v => v.DniDueño == key) >= _limiteVehciulos) 
-        {
-            _logger.Warning("Límite alcanzado: El cliente con DNI {Dni} ya tiene el máximo de vehículos permitido", key);
-            return false;
-        }
-        return true;
     }
 }

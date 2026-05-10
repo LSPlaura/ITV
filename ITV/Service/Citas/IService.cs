@@ -1,9 +1,8 @@
-using System.Collections.Generic;
-using System.Windows.Documents;
 using CSharpFunctionalExtensions;
+using ITV.Config;
 using ITV.Error.Common;
 
-namespace ITV.Service;
+namespace ITV.Service.Citas;
 
 public interface IService<TKey, TValue>
 {
@@ -46,7 +45,7 @@ public interface IService<TKey, TValue>
     IEnumerable<TValue> GetAll(int pagina = 0, int cantidad = 10);
     
     /// <summary>
-    /// Importa los datos almacenados en el tipo de archivo correspondiente mediante la ruta configurada y los almacena en el repositorio
+    /// Importa los datos   almacenados en el tipo de archivo correspondiente mediante la ruta configurada y los almacena en el repositorio
     /// borrando todos los datos anteriores para no causar conflictos de integridad
     /// </summary>
     /// <returns>El número de instancias guardadas en el repositorio</returns>

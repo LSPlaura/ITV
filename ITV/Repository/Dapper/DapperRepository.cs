@@ -18,7 +18,6 @@ public class DapperRepository : IRepositorioVehiculos
 {
     private readonly ILogger _logger = Log.ForContext<DapperRepository>();
     private readonly string _connection;
-    private readonly int _limiteVehciulos = 3;
     
     private SqliteConnection CreateConnection() => new(_connection);
     
@@ -74,10 +73,6 @@ public class DapperRepository : IRepositorioVehiculos
         {
             using var connection = CreateConnection();
             var entity = value.ToEntity();
-            
-            if (!ContarVehiculos(entity.DniDueño))
-                return Result.Failure<Cita, DomainError>(new CitaError.OwnerWithThreeOrMoreCitas(entity.DniDueño))
-                    .TapError(v => _logger.Error("Límite alcanzado: El dueño con DNI {Dni} no puede tener más vehículos", entity.DniDueño));
             
             var sql = @"INSERT INTO Cita(FechaMatriculacion, FechaInspeccion, Matricula, Modelo, Marca, Motor, Cilindrada, DniDueno, CreatedAt, UpdatedAt)
                         VALUES (@FechaMatriculacion, @FechaInspeccion, @Matricula, @Modelo, @Marca, @Motor, @Cilindrada, @DniDueño, @CreatedAt, @UpdatedAt);
@@ -220,21 +215,5 @@ public class DapperRepository : IRepositorioVehiculos
         _logger.Warning("Eliminando permanentemente todas las personas");
         using var connection = CreateConnection();
         connection.Execute("DELETE FROM Cita");
-    }
-    
-    /// <summary>
-    /// Busca los vehiculos asocidos a un dni en especifico y verifica si hay menos que el máximo configurado
-    /// </summary>
-    /// <param name="key">El dni</param>
-    /// <returns>True si hay menos que el máximo configurado</returns>
-    private bool ContarVehiculos(string key)
-    {
-        var vehiculos = GetAll();
-        if (vehiculos.Count(v => v.DniDueño == key) >= _limiteVehciulos) 
-        {
-            _logger.Warning("Límite alcanzado: El cliente con DNI {Dni} ya tiene el máximo de vehículos permitido", key);
-            return false;
-        }
-        return true;
     }
 }

@@ -44,16 +44,17 @@ public abstract record CitaError(string Message) : DomainError(Message)
         public record class IdAlreadyExists(int Id) : CitaAlredyExist($"Error: El vehiculo con el id [{Id}] ya existe");
         public record class MatriculaAlreadyExists(string matricula) : CitaAlredyExist($"Error: El vehiculo con la matrícula [{matricula}] ya existe");
     }
-    /// <summary>
-    /// Error que se devuelve cuando la mátricula del vehículo que se quiere actualizar no es la misma que la almacenada con los datos a actualizar
-    /// </summary>
-    public sealed record InconsistentUpdate(string Key, string MatriculaVehiculo)
-        : CitaError($"Error: Matricula [{MatriculaVehiculo}] con los datos actualizados asociados no coincide con la mátricula del vehiculo que se quiere actualizar[{Key}] ");
 
     /// <summary>
-    /// Error que se devuelve cuando un propietario alcanza el límite máximo de 3 vehículos permitidos.
+    /// Error que se devuelve cuando se alcanza el límite máximo de 3 citas permitidas para un mismo dni en una misma fecha.
     /// </summary>
-    public sealed record OwnerWithThreeOrMoreCitas(string Dni)
-        : CitaError($"Error: En el concesionario el dni [{Dni}] ya tiene asociados 3 vehiculos");
+    public sealed record OwnerWithThreeOrMoreCitas(string Dni, DateTime Fecha)
+        : CitaError($"Error: El DNI {Dni} ya tiene tres citas establecidas para la fecha {Fecha}");
+    
+    /// <summary>
+    /// Error que se devuelve cuando se alcanza el límite de una cita para un mismo vehículo en la misma fecha
+    /// </summary>
+    public sealed record FechaYaEstablecida(string Matricula, DateTime Fecha) 
+        : CitaError($"Error: El vehiculo con la matricula {Matricula}, ya tiene una cita programada para la fecha {Fecha}");
     
 };

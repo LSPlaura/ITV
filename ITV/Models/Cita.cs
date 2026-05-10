@@ -7,7 +7,7 @@ public record Cita
 {
     public int Id { get; init; }
     public DateTime FechaMatriculacion { get; init; }
-    public DateTime? FechaInspeccion { get; init; } = null;
+    public DateTime FechaInspeccion { get; init; } 
     public string Matricula { get; init; } = string.Empty;
     public string Marca { get; init; } = string.Empty;
     public string Modelo { get; init; } = string.Empty;
@@ -25,7 +25,7 @@ public record Cita
     public Cita(
         int id,
         DateTime fechaMatriculacion,
-        DateTime? fechaInspeccion,
+        DateTime fechaInspeccion,
         string matricula,
         string marca,
         string modelo,
@@ -56,7 +56,7 @@ public record Cita
     /// </summary>
     public Cita(
         DateTime fechaMatriculacion,
-        DateTime? fechaInspeccion,
+        DateTime fechaInspeccion,
         string matricula,
         string marca,
         string modelo,

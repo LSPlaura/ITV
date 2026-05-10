@@ -243,28 +243,6 @@ public class RepositorioAdoTests
         }
 
         [Test]
-        public void Agregar_ErrorOwnerCon3Vehiculos()
-        {
-            var vehiculo1 = new Cita(FechaMat, FechaInsp, "1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
-            var vehiculo2 = new Cita(FechaMat, FechaInsp, "2222BBB", "AAA", "ElMejor", 3.3, Motor.Gasolina, "12345678Z");
-            var vehiculo3 = new Cita(FechaMat, FechaInsp, "3333BBB", "JKASD", "ElMejor", 3.3, Motor.Electrico, "12345678Z");
-            var vehiculo4 = new Cita(FechaMat, FechaInsp, "4444BBB", "NKNN", "ElMejor", 3.3, Motor.Hidrogeno, "12345678Z");
-
-            var result1 = _repositorio.Agregar(vehiculo1);
-            var result2 = _repositorio.Agregar(vehiculo2);
-            var result3 = _repositorio.Agregar(vehiculo3);
-            var result4 = _repositorio.Agregar(vehiculo4);
-
-            result1.IsSuccess.Should().BeTrue();
-            result2.IsSuccess.Should().BeTrue();
-            result3.IsSuccess.Should().BeTrue();
-
-            result4.Should().NotBeNull();
-            result4.IsFailure.Should().BeTrue();
-            result4.Error.Should().BeOfType<CitaError.OwnerWithThreeOrMoreCitas>();
-        }
-
-        [Test]
         public void Borrar_ErrorEncontrarId()
         {
             var result = _repositorio.Borrar(20);

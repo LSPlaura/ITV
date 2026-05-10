@@ -16,7 +16,7 @@ public static class CitaMapper
         return new CitaDto(
             cita.Id,
             cita.FechaMatriculacion.ToString(_isoFormat),
-            cita.FechaInspeccion.ToString() ?? "Sin cita",
+            cita.FechaInspeccion.ToString(_isoFormat),
             cita.Matricula, 
             cita.Marca,
             cita.Modelo,
@@ -39,7 +39,7 @@ public static class CitaMapper
         return new Cita(
             dto.Id,
             DateTime.TryParse(dto.FechaMatriculacion, out var matriculacion)? matriculacion : DateTime.Now,
-            dto.FechaInspeccion == "Sin cita" ? null : DateTime.Parse(dto.FechaInspeccion),
+            DateTime.TryParse(dto.FechaMatriculacion, out var inspeccion)? inspeccion : DateTime.Now,
             dto.Matricula,
             dto.Marca,
             dto.Modelo,
@@ -62,7 +62,7 @@ public static class CitaMapper
         return new CitaEntity(
             cita.Id,
             cita.FechaMatriculacion.ToString(_isoFormat),
-            cita.FechaInspeccion.ToString() ?? "Sin cita",
+            cita.FechaInspeccion.ToString(_isoFormat),
             cita.Matricula,
             cita.Modelo,
             cita.Marca,
@@ -85,7 +85,7 @@ public static class CitaMapper
         return new Cita(
             entity.Id,
             DateTime.TryParse(entity.FechaMatriculacion, out var matriculacion)? matriculacion : DateTime.Now,
-            entity.FechaInspeccion == "Sin cita" ? null : DateTime.Parse(entity.FechaInspeccion),
+            DateTime.TryParse(entity.FechaMatriculacion, out var inspeccion)? inspeccion : DateTime.Now,
             entity.Matricula,
             entity.Modelo,
             entity.Marca,

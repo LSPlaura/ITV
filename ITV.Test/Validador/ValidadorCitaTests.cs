@@ -18,11 +18,10 @@ public class ValidadorCitaTests
             _validador = new ValidadorCita();
         }
         
-        [TestCase(null)]
-        [TestCase("2026-05-05")]
-        public void Validar_VehiculoCorrecto_SinErrores(DateTime? fechaInspeccion)
+        [Test]
+        public void Validar_VehiculoCorrecto_SinErrores()
         {
-            var vehiculo = new Cita(DateTime.Today, fechaInspeccion, "1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
+            var vehiculo = new Cita(DateTime.Today, DateTime.Today, "1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
 
             var result = _validador.Validar(vehiculo);
             
@@ -119,7 +118,7 @@ public class ValidadorCitaTests
         [Test]
         public void Validar_FechaInspeccionMenorQueHoy_Error()
         {
-            var vehiculo = new Cita(DateTime.Today.AddDays(-1), DateTime.Today, "1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
+            var vehiculo = new Cita(DateTime.Today, DateTime.Today.AddDays(-1), "1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
 
             var result = _validador.Validar(vehiculo);
             
