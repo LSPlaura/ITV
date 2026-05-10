@@ -57,9 +57,6 @@ public class EfCoreRepository : IRepositorioVehiculos
         try
         {
             var entity = value.ToEntity();
-            if (ExistMatricula(entity.Matricula))
-                return Result.Failure<Cita, DomainError>(new CitaError.CitaAlredyExist.MatriculaAlreadyExists(entity.Matricula))
-                    .TapError(v => _logger.Error("Fallo al agregar: La matricula {Matricula} ya está registrada", entity.Matricula));
             
             if (!ContarVehiculos(entity.DniDueño))
                 return Result.Failure<Cita, DomainError>(new CitaError.OwnerWithThreeOrMoreCitas(entity.DniDueño))
@@ -129,7 +126,7 @@ public class EfCoreRepository : IRepositorioVehiculos
     {
         try
         {
-            var entity = _context.Vehiculo.Find(key);
+            var entity = _context.Vehiculo.FirstOrDefault(e =>e.Matricula== key);
 
             return entity == null
                 ? Result.Failure<Cita, DomainError>(new CitaError.CitaNotFoundMatricula(key))

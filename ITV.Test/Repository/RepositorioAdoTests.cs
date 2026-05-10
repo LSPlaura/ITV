@@ -40,7 +40,7 @@ public class RepositorioAdoTests
                 Id INTEGER PRIMARY KEY,
                 FechaMatriculacion VARCHAR(100) NOT NULL,
                 FechaInspeccion VARCHAR(100) NOT NULL,
-                Matricula VARCHAR(9) NOT NULL UNIQUE,
+                Matricula VARCHAR(9) NOT NULL,
                 Modelo  VARCHAR(100) NOT NULL,
                 Marca VARCHAR(100) NOT NULL,
                 Motor INTEGER NOT NULL,
@@ -203,7 +203,7 @@ public class RepositorioAdoTests
                 Id INTEGER PRIMARY KEY,
                 FechaMatriculacion VARCHAR(100) NOT NULL,
                 FechaInspeccion VARCHAR(100) NOT NULL,
-                Matricula VARCHAR(9) NOT NULL UNIQUE,
+                Matricula VARCHAR(9) NOT NULL,
                 Modelo  VARCHAR(100) NOT NULL,
                 Marca VARCHAR(100) NOT NULL,
                 Motor INTEGER NOT NULL,
@@ -240,24 +240,6 @@ public class RepositorioAdoTests
                     }
                 }
             }
-        }
-
-        [Test]
-        public void Agregar_ErrorMatricula()
-        {
-            var vehiculo1 = new Cita(FechaMat, FechaInsp, "1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
-            var vehiculo2 = new Cita(FechaMat, FechaInsp, "1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
-
-            var result1 = _repositorio.Agregar(vehiculo1);
-            var result2 = _repositorio.Agregar(vehiculo2);
-            result1.Should().NotBeNull();
-            result1.IsSuccess.Should().BeTrue();
-            result1.Value.Id.Should().BeGreaterThan(0);
-            result1.Value.IsDeleted.Should().Be(false);
-
-            result2.Should().NotBeNull();
-            result2.IsFailure.Should().BeTrue();
-            result2.Error.Should().BeOfType<CitaError.CitaAlredyExist.MatriculaAlreadyExists>();
         }
 
         [Test]

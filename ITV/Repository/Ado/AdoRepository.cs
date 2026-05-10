@@ -85,10 +85,6 @@ public class AdoRepository : IRepositorioVehiculos
         {
             var entity = value.ToEntity();
             
-            if (ExistMatricula(entity.Matricula))
-                return Result.Failure<Cita, DomainError>(new CitaError.CitaAlredyExist.MatriculaAlreadyExists(entity.Matricula))
-                    .TapError(v => _logger.Error("Fallo al agregar: La matricula {Matricula} ya está registrada", entity.Matricula));
-            
             if (!ContarVehiculos(entity.DniDueño))
                 return Result.Failure<Cita, DomainError>(new CitaError.OwnerWithThreeOrMoreCitas(entity.DniDueño))
                     .TapError(v => _logger.Error("Límite alcanzado: El dueño con DNI {Dni} no puede tener más vehículos", entity.DniDueño));

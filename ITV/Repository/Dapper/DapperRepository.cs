@@ -43,20 +43,20 @@ public class DapperRepository : IRepositorioVehiculos
         using var connection = CreateConnection();
         connection.Open();
         connection.Execute(@"
-              CREATE TABLE IF NOT EXISTS Cita(
-                Id INTEGER PRIMARY KEY,
-                FechaMatriculacion VARCHAR(100) NOT NULL,
-                FechaInspeccion VARCHAR(100) NOT NULL
-                Matricula VARCHAR(9) NOT NULL UNIQUE,
-                Modelo  VARCHAR(100) NOT NULL,
-                Marca VARCHAR(100) NOT NULL,
-                Motor INTEGER NOT NULL,
-                Cilindrada REAL CHECK (Cilindrada > 0) NOT NULL,
-                DniDueno VARCHAR(9) NOT NULL,
-                IsDeleted INTEGER DEFAULT 0,
-                CreatedAt VARCHAR(100) NOT NULL,
-                UpdatedAt VARCHAR(100) NOT NULL
-              );");
+    CREATE TABLE IF NOT EXISTS Cita(
+    Id INTEGER PRIMARY KEY,
+    FechaMatriculacion TEXT NOT NULL,
+    FechaInspeccion TEXT,
+    Matricula TEXT NOT NULL,
+    Modelo TEXT NOT NULL,
+    Marca TEXT NOT NULL,
+    Motor INTEGER NOT NULL,
+    Cilindrada REAL CHECK (Cilindrada > 0) NOT NULL,
+    DniDueno TEXT NOT NULL,
+    IsDeleted INTEGER DEFAULT 0,
+    CreatedAt TEXT NOT NULL,
+    UpdatedAt TEXT NOT NULL
+);");
         _logger.Debug("Se ha creado la tabla, creo");
     }
     
@@ -74,10 +74,6 @@ public class DapperRepository : IRepositorioVehiculos
         {
             using var connection = CreateConnection();
             var entity = value.ToEntity();
-            
-            if (ExistMatricula(entity.Matricula))
-                return Result.Failure<Cita, DomainError>(new CitaError.CitaAlredyExist.MatriculaAlreadyExists(entity.Matricula))
-                    .TapError(v => _logger.Error("Fallo al agregar: La matricula {Matricula} ya está registrada", entity.Matricula));
             
             if (!ContarVehiculos(entity.DniDueño))
                 return Result.Failure<Cita, DomainError>(new CitaError.OwnerWithThreeOrMoreCitas(entity.DniDueño))
@@ -111,7 +107,7 @@ public class DapperRepository : IRepositorioVehiculos
 
             if (isLogical)
             {
-                var borradoLogico = "UPDATE VEHICULO SET IsDeleted = @IsDeleted WHERE Id = @Id";
+                var borradoLogico = "UPDATE Cita SET IsDeleted = @IsDeleted WHERE Id = @Id";
                 connection.Execute(borradoLogico, new { IsDeleted = 1, Id = key });
                 return BuscarId(key)
                     .Tap((l => _logger.Information("Se ha borrado (lógico) el vehiculo con el ID {Id}", l.Id)));
@@ -134,7 +130,7 @@ public class DapperRepository : IRepositorioVehiculos
         try
         {
             using var connection = CreateConnection();
-            var sql = "SELECT Id, Matricula, Modelo, Marca, Motor, Cilindrada, DniDueno AS DniDueño, IsDeleted FROM Cita WHERE Id = @Id";
+            var sql = "SELECT * FROM Cita WHERE Id = @Id";
             var entity = connection.QueryFirstOrDefault<CitaEntity>(sql, new { Id = key });
         
             return entity == null ? 
@@ -155,7 +151,7 @@ public class DapperRepository : IRepositorioVehiculos
         try
         {
             using var connection = CreateConnection();
-            var sql = "SELECT Id, Matricula, Modelo, Marca, Motor, Cilindrada, DniDueno AS DniDueño, IsDeleted FROM Cita WHERE Matricula = @Matricula";
+            var sql = "SELECT * FROM Cita WHERE Matricula = @Matricula";
             var entity = connection.QueryFirstOrDefault<CitaEntity>(sql, new { Matricula = key });
         
             return entity == null ? 
