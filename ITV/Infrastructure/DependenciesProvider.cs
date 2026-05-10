@@ -7,6 +7,7 @@ using ITV.Repository.Common;
 using ITV.Repository.Dapper;
 using ITV.Repository.EFCore;
 using ITV.Service;
+using ITV.Service.Citas;
 using ITV.Storage.Common;
 using ITV.Storage.CSV;
 using ITV.Storage.XML;
@@ -66,18 +67,18 @@ public static class DependenciesProvider
         services.AddTransient<IBackUpServiceVehiculos, BackupService>(sp => 
             new BackupService(sp.GetRequiredService<IStorage<Cita>>(), Configuracion.BackUpFile, Configuracion.BackUpFolder));
 
-        services.AddTransient<IService<string, Cita>, ServiceVehiculos>(sp => new ServiceVehiculos(
+        services.AddTransient<IService<int, Cita>, ServiceVehiculos>(sp => new ServiceVehiculos(
             sp.GetRequiredService<IRepositorioVehiculos>(),
             sp.GetRequiredService<IBackUpServiceVehiculos>(),
             sp.GetRequiredService<IStorage<Cita>>(),
-            sp.GetRequiredService<ICache<string, Cita>>(),
+            sp.GetRequiredService<ICache<int, Cita>>(),
             sp.GetRequiredService<IValidate<Cita>>()
         ));
     }
     
     private static void RegisterCache(IServiceCollection services)
     {
-        services.AddTransient<ICache<string, Cita>, LruCache>(sp => new LruCache(Configuracion.Cache));
+        services.AddTransient<ICache<int, Cita>, LruCache>(sp => new LruCache(Configuracion.Cache));
     }
 
     private static void RegisterServices(IServiceCollection services)

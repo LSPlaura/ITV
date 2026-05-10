@@ -9,14 +9,14 @@ using ITV.Utils;
 using ITV.Validador;
 using Serilog;
 
-namespace ITV.Service;
+namespace ITV.Service.Citas;
 
 public class ServiceVehiculos (
     IRepositorioVehiculos repositorio,
     IBackUpService<Cita> backUpService,
     IStorage<Cita> storage,
-    ICache<string, Cita> cache,
-    IValidate<Cita> validador) : IService<string, Cita>
+    ICache<int, Cita> cache,
+    IValidate<Cita> validador) : IService<int, Cita>
 {
     private readonly ILogger _logger = Log.ForContext<ServiceVehiculos>();
     
@@ -42,15 +42,15 @@ public class ServiceVehiculos (
         return vehiculo;
     }
 
-    public Result<Cita, DomainError> Borrar(string key, bool isLogical = true)
+    public Result<Cita, DomainError> Borrar(int key, bool isLogical = true)
     {
         _logger.Information("Borrando vehiculo con la matrícula: {Matricula}", key);
-        return repositorio.BuscarMatricula(key)
-            .Tap(v => cache.Borrar(v.Matricula))
+        return repositorio.BuscarId(key)
+            .Tap(v => cache.Borrar(v.Id))
             .Bind(v => repositorio.Borrar(v.Id, isLogical));
     }
     
-    public  Result<Cita, DomainError> GetById(string key)
+    public  Result<Cita, DomainError> GetById(int key)
     {
         _logger.Information("Buscando vehiculo con matricula: {Matricula}", key);
 
@@ -58,19 +58,17 @@ public class ServiceVehiculos (
         if (cacheado != null) return Result.Success<Cita, DomainError>(cacheado)
             .Tap(v => _logger.Information("El vehiculo con la matricula {Matricula} encontrado", v.Matricula));
 
-        return repositorio.BuscarMatricula(key).Tap(v => cache.Agregar(key, v));
+        return repositorio.BuscarId(key).Tap(v => cache.Agregar(key, v));
     }
-    
-    public Result<Cita, DomainError> Actualizar(string key, Cita item)
+
+    public Result<Cita, DomainError> Actualizar(int key, Cita item)
     {
-        return Result.Success<Cita, DomainError>(item).
-            Tap(_ =>   _logger.Information("Actualizando datos del vehiculo: {Matricula}", key))
-            .Ensure(v => v.Matricula.Equals(key, StringComparison.OrdinalIgnoreCase), 
-                new CitaError.InconsistentUpdate(key, item.Matricula))
+        return Result.Success<Cita, DomainError>(item)
+            .Tap(_ => _logger.Information("Actualizando datos del vehiculo: {Matricula}", key))
             .Bind(v => validador.Validar(v).Map(_ => v))
             .Map(Estandarizar)
-            .Ensure(v => repositorio.ExistMatricula(key), new CitaError.CitaNotFoundMatricula(key))
-            .Bind(v => repositorio.Actualizar(repositorio.BuscarMatricula(key).Value.Id, v))
+            .Ensure(v => repositorio.ExistId(key), new CitaError.CitaNotFoundId(key))
+            .Bind(v => repositorio.Actualizar(key, v))
             .Tap(_ => cache.Borrar(key));
     }
 

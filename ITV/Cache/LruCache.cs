@@ -9,15 +9,15 @@ namespace ITV.Cache;
 public class LruCache (int capacidadCache) : ILruCita
 {
    private int _max = capacidadCache;
-   private Dictionary<string, Cita> _data = new Dictionary<string, Cita>();
-   private LinkedList<string> _orderOfUsege = new LinkedList<string>();
+   private Dictionary<int, Cita> _data = new Dictionary<int, Cita>();
+   private LinkedList<int> _orderOfUsege = new LinkedList<int>();
    private readonly ILogger _logger = Log.ForContext<LruCache>();
   
-   public void Agregar(string key, Cita value)
+   public void Agregar(int key, Cita value)
    {
        _logger.Debug("Intentando agregar vehículo a la caché. ID: {Key}", key);
       
-       if (key != value.Matricula)
+       if (key != value.Id)
        {
            _logger.Warning("La matrícula introducida como clave {Key} no coincide con la matrícula del vehículo {Matricula}, no se añadirá a la cache", key, value.Matricula);
            return;
@@ -47,7 +47,7 @@ public class LruCache (int capacidadCache) : ILruCita
    }
 
 
-   public Cita? Obtener(string key)
+   public Cita? Obtener(int key)
    {
        _logger.Debug("Buscando vehículo en caché. ID: {Key}", key);
       
@@ -74,7 +74,7 @@ public class LruCache (int capacidadCache) : ILruCita
        });
    }
   
-   public void Actualizar(string key)
+   public void Actualizar(int key)
    {
        _logger.Debug("Actualizando prioridad del ID: {Key}", key);
       
@@ -86,7 +86,7 @@ public class LruCache (int capacidadCache) : ILruCita
        _logger.Error("Error crítico: Se intentó actualizar el ID {Key} pero no existía en la lista de uso", key);
    }
   
-   public bool Borrar(string key)
+   public bool Borrar(int key)
    {
        _logger.Information("Eliminando vehículo de la caché. ID: {Key}", key);
       
