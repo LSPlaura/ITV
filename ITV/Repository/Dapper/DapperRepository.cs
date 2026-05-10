@@ -43,16 +43,20 @@ public class DapperRepository : IRepositorioVehiculos
         using var connection = CreateConnection();
         connection.Open();
         connection.Execute(@"
-            CREATE TABLE IF NOT EXISTS Cita(
+              CREATE TABLE IF NOT EXISTS Cita(
                 Id INTEGER PRIMARY KEY,
+                FechaMatriculacion VARCHAR(100) NOT NULL,
+                FechaInspeccion VARCHAR(100) NOT NULL
                 Matricula VARCHAR(9) NOT NULL UNIQUE,
                 Modelo  VARCHAR(100) NOT NULL,
                 Marca VARCHAR(100) NOT NULL,
                 Motor INTEGER NOT NULL,
-                Cilindrada REAL CHECK ( Cilindrada > 0) NOT NULL,
+                Cilindrada REAL CHECK (Cilindrada > 0) NOT NULL,
                 DniDueno VARCHAR(9) NOT NULL,
-                IsDeleted INTEGER DEFAULT 0
-                )");
+                IsDeleted INTEGER DEFAULT 0,
+                CreatedAt VARCHAR(100) NOT NULL,
+                UpdatedAt VARCHAR(100) NOT NULL
+              );");
         _logger.Debug("Se ha creado la tabla, creo");
     }
     
@@ -79,8 +83,8 @@ public class DapperRepository : IRepositorioVehiculos
                 return Result.Failure<Cita, DomainError>(new CitaError.OwnerWithThreeOrMoreCitas(entity.DniDueño))
                     .TapError(v => _logger.Error("Límite alcanzado: El dueño con DNI {Dni} no puede tener más vehículos", entity.DniDueño));
             
-            var sql = @"INSERT INTO Cita(Matricula, Modelo, Marca, Motor, Cilindrada, DniDueno)
-                        VALUES (@Matricula, @Modelo, @Marca, @Motor, @Cilindrada, @DniDueño);
+            var sql = @"INSERT INTO Cita(FechaMatriculacion, FechaInspeccion, Matricula, Modelo, Marca, Motor, Cilindrada, DniDueno, CreatedAt, UpdatedAt)
+                        VALUES (@FechaMatriculacion, @FechaInspeccion, @Matricula, @Modelo, @Marca, @Motor, @Cilindrada, @DniDueño, @CreatedAt, @UpdatedAt);
                          SELECT last_insert_rowid()";
 
             entity.Id = connection.ExecuteScalar<int>(sql, entity);

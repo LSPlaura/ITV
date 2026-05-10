@@ -42,13 +42,17 @@ public class RepositorioDapper
             cmd.CommandText = @"
               CREATE TABLE IF NOT EXISTS Cita(
                 Id INTEGER PRIMARY KEY,
+                FechaMatriculacion VARCHAR(100) NOT NULL,
+                FechaInspeccion VARCHAR(100) NOT NULL
                 Matricula VARCHAR(9) NOT NULL UNIQUE,
                 Modelo  VARCHAR(100) NOT NULL,
                 Marca VARCHAR(100) NOT NULL,
                 Motor INTEGER NOT NULL,
                 Cilindrada REAL CHECK (Cilindrada > 0) NOT NULL,
                 DniDueno VARCHAR(9) NOT NULL,
-                IsDeleted INTEGER DEFAULT 0
+                IsDeleted INTEGER DEFAULT 0,
+                CreatedAt VARCHAR(100) NOT NULL,
+                UpdatedAt VARCHAR(100) NOT NULL
               );";
             cmd.ExecuteNonQuery();
             anchor.Close();
@@ -213,13 +217,17 @@ public class RepositorioDapper
             cmd.CommandText = @"
               CREATE TABLE IF NOT EXISTS Cita(
                 Id INTEGER PRIMARY KEY,
+                FechaMatriculacion VARCHAR(100) NOT NULL,
+                FechaInspeccion VARCHAR(100) NOT NULL
                 Matricula VARCHAR(9) NOT NULL UNIQUE,
                 Modelo  VARCHAR(100) NOT NULL,
                 Marca VARCHAR(100) NOT NULL,
                 Motor INTEGER NOT NULL,
                 Cilindrada REAL CHECK (Cilindrada > 0) NOT NULL,
                 DniDueno VARCHAR(9) NOT NULL,
-                IsDeleted INTEGER DEFAULT 0
+                IsDeleted INTEGER DEFAULT 0,
+                CreatedAt VARCHAR(100) NOT NULL,
+                UpdatedAt VARCHAR(100) NOT NULL
               );";
             cmd.ExecuteNonQuery();
             anchor.Close();

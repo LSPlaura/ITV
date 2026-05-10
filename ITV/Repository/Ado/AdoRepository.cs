@@ -50,20 +50,20 @@ public class AdoRepository : IRepositorioVehiculos
         connection.Open();
 
         connection.Execute(@"
-        CREATE TABLE IF NOT EXISTS Cita (
-            Id                 INTEGER PRIMARY KEY AUTOINCREMENT,
-            Matricula          VARCHAR(9) NOT NULL UNIQUE,
-            Marca              VARCHAR(100) NOT NULL,
-            Modelo             VARCHAR(100) NOT NULL,
-            Cilindrada         REAL NOT NULL CHECK (Cilindrada > 0),
-            Motor              INTEGER NOT NULL,
-            DniDueno           VARCHAR(9) NOT NULL,
-            FechaMatriculacion DATETIME NOT NULL,
-            FechaInspeccion    DATETIME NULL,
-            CreatedAt          DATETIME DEFAULT CURRENT_TIMESTAMP,
-            UpdatedAt          DATETIME DEFAULT CURRENT_TIMESTAMP,
-            IsDeleted          INTEGER DEFAULT 0
-        )");
+              CREATE TABLE IF NOT EXISTS Cita(
+                Id INTEGER PRIMARY KEY,
+                FechaMatriculacion VARCHAR(100) NOT NULL,
+                FechaInspeccion VARCHAR(100) NOT NULL,
+                Matricula VARCHAR(9) NOT NULL UNIQUE,
+                Modelo  VARCHAR(100) NOT NULL,
+                Marca VARCHAR(100) NOT NULL,
+                Motor INTEGER NOT NULL,
+                Cilindrada REAL CHECK (Cilindrada > 0) NOT NULL,
+                DniDueno VARCHAR(9) NOT NULL,
+                IsDeleted INTEGER DEFAULT 0,
+                CreatedAt VARCHAR(100) NOT NULL,
+                UpdatedAt VARCHAR(100) NOT NULL
+              );");
 
         _logger.Debug("Tabla Cita verificada/creada correctamente");
     }
@@ -98,14 +98,18 @@ public class AdoRepository : IRepositorioVehiculos
 
             // Primero insert
             using var insertCmd = connection.CreateCommand();
-            insertCmd.CommandText = @"INSERT INTO Cita(Matricula, Modelo, Marca, Motor, Cilindrada, DniDueno)
-                        VALUES (@Matricula, @Modelo, @Marca, @Motor, @Cilindrada, @DniDueno)";
+            insertCmd.CommandText = @"INSERT INTO Cita(Matricula, Modelo, Marca, Motor, Cilindrada, DniDueno,FechaMatriculacion,FechaInspeccion,CreatedAt,UpdatedAt)
+                        VALUES (@Matricula, @Modelo, @Marca, @Motor, @Cilindrada, @DniDueno, @FechaMatriculacion, @FechaInscripcion, @CreatedAt, @UpdatedAt)";
             insertCmd.Parameters.AddWithValue("@Matricula", entity.Matricula);
             insertCmd.Parameters.AddWithValue("@Modelo", entity.Modelo);
             insertCmd.Parameters.AddWithValue("@Marca", entity.Marca);
             insertCmd.Parameters.AddWithValue("@Motor", entity.Motor);
             insertCmd.Parameters.AddWithValue("@Cilindrada", entity.Cilindrada);
             insertCmd.Parameters.AddWithValue("@DniDueno", entity.DniDueño);
+            insertCmd.Parameters.AddWithValue("@FechaMatriculacion", entity.FechaMatriculacion);
+            insertCmd.Parameters.AddWithValue("@FechaInscripcion", entity.FechaInspeccion);
+            insertCmd.Parameters.AddWithValue("@CreatedAt", entity.CreatedAt);
+            insertCmd.Parameters.AddWithValue("@UpdatedAt", entity.UpdatedAt);
             insertCmd.ExecuteNonQuery();
 
             // Luego recuperamos la fila insertada
@@ -225,17 +229,18 @@ public class AdoRepository : IRepositorioVehiculos
             connection.Open();
             using var command = connection.CreateCommand();
             command.CommandText = @"UPDATE Cita SET
-                                    Matricula = @Matricula, Modelo = @Modelo, Marca = @Marca, Motor = @Motor,
-                                    Cilindrada = @Cilindrada, DniDueno = @DniDueno, IsDeleted = @IsDeleted
+                                    FechaMatriculacion = @FechaMatriculacion, FechaInspeccion = @FechaInspeccion, Matricula = @Matricula, Modelo = @Modelo, Marca = @Marca, Motor = @Motor,
+                                    Cilindrada = @Cilindrada, DniDueno = @DniDueno
                                     WHERE Id = @Id";
             
+            command.Parameters.AddWithValue("@FechaMatriculacion", entity.FechaMatriculacion);
+            command.Parameters.AddWithValue("@FechaInspeccion", entity.FechaInspeccion);
             command.Parameters.AddWithValue("@Matricula", entity.Matricula);
             command.Parameters.AddWithValue("@Modelo", entity.Modelo);
             command.Parameters.AddWithValue("@Marca", entity.Marca);
             command.Parameters.AddWithValue("@Motor", entity.Motor);
             command.Parameters.AddWithValue("@Cilindrada", entity.Cilindrada);
             command.Parameters.AddWithValue("@DniDueno", entity.DniDueño);
-            command.Parameters.AddWithValue("@IsDeleted", entity.IsDeleted);
             command.Parameters.AddWithValue("@Id", key);
             command.ExecuteNonQuery();
             
@@ -295,7 +300,7 @@ public class AdoRepository : IRepositorioVehiculos
             reader.GetInt32(reader.GetOrdinal("Motor")),
             reader.GetString(reader.GetOrdinal("DniDueno")),
             reader.GetInt32(reader.GetOrdinal("IsDeleted")),
-            reader.GetString(reader.GetOrdinal("CreatedUp")),
+            reader.GetString(reader.GetOrdinal("CreatedAt")),
             reader.GetString(reader.GetOrdinal("UpdatedAt"))
         );
     }

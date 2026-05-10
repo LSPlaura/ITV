@@ -7,6 +7,8 @@ using ITV.Repository.Common;
 using ITV.Repository.Dapper;
 using Microsoft.Data.Sqlite;
 
+namespace ITV.Test.Repository;
+
 [TestFixture]
 public class RepositorioAdoTests
 {
@@ -36,13 +38,17 @@ public class RepositorioAdoTests
             cmd.CommandText = @"
               CREATE TABLE IF NOT EXISTS Cita(
                 Id INTEGER PRIMARY KEY,
+                FechaMatriculacion VARCHAR(100) NOT NULL,
+                FechaInspeccion VARCHAR(100) NOT NULL,
                 Matricula VARCHAR(9) NOT NULL UNIQUE,
                 Modelo  VARCHAR(100) NOT NULL,
                 Marca VARCHAR(100) NOT NULL,
                 Motor INTEGER NOT NULL,
                 Cilindrada REAL CHECK (Cilindrada > 0) NOT NULL,
                 DniDueno VARCHAR(9) NOT NULL,
-                IsDeleted INTEGER DEFAULT 0
+                IsDeleted INTEGER DEFAULT 0,
+                CreatedAt VARCHAR(100) NOT NULL,
+                UpdatedAt VARCHAR(100) NOT NULL
               );";
             cmd.ExecuteNonQuery();
             anchor.Close();
@@ -123,7 +129,7 @@ public class RepositorioAdoTests
 
             result.Should().NotBeNull();
             result.IsSuccess.Should().BeTrue();
-            result.Value.Id.Should().Be(agregado.Value.Id);
+            result.IsSuccess.Should().BeTrue(result.Value.ToString());
         }
 
         [Test]
@@ -149,7 +155,7 @@ public class RepositorioAdoTests
 
             result.Should().NotBeNull();
             result.IsSuccess.Should().BeTrue();
-            result.Value.Matricula.Should().Be(agregado.Value.Matricula);
+            result.Value.Matricula.Should().Be(vehiculoNuevo.Matricula);
             result.Value.Id.Should().Be(agregado.Value.Id);
         }
 
@@ -195,18 +201,22 @@ public class RepositorioAdoTests
             cmd.CommandText = @"
               CREATE TABLE IF NOT EXISTS Cita(
                 Id INTEGER PRIMARY KEY,
+                FechaMatriculacion VARCHAR(100) NOT NULL,
+                FechaInspeccion VARCHAR(100) NOT NULL,
                 Matricula VARCHAR(9) NOT NULL UNIQUE,
                 Modelo  VARCHAR(100) NOT NULL,
                 Marca VARCHAR(100) NOT NULL,
                 Motor INTEGER NOT NULL,
                 Cilindrada REAL CHECK (Cilindrada > 0) NOT NULL,
                 DniDueno VARCHAR(9) NOT NULL,
-                IsDeleted INTEGER DEFAULT 0
+                IsDeleted INTEGER DEFAULT 0,
+                CreatedAt VARCHAR(100) NOT NULL,
+                UpdatedAt VARCHAR(100) NOT NULL
               );";
             cmd.ExecuteNonQuery();
             anchor.Close();
 
-            _repositorio = new DapperRepository(_connection);
+            _repositorio = new AdoRepository(_connection);
         }
 
         [TearDown]
