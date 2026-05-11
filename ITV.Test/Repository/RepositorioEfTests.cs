@@ -145,7 +145,7 @@ public class RepositorioEfTests
     
                 result.Should().NotBeNull();
                 result.IsSuccess.Should().BeTrue();
-                result.Value.Matricula.Should().Be(agregado.Value.Matricula);
+                result.Value.Matricula.Should().Be(vehiculoNuevo.Matricula);
                 result.Value.Id.Should().Be(agregado.Value.Id);
             }
             

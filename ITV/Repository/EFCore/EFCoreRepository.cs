@@ -150,6 +150,7 @@ public class EfCoreRepository : IRepositorioVehiculos
 
             value = value with { UpdatedAt = DateTime.Now };
             var datosActualizados = value.ToEntity();
+            existente.Matricula = datosActualizados.Matricula;
             existente.Modelo = datosActualizados.Modelo;
             existente.Marca = datosActualizados.Marca;
             existente.Motor = datosActualizados.Motor;
