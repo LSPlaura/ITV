@@ -102,8 +102,8 @@ public class DapperRepository : IRepositorioVehiculos
 
             if (isLogical)
             {
-                var borradoLogico = "UPDATE Cita SET IsDeleted = @IsDeleted WHERE Id = @Id";
-                connection.Execute(borradoLogico, new { IsDeleted = 1, Id = key });
+                var borradoLogico = "UPDATE Cita SET IsDeleted = @IsDeleted, UpdatedAt = @UpdatedAt WHERE Id = @Id";
+                connection.Execute(borradoLogico, new { IsDeleted = 1, Id = key, UpdatedAt = DateTime.Now.ToString("s") });
                 return BuscarId(key)
                     .Tap((l => _logger.Information("Se ha borrado (lógico) el vehiculo con el ID {Id}", l.Id)));
             }
@@ -174,19 +174,22 @@ public class DapperRepository : IRepositorioVehiculos
             if (encontrado == null) 
                 return Result.Failure<Cita, DomainError>(new CitaError.CitaNotFoundId(key))
                     .TapError( l => _logger.Error("No se ha encontrado el vehiculo con el ID {Id} para poder actualizarllo", key));
-            //var desactualizado = encontrado.ToModel();
 
-            //metadatos a agregar
+            value = value with { UpdatedAt = DateTime.Now };
             var entity = value.ToEntity();
-            // entity = entity with
-            // {
-            //
-            // };
-        
+            
             var sql = @"UPDATE Cita SET 
                     Matricula = @Matricula, Modelo = @Modelo, Marca = @Marca, Motor = @Motor, Cilindrada = @Cilindrada,
-                    IsDeleted = @IsDeleted WHERE Id = @Id";
-            connection.Execute(sql, entity);
+                    UpdatedAt = @UpdatedAt WHERE Id = @Id";
+            connection.Execute(sql, new { 
+                entity.Matricula, 
+                entity.Modelo, 
+                entity.Marca, 
+                entity.Motor, 
+                entity.Cilindrada, 
+                entity.UpdatedAt, 
+                Id = key
+            });
             return BuscarId(key).Tap((l => _logger.Information("Se ha actualizado el vehiculo con el ID {Id}", l.Id)));
         }
         catch (Exception ex)

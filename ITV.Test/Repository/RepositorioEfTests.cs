@@ -94,6 +94,20 @@ public class RepositorioEfTests
             }
             
             [Test]
+            public void Borrar_UpdatedAtActualilzaCorrectamente()
+            {
+                var vehiculoAntiguo =
+                    new Cita(FechaMat, FechaInsp, "3333BBB", "JKASD", "ElMejor", 3.3, Motor.Electrico, "12345678Z")
+                        { UpdatedAt = DateTime.Now.AddDays(-1) };
+                var agregado = _repositorio.Agregar(vehiculoAntiguo);
+
+                var result = _repositorio.Borrar(agregado.Value.Id);
+                result.Should().NotBeNull();
+                result.IsSuccess.Should().BeTrue();
+                result.Value.UpdatedAt.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(2));
+            }
+            
+            [Test]
             public void BuscarId_vehiculo()
             { 
                 var vehiculo = new  Cita(FechaMat, FechaInsp, "1111BBB", "Toyota", "ElMejor", 3.3, Motor.Diesel, "12345678Z");
@@ -133,6 +147,22 @@ public class RepositorioEfTests
                 result.IsSuccess.Should().BeTrue();
                 result.Value.Matricula.Should().Be(agregado.Value.Matricula);
                 result.Value.Id.Should().Be(agregado.Value.Id);
+            }
+            
+            [Test]
+            public void Actualizar_UpdatedAtActualilzaCorrectamente()
+            {
+                var vehiculoAntiguo =
+                    new Cita(FechaMat, FechaInsp, "3333BBB", "JKASD", "ElMejor", 3.3, Motor.Electrico, "12345678Z")
+                        { UpdatedAt = DateTime.Now.AddDays(-1) };
+                var agregado = _repositorio.Agregar(vehiculoAntiguo);
+            
+                var vehiculoNuevo = new Cita(FechaMat, FechaInsp, "1111BBB", "Tonto", "Feo", 3.3, Motor.Gasolina, "12345678Z");
+                var result = _repositorio.Actualizar(agregado.Value.Id, vehiculoNuevo);
+
+                result.Should().NotBeNull();
+                result.IsSuccess.Should().BeTrue();
+                result.Value.UpdatedAt.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(2));
             }
     
             [Test]

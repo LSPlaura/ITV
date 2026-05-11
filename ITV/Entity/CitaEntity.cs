@@ -42,7 +42,7 @@ public class CitaEntity
     
     public string CreatedAt { get; init; } = string.Empty;
     
-    public string UpdatedAt { get; init; } = string.Empty;
+    public string UpdatedAt { get; set; } = string.Empty;
     
     /// <summary>
     /// Constructor para usarlo con el mapper

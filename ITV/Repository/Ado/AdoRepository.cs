@@ -137,9 +137,10 @@ public class AdoRepository : IRepositorioVehiculos
 
             if (isLogical)
             {
-                command.CommandText = "UPDATE Cita SET IsDeleted = @IsDeleted WHERE Id = @Id";
+                command.CommandText = "UPDATE Cita SET IsDeleted = @IsDeleted, UpdatedAt = @UpdatedAt WHERE Id = @Id";
                 command.Parameters.AddWithValue("@IsDeleted", 1);
                 command.Parameters.AddWithValue("@Id", key);
+                command.Parameters.AddWithValue("@UpdatedAt", DateTime.Now.ToString("s"));
                 command.ExecuteNonQuery();
                 return BuscarId(key)
                     .Tap((l => _logger.Information("Se ha borrado (lógico) el vehiculo con el ID {Id}", l.Id)));
@@ -215,13 +216,17 @@ public class AdoRepository : IRepositorioVehiculos
     {
         try
         {
+            value = value with
+            {
+                UpdatedAt = DateTime.Now
+            };
             var entity = value.ToEntity();
             using var connection = CreateConnection();
             connection.Open();
             using var command = connection.CreateCommand();
             command.CommandText = @"UPDATE Cita SET
                                     FechaMatriculacion = @FechaMatriculacion, FechaInspeccion = @FechaInspeccion, Matricula = @Matricula, Modelo = @Modelo, Marca = @Marca, Motor = @Motor,
-                                    Cilindrada = @Cilindrada, DniDueno = @DniDueno
+                                    Cilindrada = @Cilindrada, DniDueno = @DniDueno, UpdatedAt = @UpdatedAt
                                     WHERE Id = @Id";
             
             command.Parameters.AddWithValue("@FechaMatriculacion", entity.FechaMatriculacion);
@@ -232,6 +237,7 @@ public class AdoRepository : IRepositorioVehiculos
             command.Parameters.AddWithValue("@Motor", entity.Motor);
             command.Parameters.AddWithValue("@Cilindrada", entity.Cilindrada);
             command.Parameters.AddWithValue("@DniDueno", entity.DniDueño);
+            command.Parameters.AddWithValue("@UpdatedAt", entity.UpdatedAt);
             command.Parameters.AddWithValue("@Id", key);
             command.ExecuteNonQuery();
             

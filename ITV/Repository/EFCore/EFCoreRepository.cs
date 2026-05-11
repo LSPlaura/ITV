@@ -81,6 +81,7 @@ public class EfCoreRepository : IRepositorioVehiculos
             if (isLogical)
             {
                 entity.IsDeleted = 1;
+                entity.UpdatedAt = DateTime.Now.ToString("s");
                 _context.SaveChanges();
                 return Result.Success<Cita, DomainError>(entity.ToModel())
                     .Tap(l => _logger.Information("Se ha borrado (lógico) el vehiculo con el ID {Id}", key));
@@ -147,12 +148,14 @@ public class EfCoreRepository : IRepositorioVehiculos
                 return Result.Failure<Cita, DomainError>(new CitaError.CitaNotFoundId(key))
                     .TapError((l => _logger.Error("No se ha encontrado el vehiculo con el ID al intentar borrarlo{Id}", key)));
 
+            value = value with { UpdatedAt = DateTime.Now };
             var datosActualizados = value.ToEntity();
             existente.Modelo = datosActualizados.Modelo;
             existente.Marca = datosActualizados.Marca;
             existente.Motor = datosActualizados.Motor;
             existente.Cilindrada = datosActualizados.Cilindrada;
             existente.DniDueño = datosActualizados.DniDueño;
+            existente.UpdatedAt = datosActualizados.UpdatedAt;
             _context.SaveChanges(); 
             
             return Result.Success<Cita, DomainError>(existente.ToModel())
