@@ -142,7 +142,7 @@ public class ServiceVehiculos (
     private bool ContarVehiculos(string dni, DateTime fecha, int id)
     {
         var citas = repositorio.GetAll();
-        if (citas.Count(v => v.DniDueño == dni && v.FechaInspeccion == fecha && v.Id != id) >= _limiteVehciulos) 
+        if (citas.Count(v => v.DniDueño.Equals(dni, StringComparison.OrdinalIgnoreCase) && v.FechaInspeccion == fecha && v.Id != id) >= _limiteVehciulos) 
         {
             _logger.Warning("Límite alcanzado: El cliente con DNI {Dni} ya tiene el máximo de vehículos permitidos para la fecha {Fecha}", dni, fecha);
             return false;
@@ -160,7 +160,7 @@ public class ServiceVehiculos (
     private bool VerificarFechaVehiculo(string matricula, DateTime? fecha, int id)
     {
         var citas = repositorio.GetAll();
-        if (citas.Any(c => c.Matricula == matricula && c.FechaInspeccion == fecha && c.Id != id)) 
+        if (citas.Any(c => c.Matricula.Equals(matricula, StringComparison.OrdinalIgnoreCase) && c.FechaInspeccion == fecha && c.Id != id)) 
         {
             _logger.Warning("Límite alcanzado: Ya existe una cita programada para el vehiculo con la matricula {Matricula} con la misma fecha {Fecha}", matricula, fecha);
             return false;
