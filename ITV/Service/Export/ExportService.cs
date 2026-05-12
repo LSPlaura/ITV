@@ -8,14 +8,16 @@ using SelectPdf;
 
 namespace ITV.Service.Export;
 
-public class ExportService
+public class ExportService : IExport<Cita>
 {
+    private static readonly string _fecha = DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss");
     private string _file;
     private string _folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
 
     public ExportService(string file)
     {
         _file = file;
+        
     }
     
     private string GenerateHtmlContent(Cita item)
@@ -90,9 +92,9 @@ public class ExportService
             </html>";
     }
     
-        Result<string, DomainError> ExportHtml(Cita item)
+        public Result<string, DomainError> ExportHtml(Cita item)
         {
-            var path = Path.Combine(_folder, _file + ".html");
+            var path = Path.Combine(_folder, _file + $"_{_fecha}" + ".html");
             try
             {
                 var html = GenerateHtmlContent(item);
@@ -105,9 +107,9 @@ public class ExportService
             return Result.Success<string, DomainError>(path);
         }
 
-        Result<string, DomainError> ExportPdf(Cita item)
+        public Result<string, DomainError> ExportPdf(Cita item)
         {
-            var path = Path.Combine(_folder, _file + ".pdf");
+            var path = Path.Combine(_folder, _file + $"_{_fecha}" + ".pdf");
             try
             {
                 var html = GenerateHtmlContent(item);

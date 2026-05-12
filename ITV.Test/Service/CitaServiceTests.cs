@@ -6,6 +6,7 @@ using ITV.Models;
 using ITV.Repository.Common;
 using ITV.Service;
 using ITV.Service.Citas;
+using ITV.Service.Export;
 using ITV.Storage.Common;
 using ITV.Validador;
 using Moq;
@@ -24,6 +25,7 @@ public class CitaServiceTests
     {
         private Mock<IRepositorioVehiculos> _mockRepository = null!;
         private Mock<IBackUpService<Cita>> _mockBackUpService = null!;
+        private Mock<IExport<Cita>> _mockExportService = null!;
         private Mock<IStorage<Cita>> _mockStorage = null!;
         private Mock<ICache<int, Cita>> _mockCacheLru = null!;
         private Mock<IValidate<Cita>> _mockValidador = null!;
@@ -40,6 +42,7 @@ public class CitaServiceTests
             _service = new ServiceVehiculos(
                 _mockRepository.Object,
                 _mockBackUpService.Object,
+                _mockExportService.Object,
                 _mockStorage.Object,
                 _mockCacheLru.Object,
                 _mockValidador.Object
@@ -328,6 +331,7 @@ public class CitaServiceTests
     {
         private Mock<IRepositorioVehiculos> _mockRepository = null!;
         private Mock<IBackUpService<Cita>> _mockBackUpService = null!;
+        private Mock<IExport<Cita>> _mockExportService = null!;
         private Mock<IStorage<Cita>> _mockStorage = null!;
         private Mock<ICache<int, Cita>> _mockCacheLru = null!;
         private Mock<IValidate<Cita>> _mockValidador = null!;
@@ -344,6 +348,7 @@ public class CitaServiceTests
             _service = new ServiceVehiculos(
                 _mockRepository.Object,
                 _mockBackUpService.Object,
+                _mockExportService.Object,
                 _mockStorage.Object,
                 _mockCacheLru.Object,
                 _mockValidador.Object

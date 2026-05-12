@@ -8,6 +8,7 @@ using ITV.Repository.Dapper;
 using ITV.Repository.EFCore;
 using ITV.Service;
 using ITV.Service.Citas;
+using ITV.Service.Export;
 using ITV.Storage.Common;
 using ITV.Storage.CSV;
 using ITV.Storage.XML;
@@ -62,14 +63,17 @@ public static class DependenciesProvider
         });
     }
     
-    private static void RegisterValidador(IServiceCollection services)
+    private static void RegisterServices(IServiceCollection services)
     {
         services.AddTransient<IBackUpServiceVehiculos, BackupService>(sp => 
             new BackupService(sp.GetRequiredService<IStorage<Cita>>(), Configuracion.BackUpFile, Configuracion.BackUpFolder));
 
+        services.AddTransient<IExport<Cita>, ExportService>(sp => new ExportService(Configuracion.BackUpFile));
+
         services.AddTransient<IService<int, Cita>, ServiceVehiculos>(sp => new ServiceVehiculos(
             sp.GetRequiredService<IRepositorioVehiculos>(),
             sp.GetRequiredService<IBackUpServiceVehiculos>(),
+            sp.GetRequiredService<IExport<Cita>>(),
             sp.GetRequiredService<IStorage<Cita>>(),
             sp.GetRequiredService<ICache<int, Cita>>(),
             sp.GetRequiredService<IValidate<Cita>>()
@@ -81,7 +85,7 @@ public static class DependenciesProvider
         services.AddTransient<ICache<int, Cita>, LruCache>(sp => new LruCache(Configuracion.Cache));
     }
 
-    private static void RegisterServices(IServiceCollection services)
+    private static void RegisterValidador(IServiceCollection services)
     {
         services.AddTransient<IValidate<Cita>, ValidadorCita>(sp => new ValidadorCita());
     }

@@ -4,6 +4,7 @@ using ITV.Error.Common;
 using ITV.Error.Vehiculos;
 using ITV.Models;
 using ITV.Repository.Common;
+using ITV.Service.Export;
 using ITV.Storage.Common;
 using ITV.Utils;
 using ITV.Validador;
@@ -14,6 +15,7 @@ namespace ITV.Service.Citas;
 public class ServiceVehiculos (
     IRepositorioVehiculos repositorio,
     IBackUpService<Cita> backUpService,
+    IExport<Cita> exportService,
     IStorage<Cita> storage,
     ICache<int, Cita> cache,
     IValidate<Cita> validador) : IService<int, Cita>
@@ -130,6 +132,20 @@ public class ServiceVehiculos (
             contador++;
         }
         return Result.Success<int, DomainError>(contador);
+    }
+    
+    //Funciones exportar
+
+    public Result<string, DomainError> ExportHtml(int key)
+    {
+        return repositorio.BuscarId(key)
+            .Bind(c => exportService.ExportHtml(c));
+    }
+    
+    public Result<string, DomainError> ExportPdf(int key)
+    {
+        return repositorio.BuscarId(key)
+            .Bind(c => exportService.ExportPdf(c));
     }
     
     /// <summary>
