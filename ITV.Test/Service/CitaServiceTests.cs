@@ -36,6 +36,7 @@ public class CitaServiceTests
         {
             _mockRepository = new Mock<IRepositorioVehiculos>();
             _mockBackUpService = new Mock<IBackUpService<Cita>>();
+            _mockExportService = new Mock<IExport<Cita>>();
             _mockStorage = new Mock<IStorage<Cita>>();
             _mockCacheLru = new Mock<ICache<int, Cita>>();
             _mockValidador = new Mock<IValidate<Cita>>();
@@ -342,6 +343,7 @@ public class CitaServiceTests
         {
             _mockRepository = new Mock<IRepositorioVehiculos>();
             _mockBackUpService = new Mock<IBackUpService<Cita>>();
+            _mockExportService = new Mock<IExport<Cita>>();
             _mockStorage = new Mock<IStorage<Cita>>();
             _mockCacheLru = new Mock<ICache<int, Cita>>();
             _mockValidador = new Mock<IValidate<Cita>>();
