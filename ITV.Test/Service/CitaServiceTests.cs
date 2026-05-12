@@ -31,22 +31,22 @@ public class CitaServiceTests
         private Mock<IValidate<Cita>> _mockValidador = null!;
         private IService<int, Cita> _service = null!;
 
-        [SetUp]
-        public void SetUp()
-        {
-            _mockRepository = new Mock<IRepositorioVehiculos>();
-            _mockBackUpService = new Mock<IBackUpService<Cita>>();
-            _mockStorage = new Mock<IStorage<Cita>>();
-            _mockCacheLru = new Mock<ICache<int, Cita>>();
-            _mockValidador = new Mock<IValidate<Cita>>();
-            _service = new ServiceVehiculos(
-                _mockRepository.Object,
-                _mockBackUpService.Object,
-                _mockExportService.Object,
-                _mockStorage.Object,
-                _mockCacheLru.Object,
-                _mockValidador.Object
-            );
+       [SetUp] 
+       public void SetUp()
+       {
+           _mockRepository = new Mock<IRepositorioVehiculos>();
+           _mockBackUpService = new Mock<IBackUpService<Cita>>();
+           _mockExportService = new Mock<IExport<Cita>>();
+           _mockStorage = new Mock<IStorage<Cita>>();
+           _mockCacheLru = new Mock<ICache<int, Cita>>();
+           _mockValidador = new Mock<IValidate<Cita>>();
+           _service = new ServiceVehiculos(
+                      _mockRepository.Object,
+                      _mockBackUpService.Object,
+                      _mockExportService.Object,
+                      _mockStorage.Object,
+                      _mockCacheLru.Object,
+                      _mockValidador.Object);
         }
 
         [Test]
@@ -336,12 +336,13 @@ public class CitaServiceTests
         private Mock<ICache<int, Cita>> _mockCacheLru = null!;
         private Mock<IValidate<Cita>> _mockValidador = null!;
         private IService<int, Cita> _service = null!;
-
+        
         [SetUp]
         public void SetUp()
         {
             _mockRepository = new Mock<IRepositorioVehiculos>();
             _mockBackUpService = new Mock<IBackUpService<Cita>>();
+            _mockExportService = new Mock<IExport<Cita>>();
             _mockStorage = new Mock<IStorage<Cita>>();
             _mockCacheLru = new Mock<ICache<int, Cita>>();
             _mockValidador = new Mock<IValidate<Cita>>();
