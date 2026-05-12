@@ -1,0 +1,130 @@
+<Window x:Class="ITV.Views.Citas.Formulario"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Registrar Nueva Cita" 
+        Height="750" Width="600"
+        WindowStartupLocation="CenterScreen"
+        Background="#FBFBFB"
+        TextOptions.TextFormattingMode="Display"
+        TextOptions.TextRenderingMode="ClearType">
+
+    <Window.Resources>
+        <Style x:Key="FieldLabel" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#444444"/>
+            <Setter Property="Margin" Value="0,0,0,8"/>
+        </Style>
+
+        <Style x:Key="FormField" TargetType="TextBox">
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="Margin" Value="0,0,0,20"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="10,0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border x:Name="border" 
+                                Background="White" 
+                                BorderBrush="#DCDFE3" 
+                                BorderThickness="1" 
+                                CornerRadius="8">
+                            <ScrollViewer x:Name="PART_ContentHost" Margin="2,0"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="#36FF6E"/>
+                                <Setter TargetName="border" Property="BorderThickness" Value="2"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="RoundButtonStyle" TargetType="Button">
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="10">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="40,30" MaxWidth="500" HorizontalAlignment="Center">
+
+                <TextBlock Text="Registrar Nueva Cita" FontSize="26" FontWeight="Bold" Margin="0,0,0, 0" HorizontalAlignment="Center" Foreground="#1A1C1E"/>
+
+                <TextBlock Text="Matrícula" Style="{StaticResource FieldLabel}"/>
+                <TextBox Style="{StaticResource FormField}" x:Name="TxtMatricula"/>
+
+                <TextBlock Text="Marca" Style="{StaticResource FieldLabel}"/>
+                <TextBox Style="{StaticResource FormField}" x:Name="TxtMarca"/>
+
+                <TextBlock Text="Modelo" Style="{StaticResource FieldLabel}"/>
+                <TextBox Style="{StaticResource FormField}" x:Name="TxtModelo"/>
+
+                <TextBlock Text="DNI del Dueño" Style="{StaticResource FieldLabel}"/>
+                <TextBox Style="{StaticResource FormField}" x:Name="TxtDni"/>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="20"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Cilindrada (cc)" Style="{StaticResource FieldLabel}"/>
+                        <TextBox Style="{StaticResource FormField}" x:Name="TxtCilindrada"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="Tipo de Motor" Style="{StaticResource FieldLabel}"/>
+                        <ComboBox Height="40" x:Name="CbMotor" Margin="0,0,0,20">
+                            <ComboBox.Resources>
+                                <Style TargetType="Border">
+                                    <Setter Property="CornerRadius" Value="8"/>
+                                </Style>
+                            </ComboBox.Resources>
+                        </ComboBox>
+                    </StackPanel>
+                </Grid>
+
+                <TextBlock Text="Fecha de Matriculación" Style="{StaticResource FieldLabel}"/>
+                <DatePicker Height="40" Margin="0,0,0,20" x:Name="DpMatriculacion"/>
+
+                <TextBlock Text="Fecha de Inspección" Style="{StaticResource FieldLabel}"/>
+                <DatePicker Height="40" Margin="0,0,0,30" x:Name="DpInspeccion"/>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,20">
+
+                    <Button Content="Añadir Cita" 
+                            Width="180" Height="45" 
+                            Background="#36FF6E" Foreground="#1A222B"
+                            Style="{StaticResource RoundButtonStyle}"
+                            Margin="10,0"/>
+
+                    <Button Content="Cancelar" 
+                            Width="180" Height="45" 
+                            Background="#FF63C2" Foreground="White"
+                            Style="{StaticResource RoundButtonStyle}"
+                            Margin="10,0"
+                            IsCancel="True"/>
+
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Window>

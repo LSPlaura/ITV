@@ -56,7 +56,7 @@ public static class Configuracion
     /// </summary>
     public static string StorageFilePath = Path.Combine(StorageFolder, StorageFile + "." + StorageType);
     
-    //BackUp
+    //BackUps
     /// <summary>
     /// 
     /// </summary>

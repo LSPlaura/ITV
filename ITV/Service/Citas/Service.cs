@@ -110,14 +110,14 @@ public class ServiceVehiculos (
     //Funciones buckup service
     public Result<string, DomainError> GuardarBuckUp()
     {
-        _logger.Information("Generando copia de seguridad (BackUp)");
+        _logger.Information("Generando copia de seguridad (BackUps)");
         return backUpService.Guardar(repositorio.GetAll())
             .Tap(l =>  _logger.Information("Copia de seguridad guardada en: {Path}", l));
     }
 
     public Result<int, DomainError> RestaurarBuckUp(string path)
     {
-        _logger.Information("Restaurando sistema desde BackUp: {Path}", path);
+        _logger.Information("Restaurando sistema desde BackUps: {Path}", path);
         return backUpService.Restuarar(path).Tap(_ => repositorio.DeleteAll()).Bind(AgregarColeccion)
             .Tap(l => _logger.Information("Restauración completada satisfactoriamente. Total: {Count}", l));
     }
