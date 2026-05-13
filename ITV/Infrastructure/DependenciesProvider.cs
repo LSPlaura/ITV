@@ -76,7 +76,8 @@ public static class DependenciesProvider
             sp.GetRequiredService<IExport<Cita>>(),
             sp.GetRequiredService<IStorage<Cita>>(),
             sp.GetRequiredService<ICache<int, Cita>>(),
-            sp.GetRequiredService<IValidate<Cita>>()
+            sp.GetRequiredService<IValidate<Cita>>(),
+            Configuracion.ToSeed
         ));
     }
     

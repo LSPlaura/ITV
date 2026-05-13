@@ -18,10 +18,22 @@ public class ServiceVehiculos (
     IExport<Cita> exportService,
     IStorage<Cita> storage,
     ICache<int, Cita> cache,
-    IValidate<Cita> validador) : IService<int, Cita>
+    IValidate<Cita> validador
+    ) : IService<int, Cita>
+
 {
     private readonly ILogger _logger = Log.ForContext<ServiceVehiculos>();
     private readonly int _limiteVehciulos = 3;
+    
+    public ServiceVehiculos(
+            IRepositorioVehiculos repositorio,
+            IBackUpService<Cita> backUpService,
+            IExport<Cita> exportService,
+            IStorage<Cita> storage,
+            ICache<int, Cita> cache,
+            IValidate<Cita> validador,
+            bool seed
+        ) : this(repositorio, backUpService, exportService, storage, cache, validador) { if (seed)  Seed(); }
     
     //Funciones Crud
     public Result<Cita, DomainError> Agregar(Cita item)
@@ -146,6 +158,33 @@ public class ServiceVehiculos (
     {
         return repositorio.BuscarId(key)
             .Bind(c => exportService.ExportPdf(c));
+    }
+
+    /// <summary>
+    /// Siembra el repositorio si no hay datos ya en este.
+    /// <remarks>
+    /// Este método verifica la existencia previa de datos para evitar duplicidad. 
+    /// Utiliza un enfoque de <b>integridad atómica</b>: si falla la inserción de cualquier registro 
+    /// de prueba, se revierte el estado del repositorio y se aborta la ejecución para prevenir 
+    /// un estado inconsistente en el entorno de demostración.
+    /// </remarks>
+    /// </summary>
+    private void Seed()
+    {
+        if (repositorio.GetAll().Any()) return;
+        var lista = Factories.FactoryCitas.Seed();
+        foreach (var cita in lista)
+        {
+            var agregado = Agregar(cita);
+            if (agregado.IsFailure)
+            {
+                _logger.Error("Error en el sembrado de datos");
+                repositorio.DeleteAll();
+                _logger.Warning("Formateando el repositorio, datos eliminados");
+                _logger.Information("Saliendo del sembrado inicial");
+                return;
+            }
+        }
     }
     
     /// <summary>

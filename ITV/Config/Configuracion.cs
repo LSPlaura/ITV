@@ -23,6 +23,11 @@ public static class Configuracion
     /// El tipo de borrado preestablecido
     /// </summary>
     public static bool DeleteType = Config.GetValue<bool>("Service:isLogical");
+    
+    /// <summary>
+    /// Flag para sembrar datos
+    /// </summary>
+    public static bool ToSeed = Config.GetValue<bool>("Service:seed");
 
     //Repositorio
     /// <summary>
