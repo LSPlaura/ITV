@@ -1,143 +1,418 @@
 <Page x:Class="ITV.Views.Citas.Citas"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:local="clr-namespace:ITV.Views.Citas"
-      mc:Ignorable="d" 
       Title="Citas"
-      Background="#FBFBFB"
-      TextOptions.TextFormattingMode="Display"
-      TextOptions.TextRenderingMode="ClearType"
-      UseLayoutRounding="True">
+      Background="#F0F2F2">
 
     <Page.Resources>
-        <Style x:Key="AddButtonStyle" TargetType="Button">
-            <Setter Property="Background" Value="#0078D4"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="Height" Value="50"/>
-            <Setter Property="MinWidth" Value="115"/>
-            <Setter Property="Padding" Value="40,0"/> <Setter Property="FontSize" Value="15"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Cursor" Value="Hand"/>
+        <!-- INPUTS HD: Bordes suaves y foco en Rosa -->
+        <Style TargetType="TextBox">
+            <Setter Property="Height" Value="38"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="12,0"/>
+            <Setter Property="BorderBrush" Value="#D1D5DB"/>
+            <Setter Property="Background" Value="White"/>
             <Setter Property="Template">
                 <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="12">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border x:Name="border" CornerRadius="8" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1">
+                            <ScrollViewer x:Name="PART_ContentHost"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="#005A9E"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="#7D8A8A"/>
+                            </Trigger>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="#FF63C2"/>
+                                <Setter TargetName="border" Property="BorderThickness" Value="1.5"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <!-- COMBOBOX HD -->
+        <Style TargetType="ComboBox">
+            <Setter Property="Height" Value="38"/>
+            <Setter Property="Padding" Value="12,0"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#D1D5DB"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Border x:Name="border" CornerRadius="8" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                            <StackPanel Orientation="Horizontal" Margin="12,0">
+                                <ContentPresenter Content="{TemplateBinding SelectionBoxItem}" VerticalAlignment="Center"/>
+                                <Path Data="M 0 0 L 4 4 L 8 0 Z" Fill="#7D8A8A" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="#7D8A8A"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+      <!-- DATEPICKER HD -->
+<Style TargetType="DatePicker">
+    <Setter Property="Height" Value="38"/>
+    <Setter Property="Padding" Value="12,0"/>
+    <Setter Property="Background" Value="White"/>
+    <Setter Property="BorderBrush" Value="#D1D5DB"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="Template">
+        <Setter.Value>
+            <ControlTemplate TargetType="DatePicker">
+                <Grid>
+                    <Border x:Name="border" CornerRadius="8" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <DatePickerTextBox x:Name="PART_TextBox" Grid.Column="0" Padding="12,0" VerticalContentAlignment="Center" Foreground="#3A4242" Background="Transparent" BorderThickness="0"/>
+                            <Button x:Name="PART_Button" Grid.Column="1" Width="35" Background="Transparent" BorderThickness="0" Foreground="#7D8A8A" FontSize="12" Content="📅" Cursor="Hand"/>
+                        </Grid>
+                    </Border>
+                    <Popup x:Name="PART_Popup" PlacementTarget="{Binding ElementName=border}" IsOpen="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" AllowsTransparency="True" Placement="Bottom">
+                        <Border Background="White" BorderBrush="#D1D5DB" BorderThickness="1" CornerRadius="8" Padding="10">
+                            <Calendar x:Name="PART_Calendar" Foreground="#3A4242"/>
+                        </Border>
+                    </Popup>
+                </Grid>
+                <ControlTemplate.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter TargetName="border" Property="BorderBrush" Value="#7D8A8A"/>
+                    </Trigger>
+                    <Trigger Property="IsFocused" Value="True">
+                        <Setter TargetName="border" Property="BorderBrush" Value="#FF63C2"/>
+                        <Setter TargetName="border" Property="BorderThickness" Value="1.5"/>
+                    </Trigger>
+                </ControlTemplate.Triggers>
+            </ControlTemplate>
+        </Setter.Value>
+    </Setter>
+</Style>
+
+        <!-- BOTÓN PRIMARIO HD (Nueva Cita) -->
+        <Style x:Key="PrimaryButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#7D8A8A"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="25,12"/>
+            <Setter Property="FontWeight" Value="Black"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="10" Padding="{TemplateBinding Padding}">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="8" ShadowDepth="2" Opacity="0.15" Color="#7D8A8A"/>
+                            </Border.Effect>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#FF63C2"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="RenderTransform">
+                                    <Setter.Value>
+                                        <ScaleTransform ScaleX="0.95" ScaleY="0.95"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- BOTÓN SECUNDARIO (Limpiar filtros) -->
+        <Style x:Key="SecondaryButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#7D8A8A"/>
+            <Setter Property="BorderBrush" Value="#7D8A8A"/>
+            <Setter Property="BorderThickness" Value="1.5"/>
+            <Setter Property="Padding" Value="20,8"/>
+            <Setter Property="FontWeight" Value="Black"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="8" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#F0F2F2"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="#FF63C2"/>
+                                <Setter Property="Foreground" Value="#FF63C2"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ETIQUETAS HD -->
+        <Style x:Key="LabelHD" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="ExtraBold"/>
+            <Setter Property="Foreground" Value="#3A4242"/>
+            <Setter Property="Opacity" Value="0.6"/>
+            <Setter Property="Margin" Value="0,0,0,6"/>
+            <Setter Property="TextAlignment" Value="Center"/>
+        </Style>
     </Page.Resources>
 
-    <Grid>
+    <Grid Margin="35">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/> <RowDefinition Height="*"/>    </Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0" Margin="30,40,30,30" HorizontalAlignment="Center">
-            
-            <TextBlock Text="Gestión de Citas"
-                       FontSize="32" 
-                       FontWeight="Bold"
-                       Foreground="#1A1C1E"
-                       HorizontalAlignment="Center"
-                       Margin="0,0,0,20"/>
-
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                
-                <Border Background="White" 
-                        BorderBrush="#DCDFE3" 
-                        BorderThickness="1" 
-                        CornerRadius="12" 
-                        Width="550" 
-                        Height="50">
+        <!-- 1. HEADER HD -->
+        <!-- 1. HEADER HD -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,25" VerticalAlignment="Center">
+            <StackPanel VerticalAlignment="Center">
+                <TextBlock Text="GESTIÓN DE CITAS" FontSize="28" FontWeight="Black" Foreground="#3A4242"/>
+                <Border Height="3" Width="50" Background="#FF63C2" HorizontalAlignment="Left" Margin="2,6,0,0" CornerRadius="2">
                     <Border.Effect>
-                        <DropShadowEffect BlurRadius="15" ShadowDepth="2" Opacity="0.03"/>
+                        <DropShadowEffect BlurRadius="10" Color="#FF63C2" Opacity="0.4" ShadowDepth="0"/>
                     </Border.Effect>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="50"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="🔍" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#95A5A6" FontSize="18"/>
-                        <TextBox Grid.Column="1" 
-                                 BorderThickness="0" 
-                                 Background="Transparent" 
-                                 VerticalContentAlignment="Center" 
-                                 Margin="5,0,20,0"
-                                 FontSize="16"
-                                 Foreground="#2C3E50"
-                                 x:Name="TxtBuscar"/>
-                    </Grid>
                 </Border>
-
-                <Button Content="✚ Nueva Cita" 
-                        Style="{StaticResource AddButtonStyle}" 
-                        Margin="15,0,0,0"
-                        Click="Formulario_Click">
-                    <Button.Effect>
-                        <DropShadowEffect BlurRadius="15" ShadowDepth="4" Opacity="0.1"/>
-                    </Button.Effect>
-                </Button>
-                
             </StackPanel>
+
+            <Button Style="{StaticResource PrimaryButtonStyle}" VerticalAlignment="Center" Margin="30,0,0,0" Padding="20,8">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="" FontFamily="Segoe MDL2 Assets" FontSize="12" Foreground="#36FF6E" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                    <TextBlock Text="NUEVA CITA" VerticalAlignment="Center" FontSize="11"/>
+                </StackPanel>
+            </Button>
         </StackPanel>
 
-        <Border Grid.Row="1" 
-                Margin="30,0,30,30" 
-                Background="White" 
-                CornerRadius="15" 
-                BorderBrush="#E0E0E0" 
-                BorderThickness="1">
+        <!-- 2. FILTROS HD -->
+        <Border Grid.Row="1" Background="White" CornerRadius="15" Padding="20" Margin="0,0,0,20">
             <Border.Effect>
-                <DropShadowEffect BlurRadius="30" ShadowDepth="4" Opacity="0.05"/>
+                <DropShadowEffect BlurRadius="30" ShadowDepth="4" Opacity="0.06" Color="Black"/>
             </Border.Effect>
-            
-            <DataGrid x:Name="DgCitas"
-                      AutoGenerateColumns="False"
-                      CanUserAddRows="False"
-                      Background="Transparent"
-                      BorderThickness="0"
-                      HeadersVisibility="Column"
-                      GridLinesVisibility="Horizontal"
-                      HorizontalGridLinesBrush="#F0F2F5"
-                      RowHeight="48"
-                      FontSize="14">
+    
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1.8*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="1.2*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- COLUMNA 1: Datos del Vehículo -->
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="DATOS DEL VEHÍCULO" Style="{StaticResource LabelHD}" Foreground="#7D8A8A" Margin="0,0,0,15" TextDecorations="Underline"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,8,15">
+                            <TextBlock Text="MATRÍCULA" Style="{StaticResource LabelHD}"/>
+                            <TextBox x:Name="TxtMatricula"/>
+                        </StackPanel>
+                        <StackPanel Grid.Row="0" Grid.Column="1" Margin="8,0,0,15">
+                            <TextBlock Text="DNI DUEÑO" Style="{StaticResource LabelHD}"/>
+                            <TextBox x:Name="TxtDni"/>
+                        </StackPanel>
+                        <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,8,0">
+                            <TextBlock Text="MARCA" Style="{StaticResource LabelHD}"/>
+                            <TextBox x:Name="TxtMarca"/>
+                        </StackPanel>
+                        <StackPanel Grid.Row="1" Grid.Column="1" Margin="8,0,0,0">
+                            <TextBlock Text="MODELO" Style="{StaticResource LabelHD}"/>
+                            <TextBox x:Name="TxtModelo"/>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+
+                <!-- SEPARADOR 1 -->
+                <Rectangle Grid.Column="1" Width="1" Fill="#E0E5E5" Margin="15,0"/>
+
+                <!-- COLUMNA 2: Fechas -->
+                <StackPanel Grid.Column="2">
+                    <TextBlock Text="RANGOS DE FECHA" Style="{StaticResource LabelHD}" Foreground="#7D8A8A" Margin="0,0,0,15" TextDecorations="Underline"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,8,12">
+                            <TextBlock Text="MATRIC. (DESDE)" Style="{StaticResource LabelHD}"/>
+                            <DatePicker x:Name="DpMatDesde"/>
+                        </StackPanel>
+                        <StackPanel Grid.Row="0" Grid.Column="1" Margin="8,0,0,12">
+                            <TextBlock Text="MATRIC. (HASTA)" Style="{StaticResource LabelHD}"/>
+                            <DatePicker x:Name="DpMatHasta"/>
+                        </StackPanel>
+                        <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,8,0">
+                            <TextBlock Text="INSPEC. (DESDE)" Style="{StaticResource LabelHD}"/>
+                            <DatePicker x:Name="DpInspDesde"/>
+                        </StackPanel>
+                        <StackPanel Grid.Row="1" Grid.Column="1" Margin="8,0,0,0">
+                            <TextBlock Text="INSPEC. (HASTA)" Style="{StaticResource LabelHD}"/>
+                            <DatePicker x:Name="DpInspHasta"/>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+
+                <!-- SEPARADOR 2 -->
+                <Rectangle Grid.Column="3" Width="1" Fill="#E0E5E5" Margin="15,0"/>
+
+                <!-- COLUMNA 3: Motor -->
+                <StackPanel Grid.Column="4" VerticalAlignment="Center">
+                    <TextBlock Text="MOTOR" Style="{StaticResource LabelHD}" Foreground="#7D8A8A" Margin="0,0,0,15" TextDecorations="Underline"/>
+                    <StackPanel Margin="0,0,0,12">
+                        <TextBlock Text="TIPO DE PROPULSIÓN" Style="{StaticResource LabelHD}"/>
+                        <ComboBox x:Name="CbMotor">
+                            <ComboBoxItem Content="Todos los motores" IsSelected="True"/>
+                            <ComboBoxItem Content="Gasolina"/>
+                            <ComboBoxItem Content="Diésel"/>
+                            <ComboBoxItem Content="Híbrido"/>
+                            <ComboBoxItem Content="Eléctrico"/>
+                        </ComboBox>
+                    </StackPanel>
+                    <Button Content="🔄 LIMPIAR FILTROS" Style="{StaticResource SecondaryButtonStyle}" HorizontalAlignment="Stretch"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+        
+        <!-- 3. TABLA HD CON TODOS LOS DATOS -->
+        <Border Grid.Row="2" Background="White" CornerRadius="15,15,0,0" BorderBrush="#E0E5E5" BorderThickness="1">
+           <DataGrid x:Name="DgCitas" 
+                     ItemsSource="{Binding Lista, Mode=OneWay}"
+                     AutoGenerateColumns="False"
+                     CanUserAddRows="False"
+                     Background="Transparent" 
+                     BorderThickness="0" 
+                     HeadersVisibility="Column" 
+                     GridLinesVisibility="Horizontal" 
+                     HorizontalGridLinesBrush="#F1F5F9" 
+                     RowHeight="55" 
+                     FontSize="13"
+                     CanUserResizeColumns="False" 
+                     CanUserReorderColumns="False">
                 
                 <DataGrid.ColumnHeaderStyle>
                     <Style TargetType="DataGridColumnHeader">
-                        <Setter Property="Background" Value="#F8F9FA"/>
-                        <Setter Property="Foreground" Value="#5C636A"/>
-                        <Setter Property="Padding" Value="15,15"/>
-                        <Setter Property="FontWeight" Value="Bold"/>
-                        <Setter Property="BorderThickness" Value="0,0,0,1"/>
-                        <Setter Property="BorderBrush" Value="#E0E0E0"/>
+                        <Setter Property="Background" Value="#7D8A8A"/>
+                        <Setter Property="Foreground" Value="White"/>
+                        <Setter Property="Padding" Value="16,14"/>
+                        <Setter Property="FontWeight" Value="Black"/>
+                        <Setter Property="FontSize" Value="11"/>
+                        <Setter Property="BorderThickness" Value="0,0,0,3"/>
+                        <Setter Property="BorderBrush" Value="#FF63C2"/>
+                        <Setter Property="VerticalContentAlignment" Value="Center"
+/>
                     </Style>
                 </DataGrid.ColumnHeaderStyle>
 
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Matrícula" Binding="{Binding Matricula}" Width="110" />
-                    <DataGridTextColumn Header="Marca" Binding="{Binding Marca}" Width="0.8*" />
-                    <DataGridTextColumn Header="Modelo" Binding="{Binding Modelo}" Width="0.8*" />
-                    <DataGridTextColumn Header="F. Matriculación" 
-                                        Binding="{Binding FechaMatriculacion, StringFormat=\{0:dd/MM/yyyy HH:mm:ss\}}" 
-                                        Width="1.2*" MinWidth="170"/>
-                    <DataGridTextColumn Header="F. Inspección" 
-                                        Binding="{Binding FechaInspeccion, StringFormat=\{0:dd/MM/yyyy HH:mm:ss\}}" 
-                                        Width="1.2*" MinWidth="170"/>
-                    <DataGridTextColumn Header="Cilindrada" Binding="{Binding Cilindrada}" Width="Auto" />
-                    <DataGridTextColumn Header="Motor" Binding="{Binding Motor}" Width="*" MinWidth="150"/>
-                    <DataGridTextColumn Header="DNI Dueño" Binding="{Binding DniDueño}" Width="120" />
-                </DataGrid.Columns>
-            </DataGrid>
+        <!-- ⚠️ IMPORTANTE: Debes agregar Binding para cada columna -->
+        <DataGridTextColumn Header="MATRÍCULA" 
+                            Binding="{Binding Matricula}"
+                            Width="110">
+            <DataGridTextColumn.ElementStyle>
+                <Style TargetType="TextBlock">
+                    <Setter Property="Foreground" Value="#FF63C2"/>
+                    <Setter Property="FontWeight" Value="Bold"/>
+                    <Setter Property="VerticalAlignment" Value="Center"/>
+                    <Setter Property="Margin" Value="16,0"/>
+                </Style>
+            </DataGridTextColumn.ElementStyle>
+        </DataGridTextColumn>
+
+        <DataGridTextColumn Header="MARCA" 
+                            Binding="{Binding Marca}"
+                            Width="0.9*"/>
+        
+        <DataGridTextColumn Header="MODELO" 
+                            Binding="{Binding Modelo}"
+                            Width="0.9*"/>
+        
+        <DataGridTextColumn Header="F. MATRICULACIÓN" 
+                            Binding="{Binding FechaMatriculacion}"
+                            Width="1.1*" 
+                            MinWidth="160"/>
+        
+        <DataGridTextColumn Header="F. INSPECCIÓN"
+                            Binding="{Binding FechaInspeccion}"
+                            Width="1.1*" 
+                            MinWidth="160"/>
+        
+        <DataGridTextColumn Header="CILINDRADA" 
+                            Binding="{Binding Cilindrada}"
+                            Width="0.8*">
+            <DataGridTextColumn.ElementStyle>
+                <Style TargetType="TextBlock">
+                    <Setter Property="Margin" Value="16,0"/>
+                </Style>
+            </DataGridTextColumn.ElementStyle>
+        </DataGridTextColumn>
+        
+        <DataGridTextColumn Header="MOTOR" 
+                            Binding="{Binding Motor}"
+                            Width="1.1*"/>
+        
+        <DataGridTextColumn Header="DNI DUEÑO" 
+                            Binding="{Binding DniDueño}"
+                            Width="1*"/>
+    </DataGrid.Columns>
+</DataGrid>
+        </Border>
+
+        <!-- 4. PAGINACIÓN HD -->
+        <Border Grid.Row="3" Background="#2A3333" CornerRadius="0,0,15,15" Padding="28,14">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="15" ShadowDepth="2" Opacity="0.1" Color="Black"/>
+            </Border.Effect>
+
+            <Grid>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="MOSTRAR:" VerticalAlignment="Center" Foreground="White" FontSize="11" FontWeight="Black" Opacity="0.7" Margin="0,0,12,0"/>
+                    <ComboBox Width="65" Height="32" Background="#7D8A8A" Foreground="White" BorderThickness="0" SelectedIndex="0">
+                        <ComboBoxItem Content="10"/>
+                        <ComboBoxItem Content="25"/>
+                        <ComboBoxItem Content="50"/>
+                    </ComboBox>
+                    <TextBlock Text="registros por página" VerticalAlignment="Center" Foreground="White" FontSize="11" Opacity="0.7" Margin="12,0,0,0"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <Button Content="◀" FontSize="14" Background="Transparent" Foreground="#36FF6E" Cursor="Hand" Padding="10,5" Margin="0,0,10,0"/>
+                    <Border Background="#7D8A8A" CornerRadius="6" Padding="14,6" Margin="0,0,10,0">
+                        <TextBlock Text="PÁGINA 1" Foreground="White" FontWeight="Black" FontSize="11"/>
+                    </Border>
+                    <Button Content="▶" FontSize="14" Background="Transparent" Foreground="#36FF6E" Cursor="Hand" Padding="10,5"/>
+                </StackPanel>
+            </Grid>
         </Border>
     </Grid>
 </Page>

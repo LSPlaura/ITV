@@ -95,7 +95,7 @@ public class ServiceVehiculos (
             .Tap(_ => cache.Borrar(key));
     }
 
-    public IEnumerable<Cita> GetAll(int pagina = 0, int cantidad = 10)
+    public IEnumerable<Cita> GetAll(int pagina = 0, int cantidad = 20)
     {
         _logger.Debug("Obteniendo listado completo de vehículos");
         return repositorio.GetAll()
@@ -171,6 +171,7 @@ public class ServiceVehiculos (
     /// </summary>
     private void Seed()
     {
+        repositorio.DeleteAll();
         if (repositorio.GetAll().Any()) return;
         var lista = Factories.FactoryCitas.Seed();
         foreach (var cita in lista)
@@ -179,9 +180,6 @@ public class ServiceVehiculos (
             if (agregado.IsFailure)
             {
                 _logger.Error("Error en el sembrado de datos");
-                repositorio.DeleteAll();
-                _logger.Warning("Formateando el repositorio, datos eliminados");
-                _logger.Information("Saliendo del sembrado inicial");
                 return;
             }
         }

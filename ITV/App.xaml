@@ -1,8 +1,7 @@
 ﻿<Application x:Class="ITV.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:ITV"
-             StartupUri="/Views/Main/MainWindow.xaml">
+             xmlns:local="clr-namespace:ITV">
     <Application.Resources>
          
     </Application.Resources>

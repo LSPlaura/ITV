@@ -10,6 +10,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
         <PackageReference Include="CSharpFunctionalExtensions" Version="3.7.0" />
         <PackageReference Include="Dapper" Version="2.1.72" />
         <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.6" />
@@ -30,10 +31,6 @@
         <None Update="appsettings.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="ViewModels\" />
     </ItemGroup>
 
     <ItemGroup>
