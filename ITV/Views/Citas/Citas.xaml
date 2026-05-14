@@ -401,8 +401,10 @@
                      HorizontalGridLinesBrush="#F1F5F9" 
                      RowHeight="55" 
                      FontSize="13"
+                     IsReadOnly="True"
                      CanUserResizeColumns="False" 
-                     CanUserReorderColumns="False">
+                     CanUserReorderColumns="False"
+                     MouseDoubleClick="DgCitas_MouseDoubleClick">
                 
                 <DataGrid.ColumnHeaderStyle>
                     <Style TargetType="DataGridColumnHeader">

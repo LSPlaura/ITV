@@ -78,4 +78,6 @@ public partial class CitaDataGrip : ObservableObject
             Lista = new ObservableCollection<Cita>();
         }
     }
+    
+    
 }

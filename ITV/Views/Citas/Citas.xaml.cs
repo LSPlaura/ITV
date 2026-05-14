@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using ITV.Models;
 using ITV.Service.Citas;
 using ITV.ViewModels;
@@ -14,5 +15,15 @@ public partial class Citas : Page
         InitializeComponent();
         var vm = new CitaDataGrip(App.ServiceProvider.GetRequiredService<IService<int, Cita>>());
         DataContext = vm;
+    }
+    
+    private void DgCitas_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+    {
+        if (DgCitas.SelectedItem is Cita citaSeleccionada)
+        {
+            var vista = new Vista(citaSeleccionada);
+            vista.ShowDialog();
+
+        }
     }
 }

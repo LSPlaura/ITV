@@ -2,15 +2,18 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Detalle de la Cita" 
-        Height="780" Width="600"
+        Height="680" Width="600"
         WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
         Background="#FBFBFB">
 
     <Window.Resources>
         <Style x:Key="FieldLabel" TargetType="TextBlock">
             <Setter Property="FontSize" Value="12"/>
             <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="Foreground" Value="#7D8A8A"/> <Setter Property="Margin" Value="0,0,0,4"/>
+            <Setter Property="Foreground" Value="#7D8A8A"/>
+            <Setter Property="Margin" Value="0,0,0,6"/>
+            <Setter Property="Opacity" Value="0.8"/>
         </Style>
 
         <Style x:Key="ValueDisplay" TargetType="TextBlock">
@@ -44,64 +47,120 @@
     </Window.Resources>
 
     <Grid>
-        <ScrollViewer VerticalScrollBarVisibility="Auto">
-            <StackPanel Margin="40,30" MaxWidth="500" HorizontalAlignment="Center">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
-                <TextBlock Text="Información de la Cita" FontSize="26" FontWeight="Bold" Margin="0,0,0,35" HorizontalAlignment="Center" Foreground="#1A1C1E"/>
+        <!-- HEADER -->
+        <Border Grid.Row="0" Background="#7D8A8A" Height="80" Padding="0">
+            <StackPanel VerticalAlignment="Center">
+                <TextBlock Text="DETALLE DE LA CITA" 
+                           Foreground="White" 
+                           FontSize="24" 
+                           FontWeight="ExtraBold" 
+                           HorizontalAlignment="Center"/>
+                <Border Height="3" Width="40" Background="#FF63C2" Margin="0,8,0,0" CornerRadius="1.5" HorizontalAlignment="Center">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="10" ShadowDepth="0" Color="#FF63C2" Opacity="0.8"/>
+                    </Border.Effect>
+                </Border>
+            </StackPanel>
+        </Border>
 
-                <TextBlock Text="MATRÍCULA" Style="{StaticResource FieldLabel}"/>
-                <TextBlock x:Name="LblMatricula" Text="1234-BBB" Style="{StaticResource ValueDisplay}"/>
+        <!-- CONTENIDO -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="0">
+            <StackPanel Margin="40,25,40,25" MaxWidth="500" HorizontalAlignment="Center">
 
-                <TextBlock Text="MARCA" Style="{StaticResource FieldLabel}"/>
-                <TextBlock x:Name="LblMarca" Text="Toyota" Style="{StaticResource ValueDisplay}"/>
-
-                <TextBlock Text="MODELO" Style="{StaticResource FieldLabel}"/>
-                <TextBlock x:Name="LblModelo" Text="Corolla Hybrid" Style="{StaticResource ValueDisplay}"/>
-
-                <TextBlock Text="DNI DEL DUEÑO" Style="{StaticResource FieldLabel}"/>
-                <TextBlock x:Name="LblDni" Text="12345678Z" Style="{StaticResource ValueDisplay}"/>
-
-                <Grid>
+                <!-- GRID DE DATOS 2 COLUMNAS -->
+                <Grid Margin="0,0,0,25">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="20"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
 
-                    <StackPanel Grid.Column="0">
-                        <TextBlock Text="CILINDRADA (CC)" Style="{StaticResource FieldLabel}"/>
-                        <TextBlock x:Name="LblCilindrada" Text="1800" Style="{StaticResource ValueDisplay}"/>
+                    <!-- MATRÍCULA (Ocupa 2 columnas) -->
+                    <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,0,20">
+                        <TextBlock Text="MATRÍCULA" Style="{StaticResource FieldLabel}"/>
+                        <TextBlock Text="{Binding Cita.Matricula}" Style="{StaticResource ValueDisplay}" Foreground="#FF63C2" FontWeight="Bold" FontSize="17"/>
                     </StackPanel>
 
-                    <StackPanel Grid.Column="2">
+                    <!-- MARCA -->
+                    <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,12,0">
+                        <TextBlock Text="MARCA" Style="{StaticResource FieldLabel}"/>
+                        <TextBlock Text="{Binding Cita.Marca}" Style="{StaticResource ValueDisplay}"/>
+                    </StackPanel>
+
+                    <!-- MODELO -->
+                    <StackPanel Grid.Row="1" Grid.Column="1" Margin="12,0,0,0">
+                        <TextBlock Text="MODELO" Style="{StaticResource FieldLabel}"/>
+                        <TextBlock Text="{Binding Cita.Modelo}" Style="{StaticResource ValueDisplay}"/>
+                    </StackPanel>
+
+                    <!-- CILINDRADA -->
+                    <StackPanel Grid.Row="2" Grid.Column="0" Margin="0,0,12,0">
+                        <TextBlock Text="CILINDRADA (CC)" Style="{StaticResource FieldLabel}"/>
+                        <TextBlock Text="{Binding Cita.Cilindrada}" Style="{StaticResource ValueDisplay}"/>
+                    </StackPanel>
+
+                    <!-- MOTOR -->
+                    <StackPanel Grid.Row="2" Grid.Column="1" Margin="12,0,0,0">
                         <TextBlock Text="TIPO DE MOTOR" Style="{StaticResource FieldLabel}"/>
-                        <TextBlock x:Name="LblMotor" Text="Híbrido" Style="{StaticResource ValueDisplay}"/>
+                        <TextBlock Text="{Binding Cita.Motor}" Style="{StaticResource ValueDisplay}"/>
+                    </StackPanel>
+
+                    <!-- DNI (Ocupa 2 columnas) -->
+                    <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2">
+                        <TextBlock Text="DNI DEL DUEÑO" Style="{StaticResource FieldLabel}"/>
+                        <TextBlock Text="{Binding Cita.DniDueño}" Style="{StaticResource ValueDisplay}"/>
                     </StackPanel>
                 </Grid>
 
-                <TextBlock Text="FECHA DE MATRICULACIÓN" Style="{StaticResource FieldLabel}"/>
-                <TextBlock x:Name="LblFechaMatriculacion" Text="15/05/2021" Style="{StaticResource ValueDisplay}"/>
+                <!-- FECHAS EN 2 COLUMNAS -->
+                <Grid Margin="0,0,0,25">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
 
-                <TextBlock Text="FECHA DE INSPECCIÓN" Style="{StaticResource FieldLabel}"/>
-                <TextBlock x:Name="LblFechaInspeccion" Text="22/06/2026 10:30" Style="{StaticResource ValueDisplay}" FontWeight="SemiBold" Foreground="#116E6B"/>
+                    <!-- FECHA MATRICULACIÓN -->
+                    <StackPanel Grid.Column="0" Margin="0,0,12,0">
+                        <TextBlock Text="FECHA DE MATRICULACIÓN" Style="{StaticResource FieldLabel}"/>
+                        <TextBlock Text="{Binding Cita.FechaMatriculacion, StringFormat='dd/MM/yyyy'}" Style="{StaticResource ValueDisplay}"/>
+                    </StackPanel>
 
-                <Border Height="1" Background="#E0E5E5" Margin="0,10,0,30"/>
+                    <!-- FECHA INSPECCIÓN -->
+                    <StackPanel Grid.Column="1" Margin="12,0,0,0">
+                        <TextBlock Text="FECHA DE INSPECCIÓN" Style="{StaticResource FieldLabel}"/>
+                        <TextBlock Text="{Binding Cita.FechaInspeccion, StringFormat='dd/MM/yyyy HH:mm'}" Style="{StaticResource ValueDisplay}" FontWeight="SemiBold" Foreground="#116E6B"/>
+                    </StackPanel>
+                </Grid>
 
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <!-- SEPARADOR -->
+                <Border Height="1" Background="#E0E5E5" Margin="0,10,0,25"/>
 
+                <!-- BOTONES -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,0">
                     <Button Content="EDITAR" 
                             Background="#36FF6E" Foreground="#1A222B"
                             Style="{StaticResource ActionButtonStyle}"
-                            Click="Edicion_Click"/>
+                            Command="{Binding EditarCommand}"/>
 
                     <Button Content="BORRAR" 
-                                                                                   Background="#FF63C2" Foreground="White"
-                                                                                   Style="{StaticResource ActionButtonStyle}"/>
+                            Background="#FF63C2" Foreground="White"
+                            Style="{StaticResource ActionButtonStyle}"
+                            Command="{Binding BorrarCommand}"/>
 
                     <Button Content="EXPORTAR" 
                             Background="#7D8A8A" Foreground="White"
-                            Style="{StaticResource ActionButtonStyle}"/>
-
+                            Style="{StaticResource ActionButtonStyle}"
+                            Command="{Binding ExportarCommand}"/>
                 </StackPanel>
             </StackPanel>
         </ScrollViewer>
