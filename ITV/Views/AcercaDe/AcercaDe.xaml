@@ -5,74 +5,66 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         Title="Acerca de ITV System" 
-        Height="400" Width="500"
+        Height="475" Width="500"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
-        Background="#FBFBFB"
-        WindowStyle="None"
-        AllowsTransparency="True">
+        Background="#FBFBFB">
 
-    <Window.Effect>
-        <DropShadowEffect BlurRadius="15" Direction="270" Opacity="0.2" ShadowDepth="2"/>
-    </Window.Effect>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
-    <Border CornerRadius="20" Background="#FBFBFB" BorderBrush="#E0E5E5" BorderThickness="1">
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/> <RowDefinition Height="*"/>    <RowDefinition Height="Auto"/> </Grid.RowDefinitions>
-
-            <Border Grid.Row="0" Background="#7D8A8A" CornerRadius="20,20,0,0" Height="100">
-                <StackPanel VerticalAlignment="Center">
-                    <TextBlock Text="ITV SYSTEM" 
-                               Foreground="White" 
-                               FontSize="28" 
-                               FontWeight="ExtraBold" 
-                               HorizontalAlignment="Center"/>
-                    <Border Height="3" Width="40" Background="#FF63C2" Margin="0,8,0,0" CornerRadius="1.5">
-                        <Border.Effect>
-                            <DropShadowEffect BlurRadius="10" ShadowDepth="0" Color="#FF63C2" Opacity="0.8"/>
-                        </Border.Effect>
-                    </Border>
-                </StackPanel>
-            </Border>
-
-            <StackPanel Grid.Row="1" Margin="30,20,30,20" HorizontalAlignment="Center">
-                <TextBlock Text="Sistema de Gestión de Inspecciones" 
-                           FontSize="16" FontWeight="SemiBold" 
-                           Foreground="#3A4242" HorizontalAlignment="Center"/>
-                
-                <TextBlock Text="v 1.0.4" 
-                           FontSize="14" FontWeight="Bold" 
-                           Foreground="#36FF6E" HorizontalAlignment="Center" Margin="0,5,0,20"/>
-
-                <Separator Background="#E0E5E5" Margin="0,0,0,20"/>
-
-                <TextBlock Text="Desarrollado por:" FontSize="12" Foreground="#7D8A8A" HorizontalAlignment="Center"/>
-                <TextBlock Text="Tu Nombre o Empresa" FontSize="15" FontWeight="Bold" Foreground="#1A1C1E" HorizontalAlignment="Center" Margin="0,5"/>
-                
-                <TextBlock Text="© 2026 Todos los derechos reservados" 
-                           FontSize="11" Foreground="#A0AAB4" 
-                           HorizontalAlignment="Center" Margin="0,20,0,0"/>
+        <!-- HEADER -->
+        <Border Grid.Row="0" Background="#7D8A8A" Height="100">
+            <StackPanel VerticalAlignment="Center">
+                <TextBlock Text="ITV SYSTEM" 
+                           Foreground="White" 
+                           FontSize="28" 
+                           FontWeight="ExtraBold" 
+                           HorizontalAlignment="Center"/>
+                <Border Height="3" Width="40" Background="#FF63C2" Margin="0,8,0,0" CornerRadius="1.5" HorizontalAlignment="Center">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="10" ShadowDepth="0" Color="#FF63C2" Opacity="0.8"/>
+                    </Border.Effect>
+                </Border>
             </StackPanel>
+        </Border>
 
-            <Button Grid.Row="2" 
-                    Content="CERRAR" 
-                    Width="120" Height="35" 
-                    Margin="0,0,0,25"
-                    Background="#7D8A8A" Foreground="White"
-                    FontWeight="Bold" Cursor="Hand"
-                    Click="Cerrar_Click">
-                <Button.Resources>
-                    <Style TargetType="Border">
-                        <Setter Property="CornerRadius" Value="17"/>
-                    </Style>
-                </Button.Resources>
+        <!-- CONTENIDO + BOTÓN -->
+        <StackPanel Grid.Row="1" Margin="30,30,30,30" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <TextBlock Text="Sistema de Gestión de Inspecciones" 
+                       FontSize="16" FontWeight="SemiBold" 
+                       Foreground="#3A4242" HorizontalAlignment="Center"/>
+            
+            <TextBlock Text="v 1.0.4" 
+                       FontSize="14" FontWeight="Bold" 
+                       Foreground="#36FF6E" HorizontalAlignment="Center" Margin="0,5,0,20"/>
+
+            <Separator Background="#E0E5E5" Margin="0,0,0,20"/>
+
+            <TextBlock Text="Desarrollado por:" FontSize="12" Foreground="#7D8A8A" HorizontalAlignment="Center"/>
+            <TextBlock Text="Tu Nombre o Empresa" FontSize="15" FontWeight="Bold" Foreground="#1A1C1E" HorizontalAlignment="Center" Margin="0,5,0,30"/>
+            
+            <TextBlock Text="© 2026 Todos los derechos reservados" 
+                       FontSize="11" Foreground="#A0AAB4" 
+                       HorizontalAlignment="Center" Margin="0,0,0,30"/>
+
+            <Button Content="CERRAR" 
+                    Width="120" Height="35"
+                    Background="#7D8A8A" 
+                    Foreground="White"
+                    FontWeight="Bold" 
+                    Cursor="Hand"
+                    Click="Cerrar_Click"
+                    HorizontalAlignment="Center">
                 <Button.Style>
                     <Style TargetType="Button">
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="Button">
-                                    <Border Background="{TemplateBinding Background}" CornerRadius="17">
+                                    <Border Background="{TemplateBinding Background}" CornerRadius="8">
                                         <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                     </Border>
                                 </ControlTemplate>
@@ -86,6 +78,6 @@
                     </Style>
                 </Button.Style>
             </Button>
-        </Grid>
-    </Border>
+        </StackPanel>
+    </Grid>
 </Window>
