@@ -9,6 +9,7 @@ using ITV.Storage.Common;
 using ITV.Utils;
 using ITV.Validador;
 using Serilog;
+using SQLitePCL;
 
 namespace ITV.Service.Citas;
 

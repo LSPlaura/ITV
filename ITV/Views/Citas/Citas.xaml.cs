@@ -13,17 +13,16 @@ public partial class Citas : Page
     public Citas()
     {
         InitializeComponent();
-        var vm = new CitaDataGrip(App.ServiceProvider.GetRequiredService<IService<int, Cita>>());
+        var vm = new CitaDashboardModel(App.ServiceProvider.GetRequiredService<IService<int, Cita>>());
         DataContext = vm;
     }
     
-    private void DgCitas_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-    {
-        if (DgCitas.SelectedItem is Cita citaSeleccionada)
-        {
-            var vista = new Vista(citaSeleccionada);
-            vista.ShowDialog();
-
-        }
-    }
+    // private void DgCitas_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+    // {
+    //     if (DgCitas.SelectedItem is Cita citaSeleccionada)
+    //     {
+    //         var vista = new Vista(citaSeleccionada);
+    //         vista.ShowDialog();
+    //     }
+    // }
 }

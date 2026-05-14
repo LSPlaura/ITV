@@ -3,22 +3,34 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ITV.Models;
 using ITV.Service.Citas;
+using ITV.Views.Citas;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Serilog;
 
 namespace ITV.ViewModels;
 
-public partial class CitaDataGrip : ObservableObject
+public partial class CitaDashboardModel : ObservableObject
 {
+    private readonly ILogger _logger = Log.ForContext<CitaVistaModel>();
     private readonly IService<int, Cita> _citasService;
     
     [ObservableProperty] 
     private ObservableCollection<Cita> _lista = new();
+    
+    [ObservableProperty]
+    private Cita? _citaSeleccionada;
+
 
     private List<Cita> _citas => _citasService.GetAll(_contador, TamanoPagina).ToList();
 
     public string NumeroPagina => $"Página {_contador + 1}";
 
     private int _contador = 0;
+    
+    partial void OnCitaSeleccionadaChanged(Cita? value)
+    {
+        if (value != null) Visualizar(value);
+    }
 
     [RelayCommand(CanExecute = nameof(CanPaginaSiguiente))]
     private void PaginaSiguiente()
@@ -46,9 +58,18 @@ public partial class CitaDataGrip : ObservableObject
     [ObservableProperty]
     private int selectedIndex = 0;
     
-    public CitaDataGrip(IService<int, Cita> citasService)
+    public CitaDashboardModel(IService<int, Cita> citasService)
     {
         _citasService = citasService;
+        LoadCitas();
+    }
+
+    private void Visualizar(Cita cita)
+    {
+        _logger.Information("Abriendo vista para cita ID: {Id}", cita.Id);
+        var vista = new Vista(cita);
+        vista.ShowDialog();
+        _logger.Information("Vista cerrada, recargando citas");
         LoadCitas();
     }
 
@@ -71,13 +92,15 @@ public partial class CitaDataGrip : ObservableObject
     {
         try
         {
-            Lista = new ObservableCollection<Cita>(_citas);
+            var citas = _citas.Where(c => !c.IsDeleted).ToList();
+        
+            Lista = new ObservableCollection<Cita>(citas);
+            _logger.Information("Se cargaron {Count} citas", citas.Count);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            _logger.Error(ex, "Error cargando citas");
             Lista = new ObservableCollection<Cita>();
         }
     }
-    
-    
 }

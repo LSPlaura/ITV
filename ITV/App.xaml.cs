@@ -2,6 +2,7 @@
 using System.Data;
 using System.IO;
 using System.Windows;
+using ITV.Config;
 using ITV.Infrastructure;
 using Serilog;
 
@@ -18,7 +19,9 @@ public partial class App : Application
     protected override void OnStartup(StartupEventArgs e) {
         _logger.Information("Iniciando la aplicaión");
         Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
-        
+        Log.Logger = new LoggerConfiguration()
+            .ReadFrom.Configuration(Configuracion.Config)  // ← USA la configuración
+            .CreateLogger();
         ServiceProvider = DependenciesProvider.BuildServiceProvider();
         
         //si me da tiempo
