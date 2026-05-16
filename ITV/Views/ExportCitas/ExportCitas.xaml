@@ -47,7 +47,8 @@
                         FontWeight="Bold" 
                         FontSize="12"
                         Cursor="Hand"
-                        Margin="0,0,20,0">
+                        Margin="0,0,20,0"
+                        Command="{Binding ExportHtmlCommand}">
                     <Button.Style>
                         <Style TargetType="Button">
                             <Setter Property="Template">
@@ -74,7 +75,8 @@
                         Foreground="White"
                         FontWeight="Bold" 
                         FontSize="12"
-                        Cursor="Hand">
+                        Cursor="Hand"
+                        Command="{Binding ExportPdfCommand}">
                     <Button.Style>
                         <Style TargetType="Button">
                             <Setter Property="Template">

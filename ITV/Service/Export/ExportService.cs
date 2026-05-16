@@ -11,90 +11,202 @@ namespace ITV.Service.Export;
 public class ExportService : IExport<Cita>
 {
     private static readonly string _fecha = DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss");
-    private string _file;
     private string _folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
-
-    public ExportService(string file)
-    {
-        _file = file;
-        
-    }
     
-    private string GenerateHtmlContent(Cita item)
-    {
-        return $@"
-            <!DOCTYPE html>
-            <html lang='es'>
-            <head>
-                <meta charset='UTF-8'>
-                <style>
-                    body {{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f5f7f9; display: flex; justify-content: center; padding: 40px; }}
-                    .card {{ background: white; width: 450px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); overflow: hidden; border: 1px solid #e1e8ed; }}
-                    .header {{ background: #2c3e50; color: white; padding: 25px; text-align: center; }}
-                    .header h2 {{ margin: 0; font-size: 1.2rem; letter-spacing: 1px; text-transform: uppercase; }}
-                    .content {{ padding: 30px; }}
-                    .section {{ margin-bottom: 20px; }}
-                    .label {{ font-size: 0.75rem; color: #7f8c8d; text-transform: uppercase; font-weight: bold; margin-bottom: 5px; display: block; }}
-                    .value {{ font-size: 1rem; color: #2c3e50; font-weight: 500; }}
-                    .grid {{ display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }}
-                    .footer {{ background: #fcfcfc; padding: 15px; text-align: center; border-top: 1px dashed #e1e8ed; color: #bdc3c7; font-size: 0.8rem; }}
-                    .badge {{ background: #3498db; color: white; padding: 3px 10px; border-radius: 50px; font-size: 0.8rem; }}
-                    .matricula {{ font-size: 1.5rem; font-weight: bold; color: #2c3e50; border: 2px solid #2c3e50; display: inline-block; padding: 2px 10px; border-radius: 4px; margin-top: 5px; }}
-                </style>
-            </head>
-            <body>
-                <div class='card'>
-                    <div class='header'>
-                        <h2>Comprobante de Cita ITV</h2>
+   private string GenerateHtmlContent(Cita item)
+{
+    return $@"
+        <!DOCTYPE html>
+        <html lang='es'>
+        <head>
+            <meta charset='UTF-8'>
+            <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+            <style>
+                * {{
+                    margin: 0;
+                    padding: 0;
+                    box-sizing: border-box;
+                }}
+
+                body {{ 
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+                    background: white;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    min-height: 100vh;
+                    padding: 20px;
+                }}
+
+                .container {{
+                    width: 100%;
+                    max-width: 600px;
+                    background: #FBFBFB;
+                    border-radius: 8px;
+                    border: solid 1px grey;
+                    overflow: hidden;
+                }}
+
+                .header {{
+                    background: #7D8A8A;
+                    color: white;
+                    padding: 40px 20px;
+                    text-align: center;
+                }}
+
+                .header h1 {{
+                    font-size: 24px;
+                    font-weight: 800;
+                    letter-spacing: 1px;
+                    margin-bottom: 12px;
+                }}
+
+                .accent-line {{
+                    width: 40px;
+                    height: 3px;
+                    background: #FF63C2;
+                    margin: 0 auto;
+                    border-radius: 2px;
+                }}
+
+                .content {{
+                    padding: 40px;
+                }}
+
+                .field-label {{
+                    font-size: 12px;
+                    font-weight: 900;
+                    color: #7D8A8A;
+                    margin-bottom: 6px;
+                    opacity: 0.8;
+                    letter-spacing: 0.5px;
+                    text-transform: uppercase;
+                }}
+
+                .field-value {{
+                    font-size: 15px;
+                    color: #1A1C1E;
+                    margin-bottom: 20px;
+                    padding: 5px 2px;
+                }}
+
+                .matricula-value {{
+                    color: #FF63C2;
+                    font-weight: bold;
+                    font-size: 17px;
+                }}
+
+                .grid-2 {{
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 24px;
+                    margin-bottom: 25px;
+                }}
+
+                .grid-2-full {{
+                    grid-column: 1 / -1;
+                }}
+
+                .section-full {{
+                    margin-bottom: 25px;
+                }}
+
+                .fecha-inspeccion {{
+                    font-weight: 600;
+                    color: #116E6B;
+                }}
+
+                .separator {{
+                    height: 1px;
+                    background: #E0E5E5;
+                    margin: 10px 0 25px 0;
+                }}
+
+                .footer {{
+                    background: #f0f0f0;
+                    padding: 20px;
+                    text-align: center;
+                    border-top: 1px solid #E0E5E5;
+                    color: #7D8A8A;
+                    font-size: 0.85rem;
+                    margin-top: 25px;
+                }}
+            </style>
+        </head>
+        <body>
+            <div class='container'>
+                <!-- HEADER -->
+                <div class='header'>
+                    <h1>DETALLE DE LA CITA</h1>
+                    <div class='accent-line'></div>
+                </div>
+
+                <!-- CONTENT -->
+                <div class='content'>
+                    <!-- MATRÍCULA -->
+                    <div class='section-full'>
+                        <div class='field-label'>Matrícula</div>
+                        <div class='field-value matricula-value'>{item.Matricula}</div>
                     </div>
-                    <div class='content'>
-                        <div class='section' style='text-align: center;'>
-                            <span class='label'>Matrícula</span>
-                            <div class='matricula'>{item.Matricula}</div>
+
+                    <!-- GRID 2 COLUMNAS: MARCA Y MODELO -->
+                    <div class='grid-2'>
+                        <div>
+                            <div class='field-label'>Marca</div>
+                            <div class='field-value'>{item.Marca}</div>
                         </div>
-
-                        <hr style='border: 0; border-top: 1px solid #eee; margin: 20px 0;'>
-
-                        <div class='grid'>
-                            <div class='section'>
-                                <span class='label'>Vehículo</span>
-                                <div class='value'>{item.Marca}</div>
-                                <div class='value' style='color: #7f8c8d;'>{item.Modelo}</div>
-                            </div>
-                            <div class='section'>
-                                <span class='label'>Motor / Cilindrada</span>
-                                <div class='value'><span class='badge'>{item.Motor}</span></div>
-                                <div class='value' style='margin-top:5px'>{item.Cilindrada} cc</div>
-                            </div>
-                        </div>
-
-                        <div class='grid'>
-                            <div class='section'>
-                                <span class='label'>Fecha Inspección</span>
-                                <div class='value'>{item.FechaInspeccion:dd/MM/yyyy}</div>
-                            </div>
-                            <div class='section'>
-                                <span class='label'>DNI Propietario</span>
-                                <div class='value'>{item.DniDueño}</div>
-                            </div>
-                        </div>
-
-                        <div class='section'>
-                            <span class='label'>Fecha Matriculación</span>
-                            <div class='value'>{item.FechaMatriculacion:dd/MM/yyyy}</div>
+                        <div>
+                            <div class='field-label'>Modelo</div>
+                            <div class='field-value'>{item.Modelo}</div>
                         </div>
                     </div>
+
+                    <!-- GRID 2 COLUMNAS: CILINDRADA Y MOTOR -->
+                    <div class='grid-2'>
+                        <div>
+                            <div class='field-label'>Cilindrada (cc)</div>
+                            <div class='field-value'>{item.Cilindrada}</div>
+                        </div>
+                        <div>
+                            <div class='field-label'>Tipo de Motor</div>
+                            <div class='field-value'>{item.Motor}</div>
+                        </div>
+                    </div>
+
+                    <!-- DNI DEL DUEÑO -->
+                    <div class='section-full'>
+                        <div class='field-label'>DNI del Dueño</div>
+                        <div class='field-value'>{item.DniDueño}</div>
+                    </div>
+
+                    <!-- GRID 2 COLUMNAS: FECHAS -->
+                    <div class='grid-2'>
+                        <div>
+                            <div class='field-label'>Fecha de Matriculación</div>
+                            <div class='field-value'>{item.FechaMatriculacion:dd/MM/yyyy}</div>
+                        </div>
+                        <div>
+                            <div class='field-label'>Fecha de Inspección</div>
+                            <div class='field-value fecha-inspeccion'>{item.FechaInspeccion:dd/MM/yyyy HH:mm}</div>
+                        </div>
+                    </div>
+
+                    <!-- SEPARADOR -->
+                    <div class='separator'></div>
+                    <!-- FOOTER -->
                     <div class='footer'>
-                        Generado el {DateTime.Now:dd/MM/yyyy HH:mm}
+                        ✓ Generado el {DateTime.Now:dd/MM/yyyy HH:mm:ss}
                     </div>
                 </div>
-            </body>
-            </html>";
-    }
-    
+            </div>
+        </body>
+        </html>";
+}
         public Result<string, DomainError> ExportHtml(Cita item)
         {
-            var path = Path.Combine(_folder, _file + $"_{_fecha}" + ".html");
+            var fechaFormato = item.FechaInspeccion.ToString("dd-MM-yyyy-HHmm");
+            var file = $"{item.Matricula}_{fechaFormato}_{_fecha}.html";
+            var path = Path.Combine(_folder, file);
             try
             {
                 var html = GenerateHtmlContent(item);
@@ -109,7 +221,9 @@ public class ExportService : IExport<Cita>
 
         public Result<string, DomainError> ExportPdf(Cita item)
         {
-            var path = Path.Combine(_folder, _file + $"_{_fecha}" + ".pdf");
+            var fechaFormato = item.FechaInspeccion.ToString("dd-MM-yyyy-HHmm");
+            var file = $"{item.Matricula}_{fechaFormato}_{_fecha}.pdf";
+            var path = Path.Combine(_folder, file);
             try
             {
                 var html = GenerateHtmlContent(item);

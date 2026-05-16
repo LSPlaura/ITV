@@ -5,6 +5,7 @@ using ITV.Config;
 using ITV.Models;
 using ITV.Service.Citas;
 using ITV.Views.Citas;
+using ITV.Views.ExportCitas;
 using Serilog;
 
 namespace ITV.ViewModels;
@@ -53,6 +54,7 @@ public partial class CitaVistaModel : ObservableObject
     
     private void Exportar()
     {
-        
+        var exportarVista = new ExportCitas(Cita);
+        exportarVista.ShowDialog();
     }
 }

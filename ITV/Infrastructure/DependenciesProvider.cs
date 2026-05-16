@@ -69,7 +69,7 @@ public static class DependenciesProvider
         services.AddTransient<IBackUpServiceVehiculos, BackupService>(sp => 
             new BackupService(sp.GetRequiredService<IStorage<Cita>>(), Configuracion.BackUpFile, Configuracion.BackUpFolder));
 
-        services.AddTransient<IExport<Cita>, ExportService>(sp => new ExportService(Configuracion.BackUpFile));
+        services.AddTransient<IExport<Cita>, ExportService>(sp => new ExportService());
 
         services.AddTransient<IService<int, Cita>, ServiceVehiculos>(sp => new ServiceVehiculos(
             sp.GetRequiredService<IRepositorioVehiculos>(),
