@@ -2,7 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using ITV.Models;
 using ITV.Service.Citas;
 
-namespace ITV.ViewModels;
+namespace ITV.ViewModels.Citas;
 
 public partial class CitaEdicionModel : ObservableObject
 {

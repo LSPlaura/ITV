@@ -3,6 +3,7 @@ using ITV.Models;
 using ITV.Service;
 using ITV.Service.Export;
 using ITV.ViewModels;
+using ITV.ViewModels.Citas;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ITV.Views.ExportCitas;

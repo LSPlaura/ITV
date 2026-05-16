@@ -12,9 +12,14 @@
 
     <Page.Resources>
         <Style x:Key="ActionButton" TargetType="Button">
-            <Setter Property="Height" Value="40"/> <Setter Property="Padding" Value="30,0"/> <Setter Property="Margin" Value="12,0,0,0"/> <Setter Property="MinWidth" Value="125"/> <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="Padding" Value="30,0"/>
+            <Setter Property="Margin" Value="12,0,0,0"/>
+            <Setter Property="MinWidth" Value="125"/>
+            <Setter Property="Foreground" Value="White"/>
             <Setter Property="FontSize" Value="14"/>
-    <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
@@ -26,7 +31,8 @@
                                 <Setter TargetName="border" Property="Opacity" Value="0.85"/>
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="border" Property="ScaleTransform.ScaleX" Value="0.98"/> </Trigger>
+                                <Setter TargetName="border" Property="ScaleTransform.ScaleX" Value="0.98"/>
+                            </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
@@ -36,89 +42,95 @@
 
     <Grid Margin="25">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/> <RowDefinition Height="*"/>    </Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
-        <DockPanel Grid.Row="0" Margin="0,0,0,20">
-            <StackPanel DockPanel.Dock="Left">
-                <TextBlock Text="Backups" FontSize="28" FontWeight="Bold" Foreground="#111111"/>
-                <TextBlock Text="Gestione sus puntos de restauración" FontSize="13" Foreground="#666666"/>
-            </StackPanel>
+        <!-- HEADER -->
+        <Border Grid.Row="0" Background="#7D8A8A" Height="80" Padding="30,0" Margin="0,0,0,25" CornerRadius="10">
+            <DockPanel VerticalAlignment="Center">
+                <StackPanel DockPanel.Dock="Left" VerticalAlignment="Center">
+                    <TextBlock Text="BACKUPS" FontSize="28" FontWeight="ExtraBold" Foreground="White"/>
+                    <TextBlock Text="Gestione sus puntos de restauración" FontSize="13" Foreground="White" Opacity="0.9"/>
+                </StackPanel>
 
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                <Button Content="✚ Crear Nuevo" 
-                        Style="{StaticResource ActionButton}" 
-                        Background="#0078D4"/>
-                
-                <Button Content="↺ Restaurar" 
-                        Style="{StaticResource ActionButton}" 
-                        Background="#107C10"/>
-                
-                <Button Content="🗑 Borrar" 
-                        Style="{StaticResource ActionButton}" 
-                        Background="#D11A2A"/>
-            </StackPanel>
-        </DockPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <Button Content="✚ CREAR" 
+                            Style="{StaticResource ActionButton}" 
+                            Command="{Binding CrearCommand}"
+                            Background="#36FF6E"
+                            Foreground="#1A222B"/>
+                    
+                    <Button Content="↺ RESTAURAR" 
+                            Style="{StaticResource ActionButton}" 
+                            Command="{Binding RestaurarCommand}"
+                            Background="#FF63C2"
+                            Foreground="White"/>
+                    
+                    <Button Content="🗑 BORRAR" 
+                            Style="{StaticResource ActionButton}"
+                            Command="{Binding BorrarCommand}"
+                            Background="#FF63C2"
+                            Foreground="White"/>
+                </StackPanel>
+            </DockPanel>
+        </Border>
 
-        <ListView Grid.Row="1"
-                  ItemsSource="{Binding RutasImportacion}"
-                  SelectedItem="{Binding RutaSeleccionada}"
-                  HorizontalContentAlignment="Stretch"
-                  BorderThickness="0"
-                  Background="Transparent"
-                  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+        <!-- LIST VIEW CON BORDER -->
+        <Border Grid.Row="1"
+                BorderBrush="#7D8A8A"
+                BorderThickness="2"
+                CornerRadius="10"
+                Padding="0">
+            
+            <ListView ItemsSource="{Binding Rutas}"
+                      SelectedItem="{Binding RutaSeleccionada}"
+                      HorizontalContentAlignment="Stretch"
+                      BorderThickness="0"
+                      Background="Transparent"
+                      ScrollViewer.HorizontalScrollBarVisibility="Disabled">
 
-            <ListView.ItemContainerStyle>
-                <Style TargetType="ListViewItem">
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="ListViewItem">
-                                <ContentPresenter />
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </Style>
-            </ListView.ItemContainerStyle>
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ListViewItem">
+                                    <ContentPresenter />
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ListView.ItemContainerStyle>
 
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <Border x:Name="ItemBorder" 
-                            Padding="16" 
-                            Margin="0,0,0,12" 
-                            Background="White" 
-                            BorderBrush="#E0E0E0" 
-                            BorderThickness="1"
-                            CornerRadius="10">
-                        <Border.Effect>
-                            <DropShadowEffect BlurRadius="10" ShadowDepth="1" Opacity="0.03"/>
-                        </Border.Effect>
-                        
-                        <DockPanel>
-                            <TextBlock Text="📄" Margin="0,0,15,0" VerticalAlignment="Center" FontSize="18"/>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Border x:Name="ItemBorder" 
+                                Padding="20" 
+                                Margin="12,12,12,0" 
+                                Background="White" 
+                                BorderBrush="#7D8A8A" 
+                                BorderThickness="2"
+                                CornerRadius="10">
                             
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                                <Button Content="✚ Crear Nuevo" 
-                                        Style="{StaticResource ActionButton}" 
-                                        Background="#0078D4"/>
-    
-                                <Button Content="↺ Restaurar" 
-                                        Style="{StaticResource ActionButton}" 
-                                        Background="#107C10"/>
-    
-                                <Button Content="🗑 Borrar" 
-                                        Style="{StaticResource ActionButton}" 
-                                        Background="#D11A2A"/>
-                            </StackPanel>
-                        </DockPanel>
-                    </Border>
-                    <DataTemplate.Triggers>
-                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListViewItem}}, Path=IsSelected}" Value="True">
-                            <Setter TargetName="ItemBorder" Property="BorderBrush" Value="#0078D4"/>
-                            <Setter TargetName="ItemBorder" Property="BorderThickness" Value="2"/>
-                            <Setter TargetName="ItemBorder" Property="Background" Value="#F0F7FF"/>
-                        </DataTrigger>
-                    </DataTemplate.Triggers>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+                            <DockPanel>
+                                <TextBlock Text="📋" Margin="0,0,20,0" VerticalAlignment="Center" FontSize="24"/>
+                                
+                                <!-- INFORMACIÓN -->
+                                <StackPanel DockPanel.Dock="Left" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding}" FontSize="16" FontWeight="Bold" Foreground="#1A222B" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </DockPanel>
+                        </Border>
+                        <DataTemplate.Triggers>
+                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListViewItem}}, Path=IsSelected}" Value="True">
+                                <Setter TargetName="ItemBorder" Property="BorderBrush" Value="#FF63C2"/>
+                                <Setter TargetName="ItemBorder" Property="BorderThickness" Value="2"/>
+                                <Setter TargetName="ItemBorder" Property="Background" Value="#FFF5FB"/>
+                            </DataTrigger>
+                        </DataTemplate.Triggers>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Border>
     </Grid>
 </Page>

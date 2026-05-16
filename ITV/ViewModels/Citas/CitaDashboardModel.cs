@@ -4,14 +4,13 @@ using CommunityToolkit.Mvvm.Input;
 using ITV.Models;
 using ITV.Service.Citas;
 using ITV.Views.Citas;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Serilog;
 
-namespace ITV.ViewModels;
+namespace ITV.ViewModels.Citas;
 
 public partial class CitaDashboardModel : ObservableObject
 {
-    private readonly ILogger _logger = Log.ForContext<CitaVistaModel>();
+    private readonly ILogger _logger = Log.ForContext<CitaDashboardModel>();
     private readonly IService<int, Cita> _citasService;
     
     [ObservableProperty] 

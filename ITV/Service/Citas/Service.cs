@@ -17,7 +17,6 @@ public class ServiceVehiculos (
     IRepositorioVehiculos repositorio,
     IBackUpService<Cita> backUpService,
     IExport<Cita> exportService,
-    IStorage<Cita> storage,
     ICache<int, Cita> cache,
     IValidate<Cita> validador
     ) : IService<int, Cita>
@@ -30,11 +29,10 @@ public class ServiceVehiculos (
             IRepositorioVehiculos repositorio,
             IBackUpService<Cita> backUpService,
             IExport<Cita> exportService,
-            IStorage<Cita> storage,
             ICache<int, Cita> cache,
             IValidate<Cita> validador,
             bool seed
-        ) : this(repositorio, backUpService, exportService, storage, cache, validador) { if (seed)  Seed(); }
+        ) : this(repositorio, backUpService, exportService, cache, validador) { if (seed)  Seed(); }
     
     //Funciones Crud
     public Result<Cita, DomainError> Agregar(Cita item)
@@ -105,14 +103,14 @@ public class ServiceVehiculos (
     }
 
     //Funciones Storage
-    public Result<int, DomainError> Importar()
+    public Result<int, DomainError> Importar(IStorage<Cita> storage)
     {
         _logger.Information("Iniciando proceso de importación desde {Ruta}", Configuracion.StorageFilePath);
         return storage.Cargar().Tap(_ => repositorio.DeleteAll()).Bind(AgregarColeccion)
             .Tap(l => _logger.Information("Importación finalizada con éxito. Total: {Count} registros", l));
     }
 
-    public  Result<int, DomainError> Exportar()
+    public  Result<int, DomainError> Exportar(IStorage<Cita> storage)
     {
         _logger.Information("Iniciando exportación de datos a {Ruta}", Configuracion.StorageFilePath);
         var lista = repositorio.GetAll().ToList();
@@ -133,6 +131,12 @@ public class ServiceVehiculos (
         _logger.Information("Restaurando sistema desde BackUps: {Path}", path);
         return backUpService.Restuarar(path).Tap(_ => repositorio.DeleteAll()).Bind(AgregarColeccion)
             .Tap(l => _logger.Information("Restauración completada satisfactoriamente. Total: {Count}", l));
+    }
+
+    public List<string> ListadoBackUps()
+    {
+        _logger.Information("Listando las rutas de todos los BackUps");
+        return backUpService.Listar().ToList();
     }
 
     private Result<int, DomainError> AgregarColeccion(IEnumerable<Cita> coleccion)

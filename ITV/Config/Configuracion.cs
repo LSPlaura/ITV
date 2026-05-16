@@ -51,7 +51,7 @@ public static class Configuracion
     /// <summary>
     /// El nombre del fichero en el que se guardarán los datos
     /// </summary>
-    public static string StorageFile = Config.GetValue<string>("Storage:File") ?? "Vehiculos";
+    public static string StorageFile = Config.GetValue<string>("Storage:File") ?? "Citas";
     /// <summary>
     /// El nombre del directorio que usará <see cref="IStorage"/>
     /// </summary>

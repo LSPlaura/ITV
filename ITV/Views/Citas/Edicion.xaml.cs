@@ -4,6 +4,7 @@ using ITV.Models;
 using ITV.Service.Citas;
 using ITV.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
+using CitaEdicionModel = ITV.ViewModels.Citas.CitaEdicionModel;
 
 namespace ITV.Views.Citas;
 

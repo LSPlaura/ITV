@@ -8,7 +8,7 @@ using ITV.Views.Citas;
 using ITV.Views.ExportCitas;
 using Serilog;
 
-namespace ITV.ViewModels;
+namespace ITV.ViewModels.Citas;
 
 public partial class CitaVistaModel : ObservableObject
 {

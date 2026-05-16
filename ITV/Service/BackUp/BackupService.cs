@@ -8,30 +8,31 @@ using ITV.Models;
 using ITV.Storage.Common;
 using Serilog;
 
-namespace ITV.Service;
+namespace ITV.Service.BackUp;
 
-public class BackupService : IBackUpServiceVehiculos
+public class BackupService : IBackUpServiceCitas
 {
     private readonly ILogger _logger = Log.ForContext<BackupService>();
-    private static readonly string _fecha = DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss");
-    private readonly string _finalFileName;
-    private readonly string _finalFolderName;
+    private readonly string _file;
+    private readonly string _directory;
     private readonly string _tempName = "tempBackup";
     private readonly IStorage<Cita> _storage;
 
     public BackupService(IStorage<Cita> storage, string file, string directory)
     {
-        _finalFileName = _fecha + file + "." + Configuracion.StorageType.ToLower();
-        _finalFolderName = _fecha + directory;
         _storage = storage;
+        _file = file;
+        _directory = directory;
     }
     
 
     public Result<string, DomainError> Guardar(IEnumerable<Cita> lista)
-    {
+    { 
+        string fecha = DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss");
+        var finalFileName = fecha + _file + "." + Configuracion.StorageType.ToLower();
         try
         {
-            Directory.CreateDirectory(_finalFolderName);
+            Directory.CreateDirectory(_directory);
             
             // Directorio temporal
             string tempDirectory = Directory.CreateDirectory(_tempName).FullName;
@@ -40,7 +41,9 @@ public class BackupService : IBackUpServiceVehiculos
             _storage.Salvar(lista);
            
             // Ruta del zip
-            var zipPath = Path.Combine(_finalFolderName, _finalFileName);
+            var zipPath = Path.Combine(_directory, finalFileName);
+            
+            if (File.Exists(zipPath)) File.Delete(zipPath);
             
             _logger.Information("Comprimiendo archivos en: {Path}", zipPath);
             ZipFile.CreateFromDirectory(tempDirectory, zipPath);
@@ -91,12 +94,13 @@ public class BackupService : IBackUpServiceVehiculos
 
     public IEnumerable<string> Listar() 
     {
-        if (!Directory.Exists(_finalFolderName)) 
+        
+        if (!Directory.Exists(_directory)) 
         {
             return Enumerable.Empty<string>();
         }
         
-        var archivos = Directory.GetFiles(_finalFolderName, "*.*") 
+        var archivos = Directory.GetFiles(_directory, "*.*") 
             .OrderByDescending(f => File.GetCreationTime(f))
             .ToList();
 

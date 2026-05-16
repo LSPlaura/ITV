@@ -1,5 +1,13 @@
 using System.Windows;
 using System.Windows.Controls;
+using ITV.Config;
+using ITV.Models;
+using ITV.Service.Citas;
+using ITV.Storage.CSV;
+using ITV.Storage.XML;
+using ITV.ViewModels.Citas;
+using ITV.ViewModels.ExportImport;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ITV.Views.ExportImport;
 
@@ -8,37 +16,10 @@ public partial class ExportImport : Page
     public ExportImport()
     {
         InitializeComponent();
-    }
-
-    private void ExportarXml_Click(object sender, RoutedEventArgs e)
-    {
-        MessageBox.Show("Exportando a XML...");
-        // aquí tu lógica real
-    }
-
-    private void ExportarJson_Click(object sender, RoutedEventArgs e)
-    {
-        MessageBox.Show("Exportando a JSON...");
-    }
-
-    private void ExportarCsv_Click(object sender, RoutedEventArgs e)
-    {
-        MessageBox.Show("Exportando a CSV...");
-    }
-    
-    private void ImportarXml_Click(object sender, RoutedEventArgs e)
-    {
-        MessageBox.Show("Exportando a XML...");
-        // aquí tu lógica real
-    }
-
-    private void ImportarJson_Click(object sender, RoutedEventArgs e)
-    {
-        MessageBox.Show("Exportando a JSON...");
-    }
-
-    private void ImportarCsv_Click(object sender, RoutedEventArgs e)
-    {
-        MessageBox.Show("Exportando a CSV...");
+        DataContext = new ExportImportModel(App.ServiceProvider.GetRequiredService<IService<int, Cita>>(),
+            new StorageCitaCsv(Configuracion.StorageFile, Configuracion.StorageFolder),
+            new StorageCitaJson(Configuracion.StorageFile, Configuracion.StorageFolder),
+            new StorageCitaXml(Configuracion.StorageFile, Configuracion.StorageFolder)
+            );
     }
 }

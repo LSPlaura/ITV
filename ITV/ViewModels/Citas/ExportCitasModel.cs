@@ -2,12 +2,10 @@ using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ITV.Models;
-using ITV.Service;
-using ITV.Service.Citas;
 using ITV.Service.Export;
 using Serilog;
 
-namespace ITV.ViewModels;
+namespace ITV.ViewModels.Citas;
 
 public partial class ExportCitasModel : ObservableObject
 {

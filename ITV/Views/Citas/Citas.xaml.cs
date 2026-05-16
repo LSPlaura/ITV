@@ -5,6 +5,7 @@ using ITV.Models;
 using ITV.Service.Citas;
 using ITV.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
+using CitaDashboardModel = ITV.ViewModels.Citas.CitaDashboardModel;
 
 namespace ITV.Views.Citas;
 
