@@ -5,6 +5,7 @@ using ITV.Error.BuckUp;
 using ITV.Error.Common;
 using ITV.Models;
 using ITV.Service;
+using ITV.Service.BackUp;
 using ITV.Storage.Common;
 
 namespace ITV.Test.Service;
@@ -17,7 +18,7 @@ public class BackUpServiceTests
    {
       private Mock<IStorage<Cita>> _mockStorage = null!;
       private IBackUpService<Cita> _backUpService = null!;
-      private string _file = "VehiculosTest";
+      private string _file = "CitasTest";
       private string _folder = "BackUpTest";
       
       private static readonly DateTime FechaMat = DateTime.Today.AddYears(-1);

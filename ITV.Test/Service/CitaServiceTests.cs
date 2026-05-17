@@ -44,7 +44,6 @@ public class CitaServiceTests
                       _mockRepository.Object,
                       _mockBackUpService.Object,
                       _mockExportService.Object,
-                      _mockStorage.Object,
                       _mockCacheLru.Object,
                       _mockValidador.Object);
         }
@@ -350,7 +349,6 @@ public class CitaServiceTests
                 _mockRepository.Object,
                 _mockBackUpService.Object,
                 _mockExportService.Object,
-                _mockStorage.Object,
                 _mockCacheLru.Object,
                 _mockValidador.Object
             );
