@@ -1,3 +1,4 @@
+using System.Data;
 using System.IO;
 using CSharpFunctionalExtensions;
 using Dapper;
@@ -14,22 +15,14 @@ using Serilog;
 
 namespace ITV.Repository.Ado;
 
-public class AdoRepository : IRepositorioVehiculos
+public class AdoRepository: IRepositorioVehiculos
 {
     private readonly ILogger _logger = Log.ForContext<AdoRepository>();
-    private readonly Func<SqliteConnection> _connectionFactory;
+    private SqliteConnection _connection;
     
-    private SqliteConnection CreateConnection() => _connectionFactory();
-
-    // Backwards-compatible constructor: recibe cadena de conexión
-    public AdoRepository(string connection) : this(() => new SqliteConnection(connection))
+    public AdoRepository(SqliteConnection connection)
     {
-    }
-
-    // Constructor inyectable para tests
-    public AdoRepository(Func<SqliteConnection> connectionFactory)
-    {
-        _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
+        _connection = connection;
         EnsureDirectory();
         CreateTable();
     }
@@ -45,10 +38,10 @@ public class AdoRepository : IRepositorioVehiculos
     private void CreateTable()
     {
         _logger.Debug("Creando la tabla Cita");
-        using var connection = CreateConnection();
-        connection.Open();
+        if (_connection.State != ConnectionState.Open)
+            _connection.Open();
 
-        connection.Execute(@"
+        _connection.Execute(@"
               CREATE TABLE IF NOT EXISTS Cita(
                 Id INTEGER PRIMARY KEY,
                 FechaMatriculacion VARCHAR(100) NOT NULL,
@@ -69,9 +62,7 @@ public class AdoRepository : IRepositorioVehiculos
     public IEnumerable<Cita> GetAll()
     {
         var vehiculos = new List<Cita>();
-        using var connection = CreateConnection();
-        connection.Open();
-        using var command = connection.CreateCommand();
+        using var command = _connection.CreateCommand();
         command.CommandText = "SELECT * FROM Cita";
         using var reader = command.ExecuteReader();
         while(reader.Read()) vehiculos.Add(MapVehiculo(reader).ToModel());
@@ -83,12 +74,8 @@ public class AdoRepository : IRepositorioVehiculos
         try
         {
             var entity = value.ToEntity();
-            
-            using var connection = CreateConnection();
-            connection.Open();
-
             // Primero insert
-            using var insertCmd = connection.CreateCommand();
+            using var insertCmd = _connection.CreateCommand();
             insertCmd.CommandText = @"INSERT INTO Cita(Matricula, Modelo, Marca, Motor, Cilindrada, DniDueno,FechaMatriculacion,FechaInspeccion,CreatedAt,UpdatedAt)
                         VALUES (@Matricula, @Modelo, @Marca, @Motor, @Cilindrada, @DniDueno, @FechaMatriculacion, @FechaInscripcion, @CreatedAt, @UpdatedAt)";
             insertCmd.Parameters.AddWithValue("@Matricula", entity.Matricula);
@@ -104,7 +91,7 @@ public class AdoRepository : IRepositorioVehiculos
             insertCmd.ExecuteNonQuery();
 
             // Luego recuperamos la fila insertada
-            using var selectCmd = connection.CreateCommand();
+            using var selectCmd = _connection.CreateCommand();
             selectCmd.CommandText = "SELECT * FROM Cita WHERE rowid = last_insert_rowid()";
             using var reader = selectCmd.ExecuteReader();
             var vehiculo = reader.Read() ? MapVehiculo(reader) : null;
@@ -131,9 +118,7 @@ public class AdoRepository : IRepositorioVehiculos
             if (encontrado.IsFailure)
                 return encontrado.TapError( l => _logger.Error("No se ha encontrado el vehiculo con el ID {Id} para poder borrarlo", key));
             
-            using var connection = CreateConnection();
-            connection.Open();
-            using var command = connection.CreateCommand();
+            using var command = _connection.CreateCommand();
 
             if (isLogical)
             {
@@ -164,9 +149,8 @@ public class AdoRepository : IRepositorioVehiculos
     {
         try
         {
-            using var connection = CreateConnection();
-            connection.Open();
-            using var command = connection.CreateCommand();
+            _connection.Open();
+            using var command = _connection.CreateCommand();
             command.CommandText = "SELECT * FROM Cita WHERE Id = @Id";
             command.Parameters.AddWithValue("@Id", key);
             using var reader = command.ExecuteReader();
@@ -190,9 +174,8 @@ public class AdoRepository : IRepositorioVehiculos
     {
         try
         {
-            using var connection = CreateConnection();
-            connection.Open();
-            using var command = connection.CreateCommand();
+            _connection.Open();
+            using var command = _connection.CreateCommand();
             command.CommandText = "SELECT * FROM Cita WHERE Matricula = @Matricula";
             command.Parameters.AddWithValue("@Matricula", key);
             using var reader = command.ExecuteReader();
@@ -221,9 +204,8 @@ public class AdoRepository : IRepositorioVehiculos
                 UpdatedAt = DateTime.Now
             };
             var entity = value.ToEntity();
-            using var connection = CreateConnection();
-            connection.Open();
-            using var command = connection.CreateCommand();
+           
+            using var command = _connection.CreateCommand();
             command.CommandText = @"UPDATE Cita SET
                                     FechaMatriculacion = @FechaMatriculacion, FechaInspeccion = @FechaInspeccion, Matricula = @Matricula, Modelo = @Modelo, Marca = @Marca, Motor = @Motor,
                                     Cilindrada = @Cilindrada, DniDueno = @DniDueno, UpdatedAt = @UpdatedAt
@@ -253,9 +235,7 @@ public class AdoRepository : IRepositorioVehiculos
 
     public bool ExistId(int key)
     {
-        using var connection = CreateConnection();
-        connection.Open();
-        using var command = connection.CreateCommand();
+        using var command = _connection.CreateCommand();
         command.CommandText = "SELECT COUNT(1) FROM Cita WHERE Id = @Id";
         command.Parameters.AddWithValue("@Id", key);
         var val = command.ExecuteScalar();
@@ -265,9 +245,7 @@ public class AdoRepository : IRepositorioVehiculos
     
     public bool ExistMatricula(string key)
     {
-        using var connection = CreateConnection();
-        connection.Open();
-        using var command = connection.CreateCommand();
+        using var command = _connection.CreateCommand();
         command.CommandText = "SELECT COUNT(1) FROM Cita WHERE Matricula = @Matricula";
         command.Parameters.AddWithValue("@Matricula", key);
         var val = command.ExecuteScalar();
@@ -278,9 +256,7 @@ public class AdoRepository : IRepositorioVehiculos
     public void DeleteAll()
     {
         _logger.Warning("Eliminando permanentemente todas las personas");
-        using var connection = CreateConnection();
-        connection.Open();
-        using var command = connection.CreateCommand();
+        using var command = _connection.CreateCommand();
         command.CommandText = @"DELETE FROM Cita";
         command.ExecuteNonQuery();
     }

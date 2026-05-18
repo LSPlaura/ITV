@@ -16,26 +16,26 @@ public class RepositorioDapper
     [TestFixture]
     public class CasosValidosconn
     {
-        private IDbConnection _connection = null!;
-        private IRepositorioVehiculos _repositorio = null!;
-        
+      private IRepositorioVehiculos _repositorio = null!;
+        private SqliteConnection _connection = null!;
+       
         private static readonly DateTime FechaMat = DateTime.Today.AddYears(-1);
         private static readonly DateTime FechaInsp = DateTime.Today.AddDays(15);
-    
+
         [SetUp]
         public void SetUp()
         {
-            var _connection = "Data Source=:memory:";
-            
+            _connection = new SqliteConnection("Data Source=:memory:");
+            _connection.Open();
             _repositorio = new DapperRepository(_connection);
         }
 
         [TearDown]
         public void TearDown()
         {
-            _repositorio = null;
+            _connection.Close();
+            _connection.Dispose();
         }
-        
             [Test]
             public void Agregar_SinErrores()
             {
@@ -168,25 +168,26 @@ public class RepositorioDapper
         [TestFixture]
         public class CasosInvalidos()
         {
-            private IDbConnection _connection = null!;
-            private IRepositorioVehiculos _repositorio = null!;
-        
-            private static readonly DateTime FechaMat = DateTime.Today.AddYears(-1);
-            private static readonly DateTime FechaInsp = DateTime.Today.AddDays(15);
-    
-            [SetUp]
-            public void SetUp()
-            {
-                var _connection = "Data Source=:memory:";
-            
-                _repositorio = new DapperRepository(_connection);
-            }
+           private IRepositorioVehiculos _repositorio = null!;
+        private SqliteConnection _connection = null!;
+       
+        private static readonly DateTime FechaMat = DateTime.Today.AddYears(-1);
+        private static readonly DateTime FechaInsp = DateTime.Today.AddDays(15);
 
-            [TearDown]
-            public void TearDown()
-            {
-                _repositorio = null;
-            }
+        [SetUp]
+        public void SetUp()
+        {
+            _connection = new SqliteConnection("Data Source=:memory:");
+            _connection.Open();
+            _repositorio = new DapperRepository(_connection);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            _connection.Close();
+            _connection.Dispose();
+        }
             [Test]
             public void Borrar_ErrorEncontrarId()
             {
