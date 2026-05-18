@@ -26,6 +26,11 @@ public abstract record CitaError(string Message) : DomainError(Message)
             : ValidationError($"Error en la validación: Motor [{Motor}] no válido");
         public sealed record ValidationDni(string Dni)
             : ValidationError($"Error en la validación: DNI [{Dni}] no valido");
+        public sealed record ValidationFechaMatriculacion(DateTime Fecha)
+            : ValidationError($"Error en la validación: Fecha de matriculación [{Fecha:dd/MM/yyyy}] no puede ser mayor que la fecha actual");
+
+        public sealed record ValidationFechaInspeccion(DateTime Fecha)
+            : ValidationError($"Error en la validación: Fecha de inspección [{Fecha:dd/MM/yyyy}] fuera de rango permitido (debe ser entre hoy y los próximos 30 días)");
     }
     
     /// <summary>
@@ -57,4 +62,4 @@ public abstract record CitaError(string Message) : DomainError(Message)
     public sealed record FechaYaEstablecida(string Matricula, DateTime Fecha) 
         : CitaError($"Error: El vehiculo con la matricula {Matricula}, ya tiene una cita programada para la fecha {Fecha}");
     
-};
+}

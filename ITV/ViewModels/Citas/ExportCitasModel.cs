@@ -15,12 +15,14 @@ public partial class ExportCitasModel : ObservableObject
 
     public IRelayCommand ExportHtmlCommand { get; }
     public IRelayCommand ExportPdfCommand { get; }
-    public ExportCitasModel(IExport<Cita> citaService, Cita cita)
+    private readonly Action _closeAction;
+    public ExportCitasModel(IExport<Cita> citaService, Cita cita, Action closeAction)
     {
         _cita = cita;
         _exportService = citaService;
         ExportHtmlCommand = new RelayCommand(ExportHtml);
         ExportPdfCommand = new RelayCommand(ExportPdf);
+        _closeAction = closeAction;
     }
 
     private void ExportHtml()
@@ -37,10 +39,7 @@ public partial class ExportCitasModel : ObservableObject
             _logger.Information("HTML exportado exitosamente");
             MessageBox.Show($"Archivo exportado correctamente:\n{result.Value}", "Éxito");
         
-            Application.Current.Windows
-                .OfType<Window>()
-                .FirstOrDefault(w => w.DataContext == this)
-                ?.Close();
+            _closeAction();
         }
     }
     
@@ -58,11 +57,7 @@ public partial class ExportCitasModel : ObservableObject
             _logger.Information("pdf exportado exitosamente");
             MessageBox.Show($"Archivo exportado correctamente:\n{result.Value}", "Éxito");
         
-            // ✅ CIERRA LA VENTANA
-            Application.Current.Windows
-                .OfType<Window>()
-                .FirstOrDefault(w => w.DataContext == this)
-                ?.Close();
+            _closeAction();
         }
     }
 }

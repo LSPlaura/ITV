@@ -15,6 +15,6 @@ public partial class Vista : Window
     public Vista(Cita cita)
     {
         InitializeComponent();
-        this.DataContext = new CitaVistaModel(App.ServiceProvider.GetRequiredService<IService<int, Cita>>(), cita);
+        this.DataContext = new CitaVistaModel(App.ServiceProvider.GetRequiredService<IService<int, Cita>>(), cita, this.Close);
     }
 }

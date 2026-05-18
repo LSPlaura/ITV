@@ -277,7 +277,7 @@
                 </Border>
             </StackPanel>
 
-            <Button Style="{StaticResource PrimaryButtonStyle}" VerticalAlignment="Center" Margin="30,0,0,0" Padding="20,8">
+            <Button Style="{StaticResource PrimaryButtonStyle}" VerticalAlignment="Center" Margin="30,0,0,0" Padding="20,8" Command="{Binding NuevaCitaCommand}">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="" FontFamily="Segoe MDL2 Assets" FontSize="12" Foreground="#36FF6E" Margin="0,0,10,0" VerticalAlignment="Center"/>
                     <TextBlock Text="NUEVA CITA" VerticalAlignment="Center" FontSize="11"/>
@@ -300,91 +300,94 @@
                     <ColumnDefinition Width="1.2*"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- COLUMNA 1: Datos del Vehículo -->
-                <StackPanel Grid.Column="0">
-                    <TextBlock Text="DATOS DEL VEHÍCULO" Style="{StaticResource LabelHD}" Foreground="#7D8A8A" Margin="0,0,0,15" TextDecorations="Underline"/>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
+              <!-- COLUMNA 1: Datos del Vehículo -->
+<StackPanel Grid.Column="0">
+    <TextBlock Text="DATOS DEL VEHÍCULO" Style="{StaticResource LabelHD}" Foreground="#7D8A8A" Margin="0,0,0,15" TextDecorations="Underline"/>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
 
-                        <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,8,15">
-                            <TextBlock Text="MATRÍCULA" Style="{StaticResource LabelHD}"/>
-                            <TextBox x:Name="TxtMatricula"/>
-                        </StackPanel>
-                        <StackPanel Grid.Row="0" Grid.Column="1" Margin="8,0,0,15">
-                            <TextBlock Text="DNI DUEÑO" Style="{StaticResource LabelHD}"/>
-                            <TextBox x:Name="TxtDni"/>
-                        </StackPanel>
-                        <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,8,0">
-                            <TextBlock Text="MARCA" Style="{StaticResource LabelHD}"/>
-                            <TextBox x:Name="TxtMarca"/>
-                        </StackPanel>
-                        <StackPanel Grid.Row="1" Grid.Column="1" Margin="8,0,0,0">
-                            <TextBlock Text="MODELO" Style="{StaticResource LabelHD}"/>
-                            <TextBox x:Name="TxtModelo"/>
-                        </StackPanel>
-                    </Grid>
-                </StackPanel>
+        <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,8,15">
+            <TextBlock Text="MATRÍCULA" Style="{StaticResource LabelHD}"/>
+            <!-- UpdateSourceTrigger=PropertyChanged hace que filtre mientras escribes -->
+            <TextBox x:Name="TxtMatricula" Text="{Binding Matricula, UpdateSourceTrigger=PropertyChanged}"/>
+        </StackPanel>
+        <StackPanel Grid.Row="0" Grid.Column="1" Margin="8,0,0,15">
+            <TextBlock Text="DNI DUEÑO" Style="{StaticResource LabelHD}"/>
+            <TextBox x:Name="TxtDni" Text="{Binding Dni, UpdateSourceTrigger=PropertyChanged}"/>
+        </StackPanel>
+        <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,8,0">
+            <TextBlock Text="MARCA" Style="{StaticResource LabelHD}"/>
+            <TextBox x:Name="TxtMarca" Text="{Binding Marca, UpdateSourceTrigger=PropertyChanged}"/>
+        </StackPanel>
+        <StackPanel Grid.Row="1" Grid.Column="1" Margin="8,0,0,0">
+            <TextBlock Text="MODELO" Style="{StaticResource LabelHD}"/>
+            <TextBox x:Name="TxtModelo" Text="{Binding Modelo, UpdateSourceTrigger=PropertyChanged}"/>
+        </StackPanel>
+    </Grid>
+</StackPanel>
 
-                <!-- SEPARADOR 1 -->
-                <Rectangle Grid.Column="1" Width="1" Fill="#E0E5E5" Margin="15,0"/>
+<!-- SEPARADOR 1 -->
+<Rectangle Grid.Column="1" Width="1" Fill="#E0E5E5" Margin="15,0"/>
 
-                <!-- COLUMNA 2: Fechas -->
-                <StackPanel Grid.Column="2">
-                    <TextBlock Text="RANGOS DE FECHA" Style="{StaticResource LabelHD}" Foreground="#7D8A8A" Margin="0,0,0,15" TextDecorations="Underline"/>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
+<!-- COLUMNA 2: Fechas -->
+<StackPanel Grid.Column="2">
+    <TextBlock Text="RANGOS DE FECHA" Style="{StaticResource LabelHD}" Foreground="#7D8A8A" Margin="0,0,0,15" TextDecorations="Underline"/>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
 
-                        <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,8,12">
-                            <TextBlock Text="MATRIC. (DESDE)" Style="{StaticResource LabelHD}"/>
-                            <DatePicker x:Name="DpMatDesde"/>
-                        </StackPanel>
-                        <StackPanel Grid.Row="0" Grid.Column="1" Margin="8,0,0,12">
-                            <TextBlock Text="MATRIC. (HASTA)" Style="{StaticResource LabelHD}"/>
-                            <DatePicker x:Name="DpMatHasta"/>
-                        </StackPanel>
-                        <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,8,0">
-                            <TextBlock Text="INSPEC. (DESDE)" Style="{StaticResource LabelHD}"/>
-                            <DatePicker x:Name="DpInspDesde"/>
-                        </StackPanel>
-                        <StackPanel Grid.Row="1" Grid.Column="1" Margin="8,0,0,0">
-                            <TextBlock Text="INSPEC. (HASTA)" Style="{StaticResource LabelHD}"/>
-                            <DatePicker x:Name="DpInspHasta"/>
-                        </StackPanel>
-                    </Grid>
-                </StackPanel>
+        <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,8,12">
+            <TextBlock Text="MATRIC. (DESDE)" Style="{StaticResource LabelHD}"/>
+            <DatePicker x:Name="DpMatDesde" SelectedDate="{Binding FechaMatriculacionDesde}"/>
+        </StackPanel>
+        <StackPanel Grid.Row="0" Grid.Column="1" Margin="8,0,0,12">
+            <TextBlock Text="MATRIC. (HASTA)" Style="{StaticResource LabelHD}"/>
+            <DatePicker x:Name="DpMatHasta" SelectedDate="{Binding FechaMatriculacionHasta}"/>
+        </StackPanel>
+        <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,8,0">
+            <TextBlock Text="INSPEC. (DESDE)" Style="{StaticResource LabelHD}"/>
+            <DatePicker x:Name="DpInspDesde" SelectedDate="{Binding FechaInspeccionDesde}"/>
+        </StackPanel>
+        <StackPanel Grid.Row="1" Grid.Column="1" Margin="8,0,0,0">
+            <TextBlock Text="INSPEC. (HASTA)" Style="{StaticResource LabelHD}"/>
+            <DatePicker x:Name="DpInspHasta" SelectedDate="{Binding FechaInspeccionHasta}"/>
+        </StackPanel>
+    </Grid>
+</StackPanel>
 
-                <!-- SEPARADOR 2 -->
-                <Rectangle Grid.Column="3" Width="1" Fill="#E0E5E5" Margin="15,0"/>
+<!-- SEPARADOR 2 -->
+<Rectangle Grid.Column="3" Width="1" Fill="#E0E5E5" Margin="15,0"/>
 
-                <!-- COLUMNA 3: Motor -->
-                <StackPanel Grid.Column="4" VerticalAlignment="Center">
-                    <TextBlock Text="MOTOR" Style="{StaticResource LabelHD}" Foreground="#7D8A8A" Margin="0,0,0,15" TextDecorations="Underline"/>
-                    <StackPanel Margin="0,0,0,12">
-                        <TextBlock Text="TIPO DE PROPULSIÓN" Style="{StaticResource LabelHD}"/>
-                        <ComboBox x:Name="CbMotor">
-                            <ComboBoxItem Content="Todos los motores" IsSelected="True"/>
-                            <ComboBoxItem Content="Gasolina"/>
-                            <ComboBoxItem Content="Diésel"/>
-                            <ComboBoxItem Content="Híbrido"/>
-                            <ComboBoxItem Content="Eléctrico"/>
-                        </ComboBox>
-                    </StackPanel>
-                    <Button Content="🔄 LIMPIAR FILTROS" Style="{StaticResource SecondaryButtonStyle}" HorizontalAlignment="Stretch"/>
-                </StackPanel>
+<!-- COLUMNA 3: Motor -->
+<StackPanel Grid.Column="4" VerticalAlignment="Center">
+    <TextBlock Text="MOTOR" Style="{StaticResource LabelHD}" Foreground="#7D8A8A" Margin="0,0,0,15" TextDecorations="Underline"/>
+    <StackPanel Margin="0,0,0,12">
+        <TextBlock Text="TIPO DE PROPULSIÓN" Style="{StaticResource LabelHD}"/>
+        <!-- SelectedValuePath y SelectedValue para capturar el string del ComboBoxItem -->
+        <ComboBox x:Name="CbMotor" SelectedValuePath="Content" SelectedValue="{Binding TipoMotor}">
+            <ComboBoxItem Content="Todos los motores"/>
+            <ComboBoxItem Content="Gasolina"/>
+            <ComboBoxItem Content="Diesel"/>
+            <ComboBoxItem Content="Hidrogeno"/>
+            <ComboBoxItem Content="Electrico"/>
+        </ComboBox>
+    </StackPanel>
+    <!-- Agregado el Binding al comando de limpiar -->
+    <Button Content="🔄 LIMPIAR FILTROS" Command="{Binding LimpiarFiltrosCommand}" Style="{StaticResource SecondaryButtonStyle}" HorizontalAlignment="Stretch"/>
+</StackPanel>
             </Grid>
         </Border>
         

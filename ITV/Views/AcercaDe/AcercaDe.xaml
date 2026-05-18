@@ -38,14 +38,20 @@
                        FontSize="16" FontWeight="SemiBold" 
                        Foreground="#3A4242" HorizontalAlignment="Center"/>
             
-            <TextBlock Text="v 1.0.4" 
+            <TextBlock Text="v 1.0.0" 
                        FontSize="14" FontWeight="Bold" 
                        Foreground="#36FF6E" HorizontalAlignment="Center" Margin="0,5,0,20"/>
 
             <Separator Background="#E0E5E5" Margin="0,0,0,20"/>
 
             <TextBlock Text="Desarrollado por:" FontSize="12" Foreground="#7D8A8A" HorizontalAlignment="Center"/>
-            <TextBlock Text="Tu Nombre o Empresa" FontSize="15" FontWeight="Bold" Foreground="#1A1C1E" HorizontalAlignment="Center" Margin="0,5,0,30"/>
+            <TextBlock Text="Laura Santamaria" FontSize="15" FontWeight="Bold" Foreground="#1A1C1E" HorizontalAlignment="Center" Margin="0,5,0,5"/>
+            <TextBlock FontSize="15" FontWeight="Bold" Foreground="#1A1C1E" HorizontalAlignment="Center" Margin="0,0,0,25">
+                <Hyperlink NavigateUri="https://github.com/LSPlaura/ITV" 
+                           RequestNavigate="Hyperlink_RequestNavigate">
+                   Enlace al repositorio
+                </Hyperlink>
+            </TextBlock>
             
             <TextBlock Text="© 2026 Todos los derechos reservados" 
                        FontSize="11" Foreground="#A0AAB4" 

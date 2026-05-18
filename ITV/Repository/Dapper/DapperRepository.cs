@@ -62,7 +62,7 @@ public class DapperRepository : IRepositorioVehiculos
     public IEnumerable<Cita> GetAll()
     {
         using var connection = CreateConnection();
-        var sql = "SELECT Id, Matricula, Modelo, Marca, Motor, Cilindrada, DniDueno AS DniDueño, IsDeleted FROM Cita";
+        var sql = "SELECT Id, FechaMatriculacion, FechaInspeccion, Matricula, Modelo, Marca, Motor, Cilindrada, DniDueno AS DniDueño, IsDeleted FROM Cita";
         var entities = connection.Query<CitaEntity>(sql).ToList();
         return CitaMapper.ToModel(entities);
     }
@@ -163,41 +163,54 @@ public class DapperRepository : IRepositorioVehiculos
     }
 
     public Result<Cita, DomainError> Actualizar(int key, Cita value)
+{
+    try
     {
-        try
-        {
-            using var connection = CreateConnection();
-        
-            var sqlBuscar = "SELECT * FROM Cita WHERE Id = @Id";
-            var encontrado = connection.QueryFirstOrDefault<CitaEntity>(sqlBuscar, new { Id = key });
-        
-            if (encontrado == null) 
-                return Result.Failure<Cita, DomainError>(new CitaError.CitaNotFoundId(key))
-                    .TapError( l => _logger.Error("No se ha encontrado el vehiculo con el ID {Id} para poder actualizarllo", key));
+        using var connection = CreateConnection();
+    
+        var sqlBuscar = "SELECT * FROM Cita WHERE Id = @Id";
+        var encontrado = connection.QueryFirstOrDefault<CitaEntity>(sqlBuscar, new { Id = key });
+    
+        if (encontrado == null) 
+            return Result.Failure<Cita, DomainError>(new CitaError.CitaNotFoundId(key))
+                .TapError( l => _logger.Error("No se ha encontrado el vehiculo con el ID {Id} para poder actualizarllo", key));
 
-            value = value with { UpdatedAt = DateTime.Now };
-            var entity = value.ToEntity();
-            
-            var sql = @"UPDATE Cita SET 
-                    Matricula = @Matricula, Modelo = @Modelo, Marca = @Marca, Motor = @Motor, Cilindrada = @Cilindrada,
-                    UpdatedAt = @UpdatedAt WHERE Id = @Id";
-            connection.Execute(sql, new { 
-                entity.Matricula, 
-                entity.Modelo, 
-                entity.Marca, 
-                entity.Motor, 
-                entity.Cilindrada, 
-                entity.UpdatedAt, 
-                Id = key
-            });
-            return BuscarId(key).Tap((l => _logger.Information("Se ha actualizado el vehiculo con el ID {Id}", l.Id)));
-        }
-        catch (Exception ex)
-        {
-            return Result.Failure<Cita, DomainError>(new DataBaseError(ex.Message))
-                .TapError(l => _logger.Fatal("Error en la base de datos al actualizar"));
-        }
+        value = value with { UpdatedAt = DateTime.Now };
+        var entity = value.ToEntity();
+        
+        // CORREGIDO: Añadidas las columnas de fechas y dni a la sentencia UPDATE
+        var sql = @"UPDATE Cita SET 
+                Matricula = @Matricula, 
+                Modelo = @Modelo, 
+                Marca = @Marca, 
+                Motor = @Motor, 
+                Cilindrada = @Cilindrada,
+                FechaMatriculacion = @FechaMatriculacion,
+                FechaInspeccion = @FechaInspeccion,
+                DniDueno = @DniDueño,
+                UpdatedAt = @UpdatedAt 
+                WHERE Id = @Id";
+        
+        connection.Execute(sql, new { 
+            entity.Matricula, 
+            entity.Modelo, 
+            entity.Marca, 
+            entity.Motor, 
+            entity.Cilindrada, 
+            entity.FechaMatriculacion,
+            entity.FechaInspeccion,    
+            entity.DniDueño,         
+            entity.UpdatedAt, 
+            Id = key
+        });
+        return BuscarId(key).Tap((l => _logger.Information("Se ha actualizado el vehiculo con el ID {Id}", l.Id)));
     }
+    catch (Exception ex)
+    {
+        return Result.Failure<Cita, DomainError>(new DataBaseError(ex.Message))
+            .TapError(l => _logger.Fatal("Error en la base de datos al actualizar"));
+    }
+}
 
     public bool ExistId(int key)
     {

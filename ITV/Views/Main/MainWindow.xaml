@@ -86,7 +86,7 @@
                     Click="Acercade_Click"/>
 
             <Border Background="#2A3333" CornerRadius="15" Padding="12,4" HorizontalAlignment="Center" Margin="0,10,0,0">
-                 <TextBlock Text="v 1.0.4 - 2026" 
+                 <TextBlock Text="v 1.0.0 - 2026" 
                            Foreground="#36FF6E" 
                            FontSize="11" 
                            FontWeight="Bold"/>
