@@ -1,3 +1,4 @@
+using System.Data;
 using System.IO;
 using FluentAssertions;
 using ITV.Error.Vehiculos;
@@ -16,67 +17,70 @@ public class RepositorioAdoTests
     public class CasosValidos
     {
         private IRepositorioVehiculos _repositorio = null!;
-        private string _dbFolder = null!;
-        private string _dbPath = null!;
-        private string _connection = null!;
-        
+        private SqliteConnection _connection = null!;
+       
         private static readonly DateTime FechaMat = DateTime.Today.AddYears(-1);
         private static readonly DateTime FechaInsp = DateTime.Today.AddDays(15);
 
         [SetUp]
         public void SetUp()
         {
-            _dbFolder = Path.Combine(Path.GetTempPath(), "RepoTests", Guid.NewGuid().ToString("N"));
-            Directory.CreateDirectory(_dbFolder);
-
-            _dbPath = Path.Combine(_dbFolder, "vehiculos.db");
-            _connection = $"Data Source={_dbPath};";
-
-            using var anchor = new SqliteConnection(_connection);
-            anchor.Open();
-            using var cmd = anchor.CreateCommand();
-            cmd.CommandText = @"
-              CREATE TABLE IF NOT EXISTS Cita(
-                Id INTEGER PRIMARY KEY,
-                FechaMatriculacion VARCHAR(100) NOT NULL,
-                FechaInspeccion VARCHAR(100) NOT NULL,
-                Matricula VARCHAR(9) NOT NULL,
-                Modelo  VARCHAR(100) NOT NULL,
-                Marca VARCHAR(100) NOT NULL,
-                Motor INTEGER NOT NULL,
-                Cilindrada REAL CHECK (Cilindrada > 0) NOT NULL,
-                DniDueno VARCHAR(9) NOT NULL,
-                IsDeleted INTEGER DEFAULT 0,
-                CreatedAt VARCHAR(100) NOT NULL,
-                UpdatedAt VARCHAR(100) NOT NULL
-              );";
-            cmd.ExecuteNonQuery();
-            anchor.Close();
-
+            _connection = new SqliteConnection("Data Source=:memory:");
+            _connection.Open();
             _repositorio = new AdoRepository(_connection);
+            // _dbFolder = Path.Combine(Path.GetTempPath(), "RepoTests", Guid.NewGuid().ToString("N"));
+            // Directory.CreateDirectory(_dbFolder);
+            //
+            // _dbPath = Path.Combine(_dbFolder, "vehiculos.db");
+            // _connection = $"Data Source={_dbPath};";
+            //
+            // using var anchor = new SqliteConnection(_connection);
+            // anchor.Open();
+            // using var cmd = anchor.CreateCommand();
+            // cmd.CommandText = @"
+            //   CREATE TABLE IF NOT EXISTS Cita(
+            //     Id INTEGER PRIMARY KEY,
+            //     FechaMatriculacion VARCHAR(100) NOT NULL,
+            //     FechaInspeccion VARCHAR(100) NOT NULL,
+            //     Matricula VARCHAR(9) NOT NULL,
+            //     Modelo  VARCHAR(100) NOT NULL,
+            //     Marca VARCHAR(100) NOT NULL,
+            //     Motor INTEGER NOT NULL,
+            //     Cilindrada REAL CHECK (Cilindrada > 0) NOT NULL,
+            //     DniDueno VARCHAR(9) NOT NULL,
+            //     IsDeleted INTEGER DEFAULT 0,
+            //     CreatedAt VARCHAR(100) NOT NULL,
+            //     UpdatedAt VARCHAR(100) NOT NULL
+            //   );";
+            // cmd.ExecuteNonQuery();
+            // anchor.Close();
+            //
+            // _repositorio = new AdoRepository(_connection);
         }
 
         [TearDown]
         public void TearDown()
         {
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-
-            if (Directory.Exists(_dbFolder))
-            {
-                for (int i = 0; i < 3; i++)
-                {
-                    try
-                    {
-                        Directory.Delete(_dbFolder, true);
-                        break;
-                    }
-                    catch (IOException)
-                    {
-                        Thread.Sleep(100);
-                    }
-                }
-            }
+            _connection.Close();
+            _connection.Dispose();
+            // GC.Collect();
+            // GC.WaitForPendingFinalizers();
+            //
+            // if (Directory.Exists(_dbFolder))
+            // {
+            //     for (int i = 0; i < 3; i++)
+            //     {
+            //         try
+            //         {
+            //             Directory.Delete(_dbFolder, true);
+            //             break;
+            //         }
+            //         catch (IOException)
+            //         {
+            //             Thread.Sleep(100);
+            //         }
+            //     }
+            // }
         }
 
         [Test]
@@ -209,67 +213,70 @@ public class RepositorioAdoTests
     public class CasosInvalidos
     {
         private IRepositorioVehiculos _repositorio = null!;
-        private string _dbFolder = null!;
-        private string _dbPath = null!;
-        private string _connection = null!;
-
+        private SqliteConnection _connection = null!;
+       
         private static readonly DateTime FechaMat = DateTime.Today.AddYears(-1);
         private static readonly DateTime FechaInsp = DateTime.Today.AddDays(15);
 
         [SetUp]
         public void SetUp()
         {
-            _dbFolder = Path.Combine(Path.GetTempPath(), "RepoTests", Guid.NewGuid().ToString("N"));
-            Directory.CreateDirectory(_dbFolder);
-
-            _dbPath = Path.Combine(_dbFolder, "vehiculos.db");
-            _connection = $"Data Source={_dbPath};";
-
-            using var anchor = new SqliteConnection(_connection);
-            anchor.Open();
-            using var cmd = anchor.CreateCommand();
-            cmd.CommandText = @"
-              CREATE TABLE IF NOT EXISTS Cita(
-                Id INTEGER PRIMARY KEY,
-                FechaMatriculacion VARCHAR(100) NOT NULL,
-                FechaInspeccion VARCHAR(100) NOT NULL,
-                Matricula VARCHAR(9) NOT NULL,
-                Modelo  VARCHAR(100) NOT NULL,
-                Marca VARCHAR(100) NOT NULL,
-                Motor INTEGER NOT NULL,
-                Cilindrada REAL CHECK (Cilindrada > 0) NOT NULL,
-                DniDueno VARCHAR(9) NOT NULL,
-                IsDeleted INTEGER DEFAULT 0,
-                CreatedAt VARCHAR(100) NOT NULL,
-                UpdatedAt VARCHAR(100) NOT NULL
-              );";
-            cmd.ExecuteNonQuery();
-            anchor.Close();
-
+            _connection = new SqliteConnection("Data Source=:memory:");
+            _connection.Open();
             _repositorio = new AdoRepository(_connection);
+            // _dbFolder = Path.Combine(Path.GetTempPath(), "RepoTests", Guid.NewGuid().ToString("N"));
+            // Directory.CreateDirectory(_dbFolder);
+            //
+            // _dbPath = Path.Combine(_dbFolder, "vehiculos.db");
+            // _connection = $"Data Source={_dbPath};";
+            //
+            // using var anchor = new SqliteConnection(_connection);
+            // anchor.Open();
+            // using var cmd = anchor.CreateCommand();
+            // cmd.CommandText = @"
+            //   CREATE TABLE IF NOT EXISTS Cita(
+            //     Id INTEGER PRIMARY KEY,
+            //     FechaMatriculacion VARCHAR(100) NOT NULL,
+            //     FechaInspeccion VARCHAR(100) NOT NULL,
+            //     Matricula VARCHAR(9) NOT NULL,
+            //     Modelo  VARCHAR(100) NOT NULL,
+            //     Marca VARCHAR(100) NOT NULL,
+            //     Motor INTEGER NOT NULL,
+            //     Cilindrada REAL CHECK (Cilindrada > 0) NOT NULL,
+            //     DniDueno VARCHAR(9) NOT NULL,
+            //     IsDeleted INTEGER DEFAULT 0,
+            //     CreatedAt VARCHAR(100) NOT NULL,
+            //     UpdatedAt VARCHAR(100) NOT NULL
+            //   );";
+            // cmd.ExecuteNonQuery();
+            // anchor.Close();
+            //
+            // _repositorio = new AdoRepository(_connection);
         }
 
         [TearDown]
         public void TearDown()
         {
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-
-            if (Directory.Exists(_dbFolder))
-            {
-                for (int i = 0; i < 3; i++)
-                {
-                    try
-                    {
-                        Directory.Delete(_dbFolder, true);
-                        break;
-                    }
-                    catch (IOException)
-                    {
-                        Thread.Sleep(100);
-                    }
-                }
-            }
+            _connection.Close();
+            _connection.Dispose();
+            // GC.Collect();
+            // GC.WaitForPendingFinalizers();
+            //
+            // if (Directory.Exists(_dbFolder))
+            // {
+            //     for (int i = 0; i < 3; i++)
+            //     {
+            //         try
+            //         {
+            //             Directory.Delete(_dbFolder, true);
+            //             break;
+            //         }
+            //         catch (IOException)
+            //         {
+            //             Thread.Sleep(100);
+            //         }
+            //     }
+            // }
         }
 
         [Test]

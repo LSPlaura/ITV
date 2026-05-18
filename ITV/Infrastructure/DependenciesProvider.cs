@@ -15,6 +15,7 @@ using ITV.Storage.Common;
 using ITV.Storage.CSV;
 using ITV.Storage.XML;
 using ITV.Validador;
+using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ITV.Infrastructure;
@@ -42,9 +43,9 @@ public static class DependenciesProvider
             var repository = Configuracion.RepositoryType.ToLower();
             return repository switch
             {
-                "dapper" => new DapperRepository(Configuracion.DataBaseString),
+                "dapper" => new DapperRepository(new SqliteConnection(Configuracion.DataBaseString)),
                 "efcore" => new EfCoreRepository(new AppDbContext(Configuracion.DataBaseString)),
-                "ado" => new AdoRepository(Configuracion.DataBaseString),
+                "ado" => new AdoRepository(new SqliteConnection(Configuracion.DataBaseString)),
                 _ => new EfCoreRepository(new AppDbContext(Configuracion.DataBaseString)),
             };
         });

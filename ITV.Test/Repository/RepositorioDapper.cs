@@ -1,3 +1,4 @@
+using System.Data;
 using System.IO;
 using FluentAssertions;
 using ITV.Error.Vehiculos;
@@ -13,76 +14,28 @@ namespace ITV.Test.Repository;
 public class RepositorioDapper
 {
     [TestFixture]
-    public class CasosValidos
+    public class CasosValidosconn
     {
-        private IRepositorioVehiculos _repositorio = null!;
-        private string _dbFolder = null!;
-        private string _dbPath = null!;
-        private string _connection = null!;
-        
+      private IRepositorioVehiculos _repositorio = null!;
+        private SqliteConnection _connection = null!;
+       
         private static readonly DateTime FechaMat = DateTime.Today.AddYears(-1);
         private static readonly DateTime FechaInsp = DateTime.Today.AddDays(15);
-    
+
         [SetUp]
         public void SetUp()
         {
-            _dbFolder = Path.Combine(Path.GetTempPath(), "RepoTests", Guid.NewGuid().ToString("N"));
-            Directory.CreateDirectory(_dbFolder);
-
-            _dbPath = Path.Combine(_dbFolder, "vehiculos.db");
-            _connection = $"Data Source={_dbPath};";
-
-            using var anchor = new SqliteConnection(_connection);
-            anchor.Open();
-            using var cmd = anchor.CreateCommand();
-            cmd.CommandText =@"
-    CREATE TABLE IF NOT EXISTS Cita(
-    Id INTEGER PRIMARY KEY,
-    FechaMatriculacion TEXT NOT NULL,
-    FechaInspeccion TEXT,
-    Matricula TEXT NOT NULL,
-    Modelo TEXT NOT NULL,
-    Marca TEXT NOT NULL,
-    Motor INTEGER NOT NULL,
-    Cilindrada REAL CHECK (Cilindrada > 0) NOT NULL,
-    DniDueno TEXT NOT NULL,
-    IsDeleted INTEGER DEFAULT 0,
-    CreatedAt TEXT NOT NULL,
-    UpdatedAt TEXT NOT NULL
-);";
-            cmd.ExecuteNonQuery();
-            anchor.Close();
-
+            _connection = new SqliteConnection("Data Source=:memory:");
+            _connection.Open();
             _repositorio = new DapperRepository(_connection);
         }
-    
+
         [TearDown]
         public void TearDown()
         {
-            // Asegura que no quedan conexiones abiertas por GC pendientes
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-    
-            // Cierra/limpia (si tu repo tuviera disposables, dispóselos aquí)
-            // Si quieres borrar la carpeta:
-            if (Directory.Exists(_dbFolder))
-            {
-                // Intento seguro de borrado; intenta varias veces por si hay retrasos en liberación de handles
-                for (int i = 0; i < 3; i++)
-                {
-                    try
-                    {
-                        Directory.Delete(_dbFolder, true);
-                        break;
-                    }
-                    catch (IOException)
-                    {
-                        Thread.Sleep(100);
-                    }
-                }
-            }
+            _connection.Close();
+            _connection.Dispose();
         }
-    
             [Test]
             public void Agregar_SinErrores()
             {
@@ -215,74 +168,26 @@ public class RepositorioDapper
         [TestFixture]
         public class CasosInvalidos()
         {
-            private IRepositorioVehiculos _repositorio = null!;
-        private string _dbFolder = null!;
-        private string _dbPath = null!;
-        private string _connection = null!;
-
+           private IRepositorioVehiculos _repositorio = null!;
+        private SqliteConnection _connection = null!;
+       
         private static readonly DateTime FechaMat = DateTime.Today.AddYears(-1);
         private static readonly DateTime FechaInsp = DateTime.Today.AddDays(15);
-    
+
         [SetUp]
         public void SetUp()
         {
-            _dbFolder = Path.Combine(Path.GetTempPath(), "RepoTests", Guid.NewGuid().ToString("N"));
-            Directory.CreateDirectory(_dbFolder);
-
-            _dbPath = Path.Combine(_dbFolder, "vehiculos.db");
-            _connection = $"Data Source={_dbPath};";
-
-            using var anchor = new SqliteConnection(_connection);
-            anchor.Open();
-            using var cmd = anchor.CreateCommand();
-            cmd.CommandText = @"
-    CREATE TABLE IF NOT EXISTS Cita(
-    Id INTEGER PRIMARY KEY,
-    FechaMatriculacion TEXT NOT NULL,
-    FechaInspeccion TEXT,
-    Matricula TEXT NOT NULL,
-    Modelo TEXT NOT NULL,
-    Marca TEXT NOT NULL,
-    Motor INTEGER NOT NULL,
-    Cilindrada REAL CHECK (Cilindrada > 0) NOT NULL,
-    DniDueno TEXT NOT NULL,
-    IsDeleted INTEGER DEFAULT 0,
-    CreatedAt TEXT NOT NULL,
-    UpdatedAt TEXT NOT NULL
-);";
-            cmd.ExecuteNonQuery();
-            anchor.Close();
-
+            _connection = new SqliteConnection("Data Source=:memory:");
+            _connection.Open();
             _repositorio = new DapperRepository(_connection);
         }
-    
+
         [TearDown]
         public void TearDown()
         {
-            // Asegura que no quedan conexiones abiertas por GC pendientes
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-    
-            // Cierra/limpia (si tu repo tuviera disposables, dispóselos aquí)
-            // Si quieres borrar la carpeta:
-            if (Directory.Exists(_dbFolder))
-            {
-                // Intento seguro de borrado; intenta varias veces por si hay retrasos en liberación de handles
-                for (int i = 0; i < 3; i++)
-                {
-                    try
-                    {
-                        Directory.Delete(_dbFolder, true);
-                        break;
-                    }
-                    catch (IOException)
-                    {
-                        Thread.Sleep(100);
-                    }
-                }
-            }
+            _connection.Close();
+            _connection.Dispose();
         }
-           
             [Test]
             public void Borrar_ErrorEncontrarId()
             {
@@ -323,5 +228,5 @@ public class RepositorioDapper
                 result.IsFailure.Should().BeTrue();
                 result.Error.Should().BeOfType<CitaError.CitaNotFoundId>();
             }
-        } 
+        }
 }
