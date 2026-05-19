@@ -139,7 +139,7 @@ public class DapperRepository : IRepositorioVehiculos
     {
         try
         {
-            var  sql = "SELECT Id, Matricula, Marca, Modelo, Cilindrada, Motor, DniDueno AS DniDueño, FechaMatriculacion, FechaInspeccion, CreatedAt, UpdatedAt, IsDeleted FROM Cita WHERE Id = @Id";
+            var  sql = "SELECT Id, Matricula, Marca, Modelo, Cilindrada, Motor, DniDueno AS DniDueño, FechaMatriculacion, FechaInspeccion, CreatedAt, UpdatedAt, IsDeleted FROM Cita WHERE Matricula = @Matricula";
             var entity = _connection.QueryFirstOrDefault<CitaEntity>(sql, new { Matricula = key });
         
             return entity == null ? 

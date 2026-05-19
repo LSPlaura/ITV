@@ -77,22 +77,22 @@ public class AdoRepository: IRepositorioVehiculos
             // Primero insert
             using var insertCmd = _connection.CreateCommand();
             insertCmd.CommandText = @"INSERT INTO Cita(Matricula, Modelo, Marca, Motor, Cilindrada, DniDueno,FechaMatriculacion,FechaInspeccion,CreatedAt,UpdatedAt)
-                        VALUES (@Matricula, @Modelo, @Marca, @Motor, @Cilindrada, @DniDueno, @FechaMatriculacion, @FechaInscripcion, @CreatedAt, @UpdatedAt)";
+                        VALUES (@Matricula, @Modelo, @Marca, @Motor, @Cilindrada, @DniDueño, @FechaMatriculacion, @FechaInspeccion, @CreatedAt, @UpdatedAt)";
             insertCmd.Parameters.AddWithValue("@Matricula", entity.Matricula);
             insertCmd.Parameters.AddWithValue("@Modelo", entity.Modelo);
             insertCmd.Parameters.AddWithValue("@Marca", entity.Marca);
             insertCmd.Parameters.AddWithValue("@Motor", entity.Motor);
             insertCmd.Parameters.AddWithValue("@Cilindrada", entity.Cilindrada);
-            insertCmd.Parameters.AddWithValue("@DniDueno", entity.DniDueño);
+            insertCmd.Parameters.AddWithValue("@DniDueño", entity.DniDueño);
             insertCmd.Parameters.AddWithValue("@FechaMatriculacion", entity.FechaMatriculacion);
-            insertCmd.Parameters.AddWithValue("@FechaInscripcion", entity.FechaInspeccion);
+            insertCmd.Parameters.AddWithValue("@FechaInspeccion", entity.FechaInspeccion);
             insertCmd.Parameters.AddWithValue("@CreatedAt", entity.CreatedAt);
             insertCmd.Parameters.AddWithValue("@UpdatedAt", entity.UpdatedAt);
             insertCmd.ExecuteNonQuery();
 
             // Luego recuperamos la fila insertada
             using var selectCmd = _connection.CreateCommand();
-            selectCmd.CommandText = "SELECT * FROM Cita WHERE rowid = last_insert_rowid()";
+            selectCmd.CommandText = "SELECT Id, Matricula, Marca, Modelo, Cilindrada, Motor, DniDueno AS DniDueño, FechaMatriculacion, FechaInspeccion, CreatedAt, UpdatedAt, IsDeleted FROM Cita WHERE rowid = last_insert_rowid()";
             using var reader = selectCmd.ExecuteReader();
             var vehiculo = reader.Read() ? MapVehiculo(reader) : null;
             
@@ -239,7 +239,7 @@ public class AdoRepository: IRepositorioVehiculos
         command.Parameters.AddWithValue("@Id", key);
         var val = command.ExecuteScalar();
         var numero = val == null ? 0 : Convert.ToInt32(val);
-        return numero == 1;
+        return numero > 0;
     }
     
     public bool ExistMatricula(string key)
@@ -249,7 +249,7 @@ public class AdoRepository: IRepositorioVehiculos
         command.Parameters.AddWithValue("@Matricula", key);
         var val = command.ExecuteScalar();
         var numero = val == null ? 0 : Convert.ToInt32(val);
-        return numero == 1;
+        return numero > 0;
     }
 
     public void DeleteAll()
@@ -270,7 +270,7 @@ public class AdoRepository: IRepositorioVehiculos
             reader.GetString(reader.GetOrdinal("Marca")),
             reader.GetDouble(reader.GetOrdinal("Cilindrada")),
             reader.GetInt32(reader.GetOrdinal("Motor")),
-            reader.GetString(reader.GetOrdinal("DniDueno")),
+            reader.GetString(reader.GetOrdinal("DniDueño")),
             reader.GetInt32(reader.GetOrdinal("IsDeleted")),
             reader.GetString(reader.GetOrdinal("CreatedAt")),
             reader.GetString(reader.GetOrdinal("UpdatedAt"))
