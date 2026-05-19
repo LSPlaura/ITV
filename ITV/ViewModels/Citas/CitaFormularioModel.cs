@@ -79,14 +79,14 @@ public partial class CitaFormularioModel : ObservableObject
         
          var nuevo = new CitaDto() with
          {
-             Matricula = this.Matricula,
-             Marca = this.Marca,
-             Modelo = this.Modelo,
-             DniDueño = this.Dni,
-             Cilindrada = double.TryParse(this.Cilindrada, out var c) ? c : 0,
-             Motor = Enum.TryParse<Motor>(MotorSeleccionado, out var m) ? (int)m : (int)Motor.Gasolina,
-             FechaMatriculacion = this.FechaMatriculacion?.ToString(_isoFormat, _invariant) ?? DateTime.Today.ToString(_isoFormat, _invariant),
-             FechaInspeccion = this.FechaInspeccion?.ToString(_isoFormat, _invariant) ?? DateTime.Today.ToString(_isoFormat, _invariant)
+             Matricula = this.Matricula.Trim(),
+             Marca = this.Marca.Trim(),
+             Modelo = this.Modelo.Trim(),
+             DniDueño = this.Dni.Trim(),
+             Cilindrada = double.TryParse(this.Cilindrada.Trim(), out var c) ? c : 0,
+             Motor = Enum.TryParse<Motor>(MotorSeleccionado.Trim(), out var m) ? (int)m : (int)Motor.Gasolina,
+             FechaMatriculacion = this.FechaMatriculacion?.ToString(_isoFormat, _invariant).Trim() ?? DateTime.Today.ToString(_isoFormat, _invariant),
+             FechaInspeccion = this.FechaInspeccion?.ToString(_isoFormat, _invariant).Trim() ?? DateTime.Today.ToString(_isoFormat, _invariant)
          };
      
          _logger.Debug("Enviando nueva cita al servicio para su inserción...");
@@ -115,14 +115,14 @@ public partial class CitaFormularioModel : ObservableObject
 
         var nuevo = _citaOriginal.ToDto() with
         {
-            Matricula = this.Matricula,
-            Marca = this.Marca,
-            Modelo = this.Modelo,
-            DniDueño = this.Dni,
-            Cilindrada = double.TryParse(this.Cilindrada, out var c) ? c : 0,
-            Motor = Enum.TryParse<Motor>(MotorSeleccionado, out var m) ? (int)m : (int)Motor.Gasolina,
-            FechaMatriculacion = this.FechaMatriculacion?.ToString(_isoFormat, _invariant) ?? DateTime.Today.ToString(_isoFormat, _invariant),
-            FechaInspeccion = this.FechaInspeccion?.ToString(_isoFormat, _invariant) ?? DateTime.Today.ToString(_isoFormat, _invariant)
+            Matricula = this.Matricula.Trim(),
+            Marca = this.Marca.Trim(),
+            Modelo = this.Modelo.Trim(),
+            DniDueño = this.Dni.Trim(),
+            Cilindrada = double.TryParse(this.Cilindrada.Trim(), out var c) ? c : 0,
+            Motor = Enum.TryParse<Motor>(MotorSeleccionado.Trim(), out var m) ? (int)m : (int)Motor.Gasolina,
+            FechaMatriculacion = this.FechaMatriculacion?.ToString(_isoFormat, _invariant).Trim() ?? DateTime.Today.ToString(_isoFormat, _invariant),
+            FechaInspeccion = this.FechaInspeccion?.ToString(_isoFormat, _invariant).Trim() ?? DateTime.Today.ToString(_isoFormat, _invariant)
         };
 
             _logger.Debug("Enviando datos actualizados...");

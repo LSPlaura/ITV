@@ -28,10 +28,10 @@ public class RepositorioAdoTests
             _connection = new SqliteConnection("Data Source=:memory:");
             _connection.Open();
             _repositorio = new AdoRepository(_connection);
-            if (_connection.State != ConnectionState.Open)
-            {
-                _connection.Open();
-            }
+            // if (_connection.State != ConnectionState.Open)
+            // {
+            //     _connection.Open();
+            // }
         }
 
         [TearDown]
