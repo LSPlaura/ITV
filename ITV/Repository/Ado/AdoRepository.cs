@@ -44,17 +44,17 @@ public class AdoRepository: IRepositorioVehiculos
         _connection.Execute(@"
               CREATE TABLE IF NOT EXISTS Cita(
                 Id INTEGER PRIMARY KEY,
-                FechaMatriculacion VARCHAR(100) NOT NULL,
-                FechaInspeccion VARCHAR(100) NOT NULL,
-                Matricula VARCHAR(9) NOT NULL UNIQUE,
-                Modelo  VARCHAR(100) NOT NULL,
-                Marca VARCHAR(100) NOT NULL,
-                Motor INTEGER NOT NULL,
+                FechaMatriculacion TEXT NOT NULL,
+                FechaInspeccion TEXT NOT NULL,
+                Matricula TEXT NOT NULL UNIQUE,
+                Modelo  TEXT NOT NULL,
+                Marca TEXT NOT NULL,
+                Motor TEXT NOT NULL,
                 Cilindrada REAL CHECK (Cilindrada > 0) NOT NULL,
-                DniDueno VARCHAR(9) NOT NULL,
+                DniDueno TEXT NOT NULL,
                 IsDeleted INTEGER DEFAULT 0,
-                CreatedAt VARCHAR(100) NOT NULL,
-                UpdatedAt VARCHAR(100) NOT NULL
+                CreatedAt TEXT NOT NULL,
+                UpdatedAt TEXT NOT NULL
               );");
 
         _logger.Debug("Tabla Cita verificada/creada correctamente");
@@ -63,7 +63,7 @@ public class AdoRepository: IRepositorioVehiculos
     {
         var vehiculos = new List<Cita>();
         using var command = _connection.CreateCommand();
-        command.CommandText = "SELECT * FROM Cita";
+        command.CommandText = "SELECT Id, Matricula, Marca, Modelo, Cilindrada, Motor, DniDueno AS DniDueño, FechaMatriculacion, FechaInspeccion, CreatedAt, UpdatedAt, IsDeleted FROM Cita";
         using var reader = command.ExecuteReader();
         while(reader.Read()) vehiculos.Add(MapVehiculo(reader).ToModel());
         return vehiculos;
@@ -149,9 +149,8 @@ public class AdoRepository: IRepositorioVehiculos
     {
         try
         {
-            _connection.Open();
             using var command = _connection.CreateCommand();
-            command.CommandText = "SELECT * FROM Cita WHERE Id = @Id";
+            command.CommandText = @"SELECT Id, Matricula, Marca, Modelo, Cilindrada, Motor, DniDueno AS DniDueño, FechaMatriculacion, FechaInspeccion, CreatedAt, UpdatedAt, IsDeleted FROM Cita WHERE Id = @Id";
             command.Parameters.AddWithValue("@Id", key);
             using var reader = command.ExecuteReader();
             var vehiculo = reader.Read() ? MapVehiculo(reader) : null;
@@ -174,9 +173,9 @@ public class AdoRepository: IRepositorioVehiculos
     {
         try
         {
-            _connection.Open();
             using var command = _connection.CreateCommand();
-            command.CommandText = "SELECT * FROM Cita WHERE Matricula = @Matricula";
+            command.CommandText = @"SELECT Id, Matricula, Marca, Modelo, Cilindrada, Motor, DniDueno AS DniDueño, FechaMatriculacion, FechaInspeccion, CreatedAt, UpdatedAt, IsDeleted 
+                                    FROM Cita WHERE Matricula = @Matricula";
             command.Parameters.AddWithValue("@Matricula", key);
             using var reader = command.ExecuteReader();
             var vehiculo = reader.Read() ? MapVehiculo(reader) : null;

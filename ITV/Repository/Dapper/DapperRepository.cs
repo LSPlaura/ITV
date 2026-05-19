@@ -41,26 +41,26 @@ public class DapperRepository : IRepositorioVehiculos
             _connection.Open();
 
         _connection.Execute(@"
-            CREATE TABLE IF NOT EXISTS Cita(
-            Id INTEGER PRIMARY KEY,
-            FechaMatriculacion TEXT NOT NULL,
-            FechaInspeccion TEXT,
-            Matricula TEXT NOT NULL,
-            Modelo TEXT NOT NULL,
-            Marca TEXT NOT NULL,
-            Motor INTEGER NOT NULL,
-            Cilindrada REAL CHECK (Cilindrada > 0) NOT NULL,
-            DniDueno TEXT NOT NULL,
-            IsDeleted INTEGER DEFAULT 0,
-            CreatedAt TEXT NOT NULL,
-            UpdatedAt TEXT NOT NULL
-        );");
+              CREATE TABLE IF NOT EXISTS Cita(
+                Id INTEGER PRIMARY KEY,
+                FechaMatriculacion TEXT NOT NULL,
+                FechaInspeccion TEXT NOT NULL,
+                Matricula TEXT NOT NULL UNIQUE,
+                Modelo  TEXT NOT NULL,
+                Marca TEXT NOT NULL,
+                Motor TEXT NOT NULL,
+                Cilindrada REAL CHECK (Cilindrada > 0) NOT NULL,
+                DniDueno TEXT NOT NULL,
+                IsDeleted INTEGER DEFAULT 0,
+                CreatedAt TEXT NOT NULL,
+                UpdatedAt TEXT NOT NULL
+              );");
         _logger.Debug("Se ha creado la tabla, creo");
     }
     
     public IEnumerable<Cita> GetAll()
     {
-        var sql = "SELECT Id, Matricula, Modelo, Marca, Motor, Cilindrada, DniDueno AS DniDueño, IsDeleted FROM Cita";
+        var sql = "SELECT Id, Matricula, Marca, Modelo, Cilindrada, Motor, DniDueno AS DniDueño, FechaMatriculacion, FechaInspeccion, CreatedAt, UpdatedAt, IsDeleted FROM Cita";
         var entities = _connection.Query<CitaEntity>(sql).ToList();
         return CitaMapper.ToModel(entities);
     }
@@ -119,7 +119,7 @@ public class DapperRepository : IRepositorioVehiculos
     {
         try
         {
-            var sql = "SELECT * FROM Cita WHERE Id = @Id";
+            var  sql = "SELECT Id, Matricula, Marca, Modelo, Cilindrada, Motor, DniDueno AS DniDueño, FechaMatriculacion, FechaInspeccion, CreatedAt, UpdatedAt, IsDeleted FROM Cita WHERE Id = @Id";
             var entity = _connection.QueryFirstOrDefault<CitaEntity>(sql, new { Id = key });
         
             return entity == null ? 
@@ -139,7 +139,7 @@ public class DapperRepository : IRepositorioVehiculos
     {
         try
         {
-            var sql = "SELECT * FROM Cita WHERE Matricula = @Matricula";
+            var  sql = "SELECT Id, Matricula, Marca, Modelo, Cilindrada, Motor, DniDueno AS DniDueño, FechaMatriculacion, FechaInspeccion, CreatedAt, UpdatedAt, IsDeleted FROM Cita WHERE Id = @Id";
             var entity = _connection.QueryFirstOrDefault<CitaEntity>(sql, new { Matricula = key });
         
             return entity == null ? 
@@ -159,18 +159,12 @@ public class DapperRepository : IRepositorioVehiculos
     {
         try
         {
-            var sqlBuscar = "SELECT * FROM Cita WHERE Id = @Id";
-            var encontrado = _connection.QueryFirstOrDefault<CitaEntity>(sqlBuscar, new { Id = key });
-        
-            if (encontrado == null) 
-                return Result.Failure<Cita, DomainError>(new CitaError.CitaNotFoundId(key))
-                    .TapError( l => _logger.Error("No se ha encontrado el vehiculo con el ID {Id} para poder actualizarllo", key));
-
             value = value with { UpdatedAt = DateTime.Now };
             var entity = value.ToEntity();
             
             var sql = @"UPDATE Cita SET 
                     Matricula = @Matricula, Modelo = @Modelo, Marca = @Marca, Motor = @Motor, Cilindrada = @Cilindrada,
+                    DniDueno = @DniDueño, FechaMatriculacion = @FechaMatriculacion, FechaInspeccion = @FechaInspeccion,
                     UpdatedAt = @UpdatedAt WHERE Id = @Id";
             _connection.Execute(sql, new { 
                 entity.Matricula, 
@@ -178,6 +172,9 @@ public class DapperRepository : IRepositorioVehiculos
                 entity.Marca, 
                 entity.Motor, 
                 entity.Cilindrada, 
+                entity.DniDueño,
+                entity.FechaInspeccion,
+                entity.FechaMatriculacion,
                 entity.UpdatedAt, 
                 Id = key
             });
