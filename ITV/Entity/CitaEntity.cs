@@ -35,7 +35,7 @@ public class CitaEntity
     [Required]
     public int Motor { get; set; }
 
-    [Required][MaxLength(9)]
+    [Required][MaxLength(9)] [Column("DniDueno")]
     public string DniDueño { get; set; } = string.Empty;
     
     public int IsDeleted { get; set; }
