@@ -407,7 +407,7 @@
                      IsReadOnly="True"
                      CanUserResizeColumns="False" 
                      CanUserReorderColumns="False"
-                     SelectedItem="{Binding CitaSeleccionada}">
+                     SelectedItem="{Binding CitaSeleccionada,  Mode=OneWayToSource}">
                 
                 <DataGrid.ColumnHeaderStyle>
                     <Style TargetType="DataGridColumnHeader">
