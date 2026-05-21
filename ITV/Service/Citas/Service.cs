@@ -14,9 +14,7 @@ using SQLitePCL;
 namespace ITV.Service.Citas;
 
 public class ServiceVehiculos (
-    IRepositorioVehiculos repositorio,
-    IBackUpService<Cita> backUpService,
-    IExport<Cita> exportService,
+    IRepositorioCita repositorio,
     ICache<int, Cita> cache,
     IValidate<Cita> validador
     ) : IService<int, Cita>
@@ -26,13 +24,11 @@ public class ServiceVehiculos (
     private readonly int _limiteVehciulos = 3;
     
     public ServiceVehiculos(
-            IRepositorioVehiculos repositorio,
-            IBackUpService<Cita> backUpService,
-            IExport<Cita> exportService,
+            IRepositorioCita repositorio,
             ICache<int, Cita> cache,
             IValidate<Cita> validador,
             bool seed
-        ) : this(repositorio, backUpService, exportService, cache, validador) { if (seed)  Seed(); }
+        ) : this(repositorio, cache, validador) { if (seed)  Seed(); }
     
     //Funciones Crud
     public Result<Cita, DomainError> Agregar(Cita item)
@@ -101,70 +97,7 @@ public class ServiceVehiculos (
             .Skip(pagina * cantidad) 
             .Take(cantidad);
     }
-
-    //Funciones Storage
-    public Result<int, DomainError> Importar(IStorage<Cita> storage)
-    {
-        _logger.Information("Iniciando proceso de importación desde {Ruta}", Configuracion.StorageFilePath);
-        return storage.Cargar().Tap(_ => repositorio.DeleteAll()).Bind(AgregarColeccion)
-            .Tap(l => _logger.Information("Importación finalizada con éxito. Total: {Count} registros", l));
-    }
-
-    public  Result<int, DomainError> Exportar(IStorage<Cita> storage)
-    {
-        _logger.Information("Iniciando exportación de datos a {Ruta}", Configuracion.StorageFilePath);
-        var lista = repositorio.GetAll().ToList();
-        return storage.Salvar(lista).Map(_ => lista.Count)
-            .Tap(l =>_logger.Information("Exportación completada correctamente. Total: {Count}", l));
-    }
-
-    //Funciones buckup service
-    public Result<string, DomainError> GuardarBuckUp()
-    {
-        _logger.Information("Generando copia de seguridad (BackUps)");
-        return backUpService.Guardar(repositorio.GetAll())
-            .Tap(l =>  _logger.Information("Copia de seguridad guardada en: {Path}", l));
-    }
-
-    public Result<int, DomainError> RestaurarBuckUp(string path)
-    {
-        _logger.Information("Restaurando sistema desde BackUps: {Path}", path);
-        return backUpService.Restuarar(path).Tap(_ => repositorio.DeleteAll()).Bind(AgregarColeccion)
-            .Tap(l => _logger.Information("Restauración completada satisfactoriamente. Total: {Count}", l));
-    }
-
-    public List<string> ListadoBackUps()
-    {
-        _logger.Information("Listando las rutas de todos los BackUps");
-        return backUpService.Listar().ToList();
-    }
-
-    private Result<int, DomainError> AgregarColeccion(IEnumerable<Cita> coleccion)
-    {
-        int contador = 0;
-        foreach (var vehiculo in coleccion)
-        {
-            var agregado = repositorio.Agregar(vehiculo);
-            if (agregado.IsFailure) return agregado.Map(_ => contador);
-            contador++;
-        }
-        return Result.Success<int, DomainError>(contador);
-    }
     
-    //Funciones exportar
-
-    public Result<string, DomainError> ExportHtml(int key)
-    {
-        return repositorio.BuscarId(key)
-            .Bind(c => exportService.ExportHtml(c));
-    }
-    
-    public Result<string, DomainError> ExportPdf(int key)
-    {
-        return repositorio.BuscarId(key)
-            .Bind(c => exportService.ExportPdf(c));
-    }
-
     /// <summary>
     /// Siembra el repositorio si no hay datos ya en este.
     /// <remarks>

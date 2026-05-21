@@ -8,7 +8,7 @@ using SelectPdf;
 
 namespace ITV.Service.Export;
 
-public class ExportService : IExport<Cita>
+public class ReportGeneratorService : ReportGenerator<Cita>
 {
     private static readonly string _fecha = DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss");
     private string _folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");

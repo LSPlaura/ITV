@@ -4,7 +4,7 @@ using ITV.Models;
 
 namespace ITV.Service.Export;
 
-public interface IExport<T>
+public interface ReportGenerator<T>
 {
     /// <summary>
     /// Exporta los datos de un objeto a un archivo html

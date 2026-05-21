@@ -15,7 +15,7 @@ using Serilog;
 
 namespace ITV.Repository.Ado;
 
-public class AdoRepository: IRepositorioVehiculos
+public class AdoRepository: IRepositorioCita
 {
     private readonly ILogger _logger = Log.ForContext<AdoRepository>();
     private SqliteConnection _connection;

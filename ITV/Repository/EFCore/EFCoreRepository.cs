@@ -12,7 +12,7 @@ using Serilog;
 
 namespace ITV.Repository.EFCore;
 
-public class EfCoreRepository : IRepositorioVehiculos
+public class EfCoreRepository : IRepositorioCita
 {
     private readonly ILogger _logger = Log.ForContext<EfCoreRepository>();
     private readonly AppDbContext _context;

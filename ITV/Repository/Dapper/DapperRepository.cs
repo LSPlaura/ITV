@@ -14,7 +14,7 @@ using Serilog;
 
 namespace ITV.Repository.Dapper;
 
-public class DapperRepository : IRepositorioVehiculos
+public class DapperRepository : IRepositorioCita
 {
     private readonly ILogger _logger = Log.ForContext<DapperRepository>();
     private IDbConnection _connection;

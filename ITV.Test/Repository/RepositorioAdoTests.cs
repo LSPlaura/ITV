@@ -16,7 +16,7 @@ public class RepositorioAdoTests
     [TestFixture]
     public class CasosValidos
     {
-        private IRepositorioVehiculos _repositorio = null!;
+        private IRepositorioCita _repositorio = null!;
         private SqliteConnection _connection = null!;
        
         private static readonly DateTime FechaMat = DateTime.Today.AddYears(-1);
@@ -170,7 +170,7 @@ public class RepositorioAdoTests
     [TestFixture]
     public class CasosInvalidos
     {
-        private IRepositorioVehiculos _repositorio = null!;
+        private IRepositorioCita _repositorio = null!;
         private SqliteConnection _connection = null!;
        
         private static readonly DateTime FechaMat = DateTime.Today.AddYears(-1);

@@ -10,6 +10,7 @@ using ITV.Repository.EFCore;
 using ITV.Service;
 using ITV.Service.BackUp;
 using ITV.Service.Citas;
+using ITV.Service.DataService;
 using ITV.Service.Export;
 using ITV.Storage.Common;
 using ITV.Storage.CSV;
@@ -38,7 +39,7 @@ public static class DependenciesProvider
 
     private static void RegisterRepository(IServiceCollection services)
     {
-        services.AddSingleton<IRepositorioVehiculos>(sp =>
+        services.AddSingleton<IRepositorioCita>(sp =>
         {
             var repository = Configuracion.RepositoryType.ToLower();
             return repository switch
@@ -71,12 +72,17 @@ public static class DependenciesProvider
         services.AddTransient<IBackUpServiceCitas, BackupService>(sp => 
             new BackupService(sp.GetRequiredService<IStorage<Cita>>(), Configuracion.BackUpFile, Configuracion.BackUpFolder));
 
-        services.AddTransient<IExport<Cita>, ExportService>(sp => new ExportService());
+        services.AddTransient<ReportGenerator<Cita>, ReportGeneratorService>(sp => new ReportGeneratorService());
+        
+        services.AddTransient<IDataService<Cita>, DataService>(sp => 
+            new DataService(
+                sp.GetRequiredService<IBackUpService<Cita>>(),
+                sp.GetRequiredService<IRepositorioCita>()
+            )
+        );
 
         services.AddTransient<IService<int, Cita>, ServiceVehiculos>(sp => new ServiceVehiculos(
-            sp.GetRequiredService<IRepositorioVehiculos>(),
-            sp.GetRequiredService<IBackUpServiceCitas>(),
-            sp.GetRequiredService<IExport<Cita>>(),
+            sp.GetRequiredService<IRepositorioCita>(),
             sp.GetRequiredService<ICache<int, Cita>>(),
             sp.GetRequiredService<IValidate<Cita>>(),
             Configuracion.ToSeed
