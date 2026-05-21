@@ -11,7 +11,7 @@ using ITV.Storage.Common;
 namespace ITV.Test.Service;
 using Moq;
 [TestFixture]
-public class BackUpServiceTests
+public class BackUpTests
 {
    [TestFixture]
    public class CasosValidos
