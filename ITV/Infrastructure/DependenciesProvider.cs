@@ -69,8 +69,9 @@ public static class DependenciesProvider
     
     private static void RegisterServices(IServiceCollection services)
     {
-        services.AddTransient<IBackUpServiceCitas, BackupService>(sp => 
-            new BackupService(sp.GetRequiredService<IStorage<Cita>>(), Configuracion.BackUpFile, Configuracion.BackUpFolder));
+        
+        services.AddTransient<IBackUpService<Cita>, BackupService>(sp => new BackupService(sp.GetRequiredService<IStorage<Cita>>(),
+            Configuracion.BackUpFile, Configuracion.BackUpFolder));
 
         services.AddTransient<ReportGenerator<Cita>, ReportGeneratorService>(sp => new ReportGeneratorService());
         
