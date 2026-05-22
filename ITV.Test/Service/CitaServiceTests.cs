@@ -21,7 +21,6 @@ public class CitaServiceTests
     public class CasosValidos
     {
         private Mock<IRepositorioCita> _mockRepository = null!;
-        private Mock<ICache<int, Cita>> _mockCacheLru = null!;
         private Mock<IValidate<Cita>> _mockValidador = null!;
         private IService<int, Cita> _service = null!;
 
@@ -29,11 +28,9 @@ public class CitaServiceTests
         public void SetUp()
         {
             _mockRepository = new Mock<IRepositorioCita>();
-            _mockCacheLru = new Mock<ICache<int, Cita>>();
             _mockValidador = new Mock<IValidate<Cita>>();
             _service = new ServiceVehiculos(
                 _mockRepository.Object,
-                _mockCacheLru.Object,
                 _mockValidador.Object);
         }
 
@@ -136,47 +133,6 @@ public class CitaServiceTests
 
             _mockRepository.Verify(r => r.BuscarId(idVehiculo), Times.Once);
             _mockRepository.Verify(r => r.Borrar(idVehiculo), Times.Once);
-            _mockCacheLru.Verify(c => c.Borrar(idVehiculo), Times.Once);
-        }
-
-        [Test]
-        public void GetById_EstaCacheado_NoLlegaAlRepositorio()
-        {
-            var idVehiculo = 6;
-            var vehiculoExistente = new Cita(idVehiculo, FechaMat, FechaInsp, "2222BBB", "Renault", "Clio", 1.2,
-                Motor.Gasolina, "99887766A", false, Now, Now);
-
-            _mockCacheLru.Setup(r => r.Obtener(idVehiculo))
-                .Returns(vehiculoExistente);
-
-            var result = _service.GetById(idVehiculo);
-
-            result.IsSuccess.Should().BeTrue();
-
-            _mockCacheLru.Verify(r => r.Obtener(idVehiculo), Times.Once);
-            _mockRepository.Verify(r => r.BuscarId(It.IsAny<int>()), Times.Never);
-            _mockCacheLru.Verify(c => c.Agregar(idVehiculo, vehiculoExistente), Times.Never);
-        }
-
-        [Test]
-        public void GetById_NoEstaCacheado_AccedeAlRepositorio()
-        {
-            var idVehiculo = 7;
-            var vehiculoExistente = new Cita(idVehiculo, FechaMat, FechaInsp, "3333CCC", "Seat", "Ibiza", 1.4,
-                Motor.Gasolina, "11223344B", false, Now, Now);
-
-            _mockCacheLru.Setup(r => r.Obtener(idVehiculo))
-                .Returns((Cita)null!);
-            _mockRepository.Setup(r => r.BuscarId(idVehiculo))
-                .Returns(Result.Success<Cita, DomainError>(vehiculoExistente));
-
-            var result = _service.GetById(idVehiculo);
-
-            result.IsSuccess.Should().BeTrue();
-
-            _mockCacheLru.Verify(r => r.Obtener(idVehiculo), Times.Once);
-            _mockRepository.Verify(r => r.BuscarId(idVehiculo), Times.Once);
-            _mockCacheLru.Verify(c => c.Agregar(idVehiculo, vehiculoExistente), Times.Once);
         }
 
         [Test]
@@ -208,7 +164,6 @@ public class CitaServiceTests
             _mockRepository.Verify(r => r.ExistId(idVehiculo), Times.Once);
             _mockRepository.Verify(r => r.GetAll(), Times.AtLeastOnce);
             _mockRepository.Verify(r => r.Actualizar(idVehiculo, It.IsAny<Cita>()), Times.Once);
-            _mockCacheLru.Verify(c => c.Borrar(idVehiculo), Times.Once);
         }
 
         [Test]
@@ -240,7 +195,6 @@ public class CitaServiceTests
             _mockRepository.Verify(r => r.ExistId(idVehiculo), Times.Once);
             _mockRepository.Verify(r => r.GetAll(), Times.AtLeastOnce);
             _mockRepository.Verify(r => r.Actualizar(idVehiculo, It.IsAny<Cita>()), Times.Once);
-            _mockCacheLru.Verify(c => c.Borrar(idVehiculo), Times.Once);
         }
 
         [Test]
@@ -276,7 +230,6 @@ public class CitaServiceTests
             _mockRepository.Verify(r => r.ExistId(idVehiculo), Times.Once);
             _mockRepository.Verify(r => r.GetAll(), Times.AtLeastOnce);
             _mockRepository.Verify(r => r.Actualizar(idVehiculo, It.IsAny<Cita>()), Times.Once);
-            _mockCacheLru.Verify(c => c.Borrar(idVehiculo), Times.Once);
         }
 
         [Test]
@@ -304,7 +257,6 @@ public class CitaServiceTests
     public class CasosInvalidos
     {
         private Mock<IRepositorioCita> _mockRepository = null!;
-        private Mock<ICache<int, Cita>> _mockCacheLru = null!;
         private Mock<IValidate<Cita>> _mockValidador = null!;
         private IService<int, Cita> _service = null!;
 
@@ -312,12 +264,10 @@ public class CitaServiceTests
         public void SetUp()
         {
             _mockRepository = new Mock<IRepositorioCita>();
-            _mockCacheLru = new Mock<ICache<int, Cita>>();
             _mockValidador = new Mock<IValidate<Cita>>();
 
             _service = new ServiceVehiculos(
                 _mockRepository.Object,
-                _mockCacheLru.Object,
                 _mockValidador.Object
             );
         }
@@ -411,7 +361,6 @@ public class CitaServiceTests
             _mockValidador.Verify(v => v.Validar(It.IsAny<Cita>()), Times.Once);
             _mockRepository.Verify(r => r.BuscarId(idVehiculo), Times.Never);
             _mockRepository.Verify(r => r.Actualizar(idVehiculo, It.IsAny<Cita>()), Times.Never);
-            _mockCacheLru.Verify(c => c.Borrar(idVehiculo), Times.Never);
         }
 
         [Test]
@@ -428,7 +377,6 @@ public class CitaServiceTests
             _mockValidador.Verify(v => v.Validar(It.IsAny<Cita>()), Times.Once);
             _mockRepository.Verify(r => r.ExistId(vehiculoAntiguo.Id), Times.Once);
             _mockRepository.Verify(r => r.Actualizar(vehiculoAntiguo.Id, It.IsAny<Cita>()), Times.Never);
-            _mockCacheLru.Verify(c => c.Borrar(vehiculoAntiguo.Id), Times.Never);
         }
 
         [Test]
@@ -447,7 +395,6 @@ public class CitaServiceTests
             resultado.IsFailure.Should().BeTrue();
             _mockValidador.Verify(v => v.Validar(It.IsAny<Cita>()), Times.Once);
             _mockRepository.Verify(r => r.Actualizar(idVehiculo, It.IsAny<Cita>()), Times.Never);
-            _mockCacheLru.Verify(c => c.Borrar(idVehiculo), Times.Never);
         }
 
         [Test]
@@ -462,23 +409,19 @@ public class CitaServiceTests
             result.IsFailure.Should().BeTrue();
             _mockRepository.Verify(r => r.BuscarId(idVehiculo), Times.Once);
             _mockRepository.Verify(r => r.Borrar(It.IsAny<int>()), Times.Never);
-            _mockCacheLru.Verify(c => c.Borrar(idVehiculo), Times.Never);
         }
 
         [Test]
         public void GetById_NoEstaRepositorio_DevuelveFailure()
         {
             var idVehiculo = 80;
-            _mockCacheLru.Setup(r => r.Obtener(idVehiculo)).Returns((Cita)null!);
             _mockRepository.Setup(r => r.BuscarId(idVehiculo))
                 .Returns(Result.Failure<Cita, DomainError>(new CitaError.CitaNotFoundId(idVehiculo)));
 
             var result = _service.GetById(idVehiculo);
 
             result.IsFailure.Should().BeTrue();
-            _mockCacheLru.Verify(r => r.Obtener(idVehiculo), Times.Once);
             _mockRepository.Verify(r => r.BuscarId(idVehiculo), Times.Once);
-            _mockCacheLru.Verify(c => c.Agregar(idVehiculo, It.IsAny<Cita>()), Times.Never);
         }
 
         [Test]

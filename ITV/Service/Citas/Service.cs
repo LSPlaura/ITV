@@ -15,7 +15,6 @@ namespace ITV.Service.Citas;
 
 public class ServiceVehiculos (
     IRepositorioCita repositorio,
-    ICache<int, Cita> cache,
     IValidate<Cita> validador
     ) : IService<int, Cita>
 
@@ -25,10 +24,9 @@ public class ServiceVehiculos (
     
     public ServiceVehiculos(
             IRepositorioCita repositorio,
-            ICache<int, Cita> cache,
             IValidate<Cita> validador,
             bool seed
-        ) : this(repositorio, cache, validador) { if (seed)  Seed(); }
+        ) : this(repositorio, validador) { if (seed)  Seed(); }
     
     //Funciones Crud
     public Result<Cita, DomainError> Agregar(Cita item)
@@ -62,7 +60,6 @@ public class ServiceVehiculos (
     {
         _logger.Information("Borrando vehiculo con la matrícula: {Matricula}", key);
         return repositorio.BuscarId(key)
-            .Tap(v => cache.Borrar(v.Id))
             .Bind(v => repositorio.Borrar(v.Id, isLogical));
     }
     
@@ -70,11 +67,7 @@ public class ServiceVehiculos (
     {
         _logger.Information("Buscando vehiculo con matricula: {Matricula}", key);
 
-        var cacheado = cache.Obtener(key);
-        if (cacheado != null) return Result.Success<Cita, DomainError>(cacheado)
-            .Tap(v => _logger.Information("El vehiculo con la matricula {Matricula} encontrado", v.Matricula));
-
-        return repositorio.BuscarId(key).Tap(v => cache.Agregar(key, v));
+        return repositorio.BuscarId(key);
     }
 
     public Result<Cita, DomainError> Actualizar(int key, Cita item)
@@ -84,10 +77,11 @@ public class ServiceVehiculos (
             .Bind(v => validador.Validar(v).Map(_ => v))
             .Map(Estandarizar)
             .Ensure(v => repositorio.ExistId(key), new CitaError.CitaNotFoundId(key))
-            .Ensure(v => VerificarFechaVehiculo(v.Matricula, v.FechaInspeccion, key),v => new CitaError.FechaYaEstablecida(v.Matricula, v.FechaInspeccion))
-            .Ensure(v => ContarVehiculos(v.DniDueño, v.FechaInspeccion, key),v => new CitaError.OwnerWithThreeOrMoreCitas(v.DniDueño, v.FechaInspeccion))
-            .Bind(v => repositorio.Actualizar(key, v))
-            .Tap(_ => cache.Borrar(key));
+            .Ensure(v => VerificarFechaVehiculo(v.Matricula, v.FechaInspeccion, key),
+                v => new CitaError.FechaYaEstablecida(v.Matricula, v.FechaInspeccion))
+            .Ensure(v => ContarVehiculos(v.DniDueño, v.FechaInspeccion, key),
+                v => new CitaError.OwnerWithThreeOrMoreCitas(v.DniDueño, v.FechaInspeccion))
+            .Bind(v => repositorio.Actualizar(key, v));
     }
 
     public IEnumerable<Cita> GetAll(int pagina = 0, int cantidad = 20)

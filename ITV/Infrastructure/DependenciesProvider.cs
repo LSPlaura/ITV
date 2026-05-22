@@ -84,7 +84,6 @@ public static class DependenciesProvider
 
         services.AddTransient<IService<int, Cita>, ServiceVehiculos>(sp => new ServiceVehiculos(
             sp.GetRequiredService<IRepositorioCita>(),
-            sp.GetRequiredService<ICache<int, Cita>>(),
             sp.GetRequiredService<IValidate<Cita>>(),
             Configuracion.ToSeed
         ));
