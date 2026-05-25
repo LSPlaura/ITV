@@ -13,6 +13,6 @@ public partial class ExportCitas : Window
     public ExportCitas(Cita cita)
     {
         InitializeComponent();
-        DataContext = new ExportCitasModel(App.ServiceProvider.GetRequiredService<ReportGenerator<Cita>>(), cita, this.Close);
+        DataContext = new ExportCitasModel(App.ServiceProvider.GetRequiredService<IReportGenerator<Cita>>(), cita, this.Close);
     }
 }

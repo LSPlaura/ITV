@@ -58,6 +58,7 @@
 
     <ItemGroup>
       <Folder Include="DataExchange\" />
+      <Folder Include="DataExchange\Report\Common\" />
     </ItemGroup>
 
 </Project>
