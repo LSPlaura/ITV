@@ -59,8 +59,7 @@ public class ServiceVehiculos (
     public Result<Cita, DomainError> Borrar(int key, bool isLogical = true)
     {
         _logger.Information("Borrando vehiculo con la matrícula: {Matricula}", key);
-        return repositorio.BuscarId(key)
-            .Bind(v => repositorio.Borrar(v.Id, isLogical));
+        return repositorio.Borrar(key, isLogical);
     }
     
     public  Result<Cita, DomainError> GetById(int key)

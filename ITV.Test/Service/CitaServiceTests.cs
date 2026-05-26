@@ -121,17 +121,14 @@ public class CitaServiceTests
             var idVehiculo = 5;
             var vehiculoExistente = new Cita(idVehiculo, FechaMat, FechaInsp, "1111BBB", "Toyota", "Malo", 1.0,
                 Motor.Diesel, "12345678Z", false, Now, Now);
-
-            _mockRepository.Setup(r => r.BuscarId(idVehiculo))
-                .Returns(Result.Success<Cita, DomainError>(vehiculoExistente));
+            
             _mockRepository.Setup(r => r.Borrar(idVehiculo))
                 .Returns(Result.Success<Cita, DomainError>(vehiculoExistente));
 
             var result = _service.Borrar(idVehiculo);
 
             result.IsSuccess.Should().BeTrue();
-
-            _mockRepository.Verify(r => r.BuscarId(idVehiculo), Times.Once);
+            
             _mockRepository.Verify(r => r.Borrar(idVehiculo), Times.Once);
         }
 
@@ -395,20 +392,6 @@ public class CitaServiceTests
             resultado.IsFailure.Should().BeTrue();
             _mockValidador.Verify(v => v.Validar(It.IsAny<Cita>()), Times.Once);
             _mockRepository.Verify(r => r.Actualizar(idVehiculo, It.IsAny<Cita>()), Times.Never);
-        }
-
-        [Test]
-        public void Borrar_NoEncuentraId_DevuelveFailure()
-        {
-            var idVehiculo = 70;
-            _mockRepository.Setup(r => r.BuscarId(idVehiculo))
-                .Returns(Result.Failure<Cita, DomainError>(new CitaError.CitaNotFoundId(idVehiculo)));
-
-            var result = _service.Borrar(idVehiculo);
-
-            result.IsFailure.Should().BeTrue();
-            _mockRepository.Verify(r => r.BuscarId(idVehiculo), Times.Once);
-            _mockRepository.Verify(r => r.Borrar(It.IsAny<int>()), Times.Never);
         }
 
         [Test]

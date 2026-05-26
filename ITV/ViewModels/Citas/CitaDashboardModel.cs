@@ -46,7 +46,7 @@ public partial class CitaDashboardModel : ObservableObject
         _citasService = citasService;
         NuevaCitaCommand = new RelayCommand(NuevaCita);
         _logger.Debug("Inicializando CitaDashboardModel");
-        LoadCitas();
+        GenerarListado();
     }
 
     private void NuevaCita()
@@ -55,7 +55,7 @@ public partial class CitaDashboardModel : ObservableObject
         var view = new Formulario(new Cita(), true);
         view.ShowDialog();
         _logger.Information("Formulario de nueva cita cerrado, recargando datos");
-        LoadCitas();
+        GenerarListado();
     }
 
     partial void OnMatriculaChanged(string value) => ResetearPaginaYFiltrar("Matrícula", value);
@@ -73,7 +73,7 @@ public partial class CitaDashboardModel : ObservableObject
         _logger.Debug("Cambio detectado en filtro: {Propiedad} = {Valor}. Reiniciando índice de página", propiedad, valor ?? "null");
         _contador = 0;
         OnPropertyChanged(nameof(NumeroPagina));
-        Filtrar();
+        GenerarListado();
     }
 
     partial void OnCitaSeleccionadaChanged(Cita? value)
@@ -91,16 +91,11 @@ public partial class CitaDashboardModel : ObservableObject
         OnPropertyChanged(nameof(TamanoPagina));
         _contador = 0;
         OnPropertyChanged(nameof(NumeroPagina));
-        Filtrar();
-    }
-
-    private void LoadCitas()
-    {
-        Filtrar();
+        GenerarListado();
     }
     
     [RelayCommand]
-    private void Filtrar()
+    private void GenerarListado()
     {
         try
         {
@@ -179,7 +174,7 @@ public partial class CitaDashboardModel : ObservableObject
         _contador++;
         _logger.Debug("Avanzando a la página index: {Index}", _contador);
         OnPropertyChanged(nameof(NumeroPagina));
-        LoadCitas();
+        GenerarListado();
     }
 
     [RelayCommand(CanExecute = nameof(CanPaginaAnterior))]
@@ -188,7 +183,7 @@ public partial class CitaDashboardModel : ObservableObject
         _contador--;
         _logger.Debug("Retrocediendo a la página index: {Index}", _contador);
         OnPropertyChanged(nameof(NumeroPagina));
-        LoadCitas();
+        GenerarListado();
     }
 
     private bool CanPaginaSiguiente() => _puedePasarSiguiente; 
