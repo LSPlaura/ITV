@@ -2,9 +2,9 @@ using System.IO;
 using CSharpFunctionalExtensions;
 using ITV.Config;
 using ITV.Entity;
+using ITV.Error.Citas;
 using ITV.Error.Common;
 using ITV.Error.DataBase;
-using ITV.Error.Vehiculos;
 using ITV.Mappers;
 using ITV.Models;
 using ITV.Repository.Common;
@@ -12,7 +12,7 @@ using Serilog;
 
 namespace ITV.Repository.EFCore;
 
-public class EfCoreRepository : IRepositorioCita
+public class EfCoreRepository : IRepositorioCitas
 {
     private readonly ILogger _logger = Log.ForContext<EfCoreRepository>();
     private readonly AppDbContext _context;

@@ -15,8 +15,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-
-        <!-- HEADER -->
+        
         <Border Grid.Row="0" Background="#7D8A8A" Height="100">
             <StackPanel VerticalAlignment="Center">
                 <TextBlock Text="ITV SYSTEM" 

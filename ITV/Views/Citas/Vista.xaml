@@ -52,7 +52,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- HEADER -->
+        
         <Border Grid.Row="0" Background="#7D8A8A" Height="80" Padding="0">
             <StackPanel VerticalAlignment="Center">
                 <TextBlock Text="DETALLE DE LA CITA" 
@@ -67,12 +67,10 @@
                 </Border>
             </StackPanel>
         </Border>
-
-        <!-- CONTENIDO -->
+        
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="0">
             <StackPanel Margin="40,25,40,25" MaxWidth="500" HorizontalAlignment="Center">
-
-                <!-- GRID DE DATOS 2 COLUMNAS -->
+                
                 <Grid Margin="0,0,0,25">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -84,68 +82,62 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-
-                    <!-- MATRÍCULA (Ocupa 2 columnas) -->
+                    
                     <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,0,20">
                         <TextBlock Text="MATRÍCULA" Style="{StaticResource FieldLabel}"/>
                         <TextBlock Text="{Binding Cita.Matricula}" Style="{StaticResource ValueDisplay}" Foreground="#FF63C2" FontWeight="Bold" FontSize="17"/>
                     </StackPanel>
-
-                    <!-- MARCA -->
+                    
                     <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,12,0">
                         <TextBlock Text="MARCA" Style="{StaticResource FieldLabel}"/>
                         <TextBlock Text="{Binding Cita.Marca}" Style="{StaticResource ValueDisplay}"/>
                     </StackPanel>
-
-                    <!-- MODELO -->
+                    
                     <StackPanel Grid.Row="1" Grid.Column="1" Margin="12,0,0,0">
                         <TextBlock Text="MODELO" Style="{StaticResource FieldLabel}"/>
                         <TextBlock Text="{Binding Cita.Modelo}" Style="{StaticResource ValueDisplay}"/>
                     </StackPanel>
-
-                    <!-- CILINDRADA -->
+                    
                     <StackPanel Grid.Row="2" Grid.Column="0" Margin="0,0,12,0">
                         <TextBlock Text="CILINDRADA (CC)" Style="{StaticResource FieldLabel}"/>
                         <TextBlock Text="{Binding Cita.Cilindrada}" Style="{StaticResource ValueDisplay}"/>
                     </StackPanel>
-
-                    <!-- MOTOR -->
+                    
                     <StackPanel Grid.Row="2" Grid.Column="1" Margin="12,0,0,0">
                         <TextBlock Text="TIPO DE MOTOR" Style="{StaticResource FieldLabel}"/>
                         <TextBlock Text="{Binding Cita.Motor}" Style="{StaticResource ValueDisplay}"/>
                     </StackPanel>
 
-                    <!-- DNI (Ocupa 2 columnas) -->
+                   
                     <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2">
                         <TextBlock Text="DNI DEL DUEÑO" Style="{StaticResource FieldLabel}"/>
                         <TextBlock Text="{Binding Cita.DniDueño}" Style="{StaticResource ValueDisplay}"/>
                     </StackPanel>
                 </Grid>
 
-                <!-- FECHAS EN 2 COLUMNAS -->
+               
                 <Grid Margin="0,0,0,25">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
-                    <!-- FECHA MATRICULACIÓN -->
+                   
                     <StackPanel Grid.Column="0" Margin="0,0,12,0">
                         <TextBlock Text="FECHA DE MATRICULACIÓN" Style="{StaticResource FieldLabel}"/>
                         <TextBlock Text="{Binding Cita.FechaMatriculacion, StringFormat='dd/MM/yyyy'}" Style="{StaticResource ValueDisplay}"/>
                     </StackPanel>
 
-                    <!-- FECHA INSPECCIÓN -->
+                   
                     <StackPanel Grid.Column="1" Margin="12,0,0,0">
                         <TextBlock Text="FECHA DE INSPECCIÓN" Style="{StaticResource FieldLabel}"/>
                         <TextBlock Text="{Binding Cita.FechaInspeccion, StringFormat='dd/MM/yyyy HH:mm'}" Style="{StaticResource ValueDisplay}" FontWeight="SemiBold" Foreground="#116E6B"/>
                     </StackPanel>
                 </Grid>
 
-                <!-- SEPARADOR -->
+              
                 <Border Height="1" Background="#E0E5E5" Margin="0,10,0,25"/>
-
-                <!-- BOTONES -->
+                
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,0">
                     <Button Content="EDITAR" 
                             Background="#36FF6E" Foreground="#1A222B"

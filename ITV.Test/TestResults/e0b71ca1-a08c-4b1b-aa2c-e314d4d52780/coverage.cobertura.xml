@@ -5910,7 +5910,7 @@
                 <line number="154" hits="9" branch="False" />
               </lines>
             </method>
-            <method name=".ctor" signature="(ITV.Repository.Common.IRepositorioCita,ITV.Validador.IValidate`1&lt;ITV.Models.Cita&gt;)" line-rate="1" branch-rate="1" complexity="1">
+            <method name=".ctor" signature="(ITV.Repository.Common.IRepositorioCitas,ITV.Validador.IValidate`1&lt;ITV.Models.Cita&gt;)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
                 <line number="16" hits="18" branch="False" />
                 <line number="17" hits="18" branch="False" />
@@ -5920,7 +5920,7 @@
                 <line number="23" hits="18" branch="False" />
               </lines>
             </method>
-            <method name=".ctor" signature="(ITV.Repository.Common.IRepositorioCita,ITV.Validador.IValidate`1&lt;ITV.Models.Cita&gt;,System.Boolean)" line-rate="0" branch-rate="0" complexity="2">
+            <method name=".ctor" signature="(ITV.Repository.Common.IRepositorioCitas,ITV.Validador.IValidate`1&lt;ITV.Models.Cita&gt;,System.Boolean)" line-rate="0" branch-rate="0" complexity="2">
               <lines>
                 <line number="29" hits="0" branch="True" condition-coverage="0% (0/2)">
                   <conditions>

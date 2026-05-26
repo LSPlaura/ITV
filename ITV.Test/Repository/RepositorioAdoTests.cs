@@ -1,7 +1,7 @@
 using System.Data;
 using System.IO;
 using FluentAssertions;
-using ITV.Error.Vehiculos;
+using ITV.Error.Citas;
 using ITV.Models;
 using ITV.Repository.Ado;
 using ITV.Repository.Common;
@@ -16,7 +16,7 @@ public class RepositorioAdoTests
     [TestFixture]
     public class CasosValidos
     {
-        private IRepositorioCita _repositorio = null!;
+        private IRepositorioCitas _repositorio = null!;
         private SqliteConnection _connection = null!;
        
         private static readonly DateTime FechaMat = DateTime.Today.AddYears(-1);
@@ -170,7 +170,7 @@ public class RepositorioAdoTests
     [TestFixture]
     public class CasosInvalidos
     {
-        private IRepositorioCita _repositorio = null!;
+        private IRepositorioCitas _repositorio = null!;
         private SqliteConnection _connection = null!;
        
         private static readonly DateTime FechaMat = DateTime.Today.AddYears(-1);

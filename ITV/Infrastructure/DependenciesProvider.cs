@@ -39,7 +39,7 @@ public static class DependenciesProvider
 
     private static void RegisterRepository(IServiceCollection services)
     {
-        services.AddSingleton<IRepositorioCita>(sp =>
+        services.AddSingleton<IRepositorioCitas>(sp =>
         {
             var repository = Configuracion.RepositoryType.ToLower();
             return repository switch
@@ -78,12 +78,12 @@ public static class DependenciesProvider
         services.AddTransient<IDataService<Cita>, DataService>(sp => 
             new DataService(
                 sp.GetRequiredService<IBackUpService<Cita>>(),
-                sp.GetRequiredService<IRepositorioCita>()
+                sp.GetRequiredService<IRepositorioCitas>()
             )
         );
 
         services.AddTransient<IService<int, Cita>, ServiceCitas>(sp => new ServiceCitas(
-            sp.GetRequiredService<IRepositorioCita>(),
+            sp.GetRequiredService<IRepositorioCitas>(),
             sp.GetRequiredService<IValidate<Cita>>(),
             Configuracion.ToSeed
         ));

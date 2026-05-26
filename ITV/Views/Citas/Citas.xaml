@@ -5,7 +5,6 @@
       Background="#F0F2F2">
 
     <Page.Resources>
-        <!-- INPUTS HD: Bordes suaves y foco en Rosa -->
         <Style TargetType="TextBox">
             <Setter Property="Height" Value="38"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
@@ -43,7 +42,7 @@
         <Setter.Value>
             <ControlTemplate TargetType="ComboBox">
                 <Grid>
-                    <!-- BORDER + CONTENIDO -->
+                 
                     <Border x:Name="border" 
                             CornerRadius="6" 
                             Background="{TemplateBinding Background}" 
@@ -55,13 +54,13 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             
-                            <!-- CONTENIDO SELECCIONADO -->
+                           
                             <ContentPresenter Grid.Column="0"
                                               Content="{TemplateBinding SelectionBoxItem}" 
                                               VerticalAlignment="Center"
                                               Margin="8,0,4,0"/>
                             
-                            <!-- BOTÓN TOGGLE -->
+                        
                             <ToggleButton x:Name="PART_DropDownButton"
                                           Grid.Column="1"
                                           ClickMode="Press"
@@ -79,7 +78,7 @@
                         </Grid>
                     </Border>
                     
-                    <!-- POPUP DROPDOWN -->
+                    
                     <Popup x:Name="PART_Popup" 
                            PlacementTarget="{Binding ElementName=border}" 
                            IsOpen="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" 
@@ -109,7 +108,7 @@
         </Setter.Value>
     </Setter>
     
-    <!-- ITEMS STYLING -->
+   
     <Setter Property="ItemContainerStyle">
         <Setter.Value>
             <Style TargetType="ComboBoxItem">
@@ -142,7 +141,7 @@
     </Setter>
 </Style>
 
-      <!-- DATEPICKER HD -->
+     
 <Style TargetType="DatePicker">
     <Setter Property="Height" Value="38"/>
     <Setter Property="Padding" Value="12,0"/>
@@ -183,7 +182,6 @@
     </Setter>
 </Style>
 
-        <!-- BOTÓN PRIMARIO HD (Nueva Cita) -->
         <Style x:Key="PrimaryButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="#7D8A8A"/>
             <Setter Property="Foreground" Value="White"/>
@@ -217,7 +215,7 @@
             </Setter>
         </Style>
 
-        <!-- BOTÓN SECUNDARIO (Limpiar filtros) -->
+        
         <Style x:Key="SecondaryButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Foreground" Value="#7D8A8A"/>
@@ -246,7 +244,7 @@
             </Setter>
         </Style>
 
-        <!-- ETIQUETAS HD -->
+       
         <Style x:Key="LabelHD" TargetType="TextBlock">
             <Setter Property="FontSize" Value="11"/>
             <Setter Property="FontWeight" Value="ExtraBold"/>
@@ -264,9 +262,7 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-
-        <!-- 1. HEADER HD -->
-        <!-- 1. HEADER HD -->
+        
         <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,25" VerticalAlignment="Center">
             <StackPanel VerticalAlignment="Center">
                 <TextBlock Text="GESTIÓN DE CITAS" FontSize="28" FontWeight="Black" Foreground="#3A4242"/>
@@ -284,8 +280,7 @@
                 </StackPanel>
             </Button>
         </StackPanel>
-
-        <!-- 2. FILTROS HD -->
+        
         <Border Grid.Row="1" Background="White" CornerRadius="15" Padding="20" Margin="0,0,0,20">
             <Border.Effect>
                 <DropShadowEffect BlurRadius="30" ShadowDepth="4" Opacity="0.06" Color="Black"/>
@@ -299,8 +294,7 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="1.2*"/>
                 </Grid.ColumnDefinitions>
-
-              <!-- COLUMNA 1: Datos del Vehículo -->
+                
 <StackPanel Grid.Column="0">
     <TextBlock Text="DATOS DEL VEHÍCULO" Style="{StaticResource LabelHD}" Foreground="#7D8A8A" Margin="0,0,0,15" TextDecorations="Underline"/>
     <Grid>
@@ -315,7 +309,6 @@
 
         <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,8,15">
             <TextBlock Text="MATRÍCULA" Style="{StaticResource LabelHD}"/>
-            <!-- UpdateSourceTrigger=PropertyChanged hace que filtre mientras escribes -->
             <TextBox x:Name="TxtMatricula" Text="{Binding Matricula, UpdateSourceTrigger=PropertyChanged}"/>
         </StackPanel>
         <StackPanel Grid.Row="0" Grid.Column="1" Margin="8,0,0,15">
@@ -332,11 +325,9 @@
         </StackPanel>
     </Grid>
 </StackPanel>
-
-<!-- SEPARADOR 1 -->
+                
 <Rectangle Grid.Column="1" Width="1" Fill="#E0E5E5" Margin="15,0"/>
 
-<!-- COLUMNA 2: Fechas -->
 <StackPanel Grid.Column="2">
     <TextBlock Text="RANGOS DE FECHA" Style="{StaticResource LabelHD}" Foreground="#7D8A8A" Margin="0,0,0,15" TextDecorations="Underline"/>
     <Grid>
@@ -368,15 +359,12 @@
     </Grid>
 </StackPanel>
 
-<!-- SEPARADOR 2 -->
 <Rectangle Grid.Column="3" Width="1" Fill="#E0E5E5" Margin="15,0"/>
 
-<!-- COLUMNA 3: Motor -->
 <StackPanel Grid.Column="4" VerticalAlignment="Center">
     <TextBlock Text="MOTOR" Style="{StaticResource LabelHD}" Foreground="#7D8A8A" Margin="0,0,0,15" TextDecorations="Underline"/>
     <StackPanel Margin="0,0,0,12">
         <TextBlock Text="TIPO DE PROPULSIÓN" Style="{StaticResource LabelHD}"/>
-        <!-- SelectedValuePath y SelectedValue para capturar el string del ComboBoxItem -->
         <ComboBox x:Name="CbMotor" SelectedValuePath="Content" SelectedValue="{Binding TipoMotor}">
             <ComboBoxItem Content="Todos los motores"/>
             <ComboBoxItem Content="Gasolina"/>
@@ -385,13 +373,11 @@
             <ComboBoxItem Content="Electrico"/>
         </ComboBox>
     </StackPanel>
-    <!-- Agregado el Binding al comando de limpiar -->
     <Button Content="🔄 LIMPIAR FILTROS" Command="{Binding LimpiarFiltrosCommand}" Style="{StaticResource SecondaryButtonStyle}" HorizontalAlignment="Stretch"/>
 </StackPanel>
             </Grid>
         </Border>
         
-        <!-- 3. TABLA HD CON TODOS LOS DATOS -->
         <Border Grid.Row="2" Background="White" CornerRadius="15,15,0,0" BorderBrush="#E0E5E5" BorderThickness="1">
            <DataGrid x:Name="DgCitas" 
                      ItemsSource="{Binding Lista, Mode=OneWay}"
@@ -424,7 +410,6 @@
                 </DataGrid.ColumnHeaderStyle>
 
                 <DataGrid.Columns>
-        <!-- ⚠️ IMPORTANTE: Debes agregar Binding para cada columna -->
         <DataGridTextColumn Header="MATRÍCULA" 
                             Binding="{Binding Matricula}"
                             Width="110">
@@ -476,8 +461,7 @@
     </DataGrid.Columns>
 </DataGrid>
         </Border>
-
-        <!-- 4. PAGINACIÓN HD -->
+        
         <Border Grid.Row="3" Background="#2A3333" CornerRadius="0,0,15,15" Padding="28,14">
             <Border.Effect>
                 <DropShadowEffect BlurRadius="15" ShadowDepth="2" Opacity="0.1" Color="Black"/>

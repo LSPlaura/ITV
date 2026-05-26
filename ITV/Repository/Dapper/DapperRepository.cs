@@ -4,9 +4,9 @@ using CSharpFunctionalExtensions;
 using Dapper;
 using ITV.Config;
 using ITV.Entity;
+using ITV.Error.Citas;
 using ITV.Error.Common;
 using ITV.Error.DataBase;
-using ITV.Error.Vehiculos;
 using ITV.Mappers;
 using ITV.Models;
 using ITV.Repository.Common;
@@ -14,7 +14,7 @@ using Serilog;
 
 namespace ITV.Repository.Dapper;
 
-public class DapperRepository : IRepositorioCita
+public class DapperRepository : IRepositorioCitas
 {
     private readonly ILogger _logger = Log.ForContext<DapperRepository>();
     private IDbConnection _connection;

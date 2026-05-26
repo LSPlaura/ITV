@@ -4,6 +4,10 @@ namespace ITV.Factories;
 
 public static class FactoryCitas
 {
+    /// <summary>
+    /// Método para poblar la base de datos
+    /// </summary>
+    /// <returns></returns>
     public static List<Cita> Seed()
     {
         return new List<Cita>()

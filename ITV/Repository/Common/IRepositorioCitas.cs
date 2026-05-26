@@ -4,7 +4,7 @@ using ITV.Models;
 
 namespace ITV.Repository.Common;
 
-public interface IRepositorioCita : ICrud<int, Cita>
+public interface IRepositorioCitas : ICrud<int, Cita>
 {
     /// <summary>
     /// Valida si la matricula de un vehiculo existe

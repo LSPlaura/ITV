@@ -15,8 +15,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-
-        <!-- HEADER -->
+        
         <Border Grid.Row="0" Background="#7D8A8A" Height="100">
             <StackPanel VerticalAlignment="Center">
                 <TextBlock Text="EXPORTAR CITA" 
@@ -31,14 +30,12 @@
                 </Border>
             </StackPanel>
         </Border>
-
-        <!-- CONTENIDO + BOTONES -->
+        
         <StackPanel Grid.Row="1" Margin="30,20,30,30" VerticalAlignment="Center" HorizontalAlignment="Center">
             <TextBlock Text="Selecciona el formato de exportación" 
                        FontSize="22" FontWeight="SemiBold" 
                        Foreground="#3A4242" HorizontalAlignment="Center" Margin="0,0,0,30"/>
-
-            <!-- BOTONES -->
+            
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                 <Button Content="📄 EXPORTAR A HTML" 
                         Width="160" Height="50"

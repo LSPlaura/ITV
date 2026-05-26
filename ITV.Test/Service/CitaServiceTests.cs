@@ -1,7 +1,7 @@
 using CSharpFunctionalExtensions;
 using FluentAssertions;
+using ITV.Error.Citas;
 using ITV.Error.Common;
-using ITV.Error.Vehiculos;
 using ITV.Models;
 using ITV.Repository.Common;
 using ITV.Service.Citas;
@@ -20,14 +20,14 @@ public class CitaServiceTests
     [TestFixture]
     public class CasosValidos
     {
-        private Mock<IRepositorioCita> _mockRepository = null!;
+        private Mock<IRepositorioCitas> _mockRepository = null!;
         private Mock<IValidate<Cita>> _mockValidador = null!;
         private IService<int, Cita> _service = null!;
 
         [SetUp]
         public void SetUp()
         {
-            _mockRepository = new Mock<IRepositorioCita>();
+            _mockRepository = new Mock<IRepositorioCitas>();
             _mockValidador = new Mock<IValidate<Cita>>();
             _service = new ServiceCitas(
                 _mockRepository.Object,
@@ -256,14 +256,14 @@ public class CitaServiceTests
     [TestFixture]
     public class CasosInvalidos
     {
-        private Mock<IRepositorioCita> _mockRepository = null!;
+        private Mock<IRepositorioCitas> _mockRepository = null!;
         private Mock<IValidate<Cita>> _mockValidador = null!;
         private IService<int, Cita> _service = null!;
 
         [SetUp]
         public void SetUp()
         {
-            _mockRepository = new Mock<IRepositorioCita>();
+            _mockRepository = new Mock<IRepositorioCitas>();
             _mockValidador = new Mock<IValidate<Cita>>();
 
             _service = new ServiceCitas(

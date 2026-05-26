@@ -1,7 +1,7 @@
 using System.IO;
 using CSharpFunctionalExtensions;
 using FluentAssertions;
-using ITV.Error.BuckUp;
+using ITV.Error.BackUp;
 using ITV.Error.Common;
 using ITV.Models;
 using ITV.Service;

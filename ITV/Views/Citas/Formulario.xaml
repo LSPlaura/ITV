@@ -13,7 +13,6 @@
         TextOptions.TextRenderingMode="ClearType">
 
     <Window.Resources>
-        <!-- Estilo de etiquetas alineado con Vista de Detalle -->
         <Style x:Key="FieldLabel" TargetType="TextBlock">
             <Setter Property="FontSize" Value="12"/>
             <Setter Property="FontWeight" Value="Bold"/>
@@ -21,8 +20,7 @@
             <Setter Property="Margin" Value="0,0,0,6"/>
             <Setter Property="Opacity" Value="0.8"/>
         </Style>
-
-        <!-- Cajas de texto estilizadas con bordes redondeados suaves -->
+        
         <Style x:Key="FormField" TargetType="TextBox">
             <Setter Property="Height" Value="40"/>
             <Setter Property="Margin" Value="0,0,0,20"/>
@@ -51,8 +49,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
-
-        <!-- 🌟 NUEVO: Estilo DatePicker HD importado de tu módulo de gestión -->
+        
         <Style x:Key="DatePickerHD" TargetType="DatePicker">
             <Setter Property="Height" Value="40"/>
             <Setter Property="Margin" Value="0,0,0,20"/>
@@ -93,8 +90,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
-
-        <!-- Botones redondeados unificados -->
+        
         <Style x:Key="ActionButtonStyle" TargetType="Button">
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="Height" Value="45"/>
@@ -123,8 +119,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-
-        <!-- HEADER -->
+        
         <Border Grid.Row="0" Background="#7D8A8A" Height="80">
             <StackPanel VerticalAlignment="Center">
                 <TextBlock Text="{Binding Titulo}"
@@ -140,11 +135,11 @@
             </StackPanel>
         </Border>
 
-        <!-- CUERPO DE EDICIÓN -->
+      
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
             <StackPanel Margin="40,25,40,25" MaxWidth="500" HorizontalAlignment="Center">
 
-                <!-- GRID DE FORMULARIO DE DOS COLUMNAS -->
+               
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -157,31 +152,31 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <!-- MATRÍCULA -->
+                  
                     <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
                         <TextBlock Text="MATRÍCULA" Style="{StaticResource FieldLabel}" Foreground="#FF63C2"/>
                         <TextBox Style="{StaticResource FormField}" Text="{Binding Matricula, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                     </StackPanel>
 
-                    <!-- MARCA -->
+                   
                     <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,12,0">
                         <TextBlock Text="MARCA" Style="{StaticResource FieldLabel}"/>
                         <TextBox Style="{StaticResource FormField}" Text="{Binding Marca, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                     </StackPanel>
 
-                    <!-- MODELO -->
+                  
                     <StackPanel Grid.Row="1" Grid.Column="1" Margin="12,0,0,0">
                         <TextBlock Text="MODELO" Style="{StaticResource FieldLabel}"/>
                         <TextBox Style="{StaticResource FormField}" Text="{Binding Modelo, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                     </StackPanel>
 
-                    <!-- CILINDRADA -->
+                 
                     <StackPanel Grid.Row="2" Grid.Column="0" Margin="0,0,12,0">
                         <TextBlock Text="CILINDRADA (CC)" Style="{StaticResource FieldLabel}"/>
                         <TextBox Style="{StaticResource FormField}" Text="{Binding Cilindrada, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                     </StackPanel>
 
-                    <!-- TIPO DE MOTOR -->
+                   
                     <StackPanel Grid.Row="2" Grid.Column="1" Margin="12,0,0,0">
                         <TextBlock Text="TIPO DE MOTOR" Style="{StaticResource FieldLabel}"/>
                         <ComboBox Height="40" Margin="0,0,0,20"
@@ -194,38 +189,32 @@
                             </ComboBox.Resources>
                         </ComboBox>
                     </StackPanel>
-
-                    <!-- DNI DEL DUEÑO -->
+                    
                     <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2">
                         <TextBlock Text="DNI DEL DUEÑO" Style="{StaticResource FieldLabel}"/>
                         <TextBox Style="{StaticResource FormField}" Text="{Binding Dni, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                     </StackPanel>
                 </Grid>
-
-                <!-- FECHAS EN DOS COLUMNAS CON ESTILO HD -->
+                
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-
-                    <!-- FECHA MATRICULACIÓN -->
+                    
                     <StackPanel Grid.Column="0" Margin="0,0,12,0">
                         <TextBlock Text="FECHA DE MATRICULACIÓN" Style="{StaticResource FieldLabel}"/>
                         <DatePicker Style="{StaticResource DatePickerHD}" SelectedDate="{Binding FechaMatriculacion, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                     </StackPanel>
-
-                    <!-- FECHA INSPECCIÓN -->
+                    
                     <StackPanel Grid.Column="1" Margin="12,0,0,0">
                         <TextBlock Text="FECHA DE INSPECCIÓN" Style="{StaticResource FieldLabel}"/>
                         <DatePicker Style="{StaticResource DatePickerHD}" SelectedDate="{Binding FechaInspeccion, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                     </StackPanel>
                 </Grid>
-
-                <!-- SEPARADOR -->
+                
                 <Border Height="1" Background="#E0E5E5" Margin="0,10,0,25"/>
-
-                <!-- ACCIONES -->
+                
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                     <Button Content="GUARDAR CAMBIOS" 
                             Background="#36FF6E" Foreground="#1A222B"
