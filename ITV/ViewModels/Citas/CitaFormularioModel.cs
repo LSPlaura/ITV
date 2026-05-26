@@ -83,7 +83,7 @@ public partial class CitaFormularioModel : ObservableObject
              Marca = this.Marca.Trim(),
              Modelo = this.Modelo.Trim(),
              DniDueño = this.Dni.Trim(),
-             Cilindrada = double.TryParse(this.Cilindrada.Trim(), out var c) ? c : 0,
+             Cilindrada = double.TryParse(this.Cilindrada.Trim(), NumberStyles.Any, CultureInfo.InvariantCulture, out var c) ? c : 0,
              Motor = Enum.TryParse<Motor>(MotorSeleccionado.Trim(), out var m) ? (int)m : (int)Motor.Gasolina,
              FechaMatriculacion = this.FechaMatriculacion?.ToString(_isoFormat, _invariant).Trim() ?? DateTime.Today.ToString(_isoFormat, _invariant),
              FechaInspeccion = this.FechaInspeccion?.ToString(_isoFormat, _invariant).Trim() ?? DateTime.Today.ToString(_isoFormat, _invariant)
@@ -119,7 +119,7 @@ public partial class CitaFormularioModel : ObservableObject
             Marca = this.Marca.Trim(),
             Modelo = this.Modelo.Trim(),
             DniDueño = this.Dni.Trim(),
-            Cilindrada = double.TryParse(this.Cilindrada.Trim(), out var c) ? c : 0,
+            Cilindrada = double.TryParse(this.Cilindrada.Trim(), NumberStyles.Any, CultureInfo.InvariantCulture, out var c) ? c : 0,
             Motor = Enum.TryParse<Motor>(MotorSeleccionado.Trim(), out var m) ? (int)m : (int)Motor.Gasolina,
             FechaMatriculacion = this.FechaMatriculacion?.ToString(_isoFormat, _invariant).Trim() ?? DateTime.Today.ToString(_isoFormat, _invariant),
             FechaInspeccion = this.FechaInspeccion?.ToString(_isoFormat, _invariant).Trim() ?? DateTime.Today.ToString(_isoFormat, _invariant)

@@ -7,7 +7,6 @@ using ITV.Config;
 using ITV.Dto;
 using ITV.Error.Common;
 using ITV.Error.Storage;
-using ITV.Error.Vehiculos;
 using ITV.Mappers;
 using ITV.Models;
 using ITV.Storage.Common;

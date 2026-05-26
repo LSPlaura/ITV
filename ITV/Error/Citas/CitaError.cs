@@ -1,7 +1,8 @@
 using ITV.Error.Common;
 using ITV.Models;
+using ITV.Repository.Common;
 
-namespace ITV.Error.Vehiculos;
+namespace ITV.Error.Citas;
 
 /// <summary>
 /// Record para capturar errores al operar con <see cref="Cita"/>>
@@ -34,7 +35,7 @@ public abstract record CitaError(string Message) : DomainError(Message)
     }
     
     /// <summary>
-    /// Errores de vehiculos no encontrados en el <see cref="IRepositorioVehiculo"/>
+    /// Errores de vehiculos no encontrados en el <see cref="IRepositorioCitas"/>
     /// </summary>
     public sealed record CitaNotFoundMatricula(string Matricula)
         : CitaError($"Error: Cita con la matricula [{Matricula}] no encontrado");
@@ -42,7 +43,7 @@ public abstract record CitaError(string Message) : DomainError(Message)
         : CitaError($"Error: Cita con el ID [{Id}] no encontrado");
 
     /// <summary>
-    /// Errores de vehiculos ya incoporados en el <see cref="IRepositorioVehiculo"/>
+    /// Errores de vehiculos ya incoporados en el <see cref="IRepositorioCitas"/>
     /// </summary>
     public record CitaAlredyExist(string Message) : CitaError(Message)
     {

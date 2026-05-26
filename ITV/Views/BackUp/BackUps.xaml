@@ -11,7 +11,7 @@
       UseLayoutRounding="True">
 
     <Page.Resources>
-        <!-- BOTÓN ENCABEZADO HD (Crear Respaldo - Verde Principal) -->
+      
         <Style x:Key="PrimaryGreenButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="#36FF6E"/>
             <Setter Property="Foreground" Value="#1A222B"/>
@@ -44,8 +44,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
-
-        <!-- BOTÓN LATERAL: RESTAURAR (Verde Secundario Interactivo) -->
+        
         <Style x:Key="RestoreButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Foreground" Value="#3A4242"/>
@@ -73,8 +72,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
-
-        <!-- BOTÓN LATERAL: BORRAR (Gris / Coherente con Cancelar) -->
+        
         <Style x:Key="DeleteButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Foreground" Value="#7D8A8A"/>
@@ -103,8 +101,7 @@
             </Setter>
         </Style>
     </Page.Resources>
-
-    <!-- REJILLA PRINCIPAL QUE SINCRONIZA CABECERA Y CONTENIDO -->
+    
     <Grid Margin="35">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -114,8 +111,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-
-        <!-- 1. HEADER HD (Parte Izquierda) -->
+        
         <StackPanel Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,0,25">
             <TextBlock Text="COPIAS DE SEGURIDAD" FontSize="28" FontWeight="Black" Foreground="#3A4242"/>
             <Border Height="3" Width="50" Background="#FF63C2" HorizontalAlignment="Left" Margin="2,6,0,0" CornerRadius="2">
@@ -124,8 +120,7 @@
                 </Border.Effect>
             </Border>
         </StackPanel>
-
-        <!-- BOTÓN CREAR (Alineado perfectamente encima del panel lateral derecho) -->
+        
         <Button Grid.Row="0" Grid.Column="1" 
                 Style="{StaticResource PrimaryGreenButtonStyle}" 
                 VerticalAlignment="Center" 
@@ -137,8 +132,7 @@
                 <TextBlock Text="CREAR RESPALDO" VerticalAlignment="Center"/>
             </StackPanel>
         </Button>
-
-        <!-- 2. LISTADO DE PUNTOS DE RESTAURACIÓN -->
+        
         <Border Grid.Row="1" Grid.Column="0" Background="White" CornerRadius="15" BorderBrush="#E0E5E5" BorderThickness="1" Margin="0,0,20,0">
             <Border.Effect>
                 <DropShadowEffect BlurRadius="30" ShadowDepth="4" Opacity="0.04" Color="Black"/>
@@ -195,8 +189,7 @@
                 </ListView.ItemTemplate>
             </ListView>
         </Border>
-
-        <!-- PANEL LATERAL DE ACCIONES CRÍTICAS -->
+        
         <Border Grid.Row="1" Grid.Column="1" Background="White" CornerRadius="15" Padding="20" BorderBrush="#E0E5E5" BorderThickness="1" VerticalAlignment="Top">
             <Border.Effect>
                 <DropShadowEffect BlurRadius="30" ShadowDepth="4" Opacity="0.04" Color="Black"/>

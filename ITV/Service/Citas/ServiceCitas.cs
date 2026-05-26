@@ -1,7 +1,7 @@
 using CSharpFunctionalExtensions;
 using ITV.Config;
+using ITV.Error.Citas;
 using ITV.Error.Common;
-using ITV.Error.Vehiculos;
 using ITV.Models;
 using ITV.Repository.Common;
 using ITV.Service.Export;
@@ -13,17 +13,17 @@ using SQLitePCL;
 
 namespace ITV.Service.Citas;
 
-public class ServiceVehiculos (
-    IRepositorioCita repositorio,
+public class ServiceCitas (
+    IRepositorioCitas repositorio,
     IValidate<Cita> validador
     ) : IService<int, Cita>
 
 {
-    private readonly ILogger _logger = Log.ForContext<ServiceVehiculos>();
+    private readonly ILogger _logger = Log.ForContext<ServiceCitas>();
     private readonly int _limiteVehciulos = 3;
     
-    public ServiceVehiculos(
-            IRepositorioCita repositorio,
+    public ServiceCitas(
+            IRepositorioCitas repositorio,
             IValidate<Cita> validador,
             bool seed
         ) : this(repositorio, validador) { if (seed)  Seed(); }

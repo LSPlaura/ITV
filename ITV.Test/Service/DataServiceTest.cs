@@ -1,7 +1,7 @@
 using CSharpFunctionalExtensions;
 using FluentAssertions;
+using ITV.Error.Citas;
 using ITV.Error.Common;
-using ITV.Error.Vehiculos;
 using ITV.Models;
 using ITV.Repository.Common;
 using ITV.Service;
@@ -20,14 +20,14 @@ public class DataServiceTest
         private static readonly DateTime FechaMat = DateTime.Today.AddYears(-1);
         private static readonly DateTime FechaInsp = DateTime.Today.AddDays(15);
 
-        private Mock<IRepositorioCita> _mockRepository = null!;
+        private Mock<IRepositorioCitas> _mockRepository = null!;
         private Mock<IBackUpService<Cita>> _mockBackUpService = null!; 
         private IDataService<Cita> _service = null!;
 
         [SetUp]
         public void SetUp()
         {
-            _mockRepository = new Mock<IRepositorioCita>();
+            _mockRepository = new Mock<IRepositorioCitas>();
             _mockBackUpService = new Mock<IBackUpService<Cita>>();
             
             _service = new DataService(
@@ -77,14 +77,14 @@ public class DataServiceTest
         private static readonly DateTime FechaMat = DateTime.Today.AddYears(-1);
         private static readonly DateTime FechaInsp = DateTime.Today.AddDays(15);
 
-        private Mock<IRepositorioCita> _mockRepository = null!;
+        private Mock<IRepositorioCitas> _mockRepository = null!;
         private Mock<IBackUpService<Cita>> _mockBackUpService = null!; 
         private IDataService<Cita> _service = null!;
 
         [SetUp]
         public void SetUp()
         {
-            _mockRepository = new Mock<IRepositorioCita>();
+            _mockRepository = new Mock<IRepositorioCitas>();
             _mockBackUpService = new Mock<IBackUpService<Cita>>();
             
             _service = new DataService(

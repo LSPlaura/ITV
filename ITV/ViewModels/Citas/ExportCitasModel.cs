@@ -10,13 +10,13 @@ namespace ITV.ViewModels.Citas;
 public partial class ExportCitasModel : ObservableObject
 {
     private Cita _cita;
-    private ReportGenerator<Cita> _reportGeneratorService;
+    private IReportGenerator<Cita> _reportGeneratorService;
     private readonly ILogger _logger = Log.ForContext<ExportCitasModel>();
 
     public IRelayCommand ExportHtmlCommand { get; }
     public IRelayCommand ExportPdfCommand { get; }
     private readonly Action _closeAction;
-    public ExportCitasModel(ReportGenerator<Cita> citaService, Cita cita, Action closeAction)
+    public ExportCitasModel(IReportGenerator<Cita> citaService, Cita cita, Action closeAction)
     {
         _cita = cita;
         _reportGeneratorService = citaService;

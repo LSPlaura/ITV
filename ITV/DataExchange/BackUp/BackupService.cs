@@ -2,7 +2,7 @@ using System.IO;
 using System.IO.Compression;
 using CSharpFunctionalExtensions;
 using ITV.Config;
-using ITV.Error.BuckUp;
+using ITV.Error.BackUp;
 using ITV.Error.Common;
 using ITV.Models;
 using ITV.Storage.Common;

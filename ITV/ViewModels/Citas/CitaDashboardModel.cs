@@ -194,5 +194,6 @@ public partial class CitaDashboardModel : ObservableObject
         _logger.Information("Abriendo ventana de detalle para Cita ID: {Id}", cita.Id);
         var vista = new Vista(cita);
         vista.ShowDialog();
+        Filtrar();
     }
 }

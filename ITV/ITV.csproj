@@ -56,8 +56,4 @@
       </Page>
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="DataExchange\" />
-    </ItemGroup>
-
 </Project>

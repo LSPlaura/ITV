@@ -12,7 +12,7 @@ namespace ITV.Service.DataService;
 
 public class DataService(IBackUpService<Cita> backUp, ICrud<int, Cita> repositorio) : IDataService<Cita>
 {
-    private readonly ILogger _logger = Log.ForContext<ServiceVehiculos>();
+    private readonly ILogger _logger = Log.ForContext<DataService>();
     
     public Result<int, DomainError> Importar(IStorage<Cita> storage)
     {

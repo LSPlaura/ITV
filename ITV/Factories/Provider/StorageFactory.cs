@@ -8,6 +8,11 @@ namespace ITV.Factories.Provider;
 
 public static class StorageFactory
 {
+    /// <summary>
+    /// Método para crear el storage deseado segín el parámetro dado
+    /// </summary>
+    /// <param name="formato">Nombre del storage que se quiere</param>
+    /// <returns></returns>
     public static IStorage<Cita> ObtenerStorage(string formato)
     {
         return formato.ToLower().Trim() switch

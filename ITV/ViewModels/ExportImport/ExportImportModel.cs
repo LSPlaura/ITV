@@ -23,6 +23,7 @@ public partial class ExportImportModel : ObservableObject
         _service = service;
     }
 
+    /// Cuando se pulsa el botón con el comando asociado ejecuta la función con el formato deseado como parámetro
     [RelayCommand] private void ImportarCsv()  => EjecutarImportacion("CSV");
     [RelayCommand] private void ImportarJson() => EjecutarImportacion("JSON");
     [RelayCommand] private void ImportarXml()  => EjecutarImportacion("XML");
@@ -30,7 +31,7 @@ public partial class ExportImportModel : ObservableObject
     [RelayCommand] private void ExportarJson() => EjecutarExportacion("JSON");
     [RelayCommand] private void ExportarXml()  => EjecutarExportacion("XML");
     
-
+    
     private void EjecutarImportacion(string formato)
     {
         var result = _service.Importar(StorageFactory.ObtenerStorage(formato));
