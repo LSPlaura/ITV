@@ -63,8 +63,11 @@ public static class Configuracion
     
     //BackUps
     /// <summary>
-    /// 
+    /// Nombre del archivo del BackUp
     /// </summary>
     public static string BackUpFile = Config.GetValue<string>("BuckUp:File") ?? "_BackUp";
+    /// <summary>
+    /// Nombre de la carpeta del BackUp
+    /// </summary>
     public static string BackUpFolder = Config.GetValue<string>("BuckUp:Folder") ?? "_BackUp.zip";
 }
