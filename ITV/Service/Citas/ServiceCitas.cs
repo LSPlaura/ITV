@@ -13,16 +13,16 @@ using SQLitePCL;
 
 namespace ITV.Service.Citas;
 
-public class ServiceVehiculos (
+public class ServiceCitas (
     IRepositorioCita repositorio,
     IValidate<Cita> validador
     ) : IService<int, Cita>
 
 {
-    private readonly ILogger _logger = Log.ForContext<ServiceVehiculos>();
+    private readonly ILogger _logger = Log.ForContext<ServiceCitas>();
     private readonly int _limiteVehciulos = 3;
     
-    public ServiceVehiculos(
+    public ServiceCitas(
             IRepositorioCita repositorio,
             IValidate<Cita> validador,
             bool seed

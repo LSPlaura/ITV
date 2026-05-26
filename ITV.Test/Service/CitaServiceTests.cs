@@ -29,7 +29,7 @@ public class CitaServiceTests
         {
             _mockRepository = new Mock<IRepositorioCita>();
             _mockValidador = new Mock<IValidate<Cita>>();
-            _service = new ServiceVehiculos(
+            _service = new ServiceCitas(
                 _mockRepository.Object,
                 _mockValidador.Object);
         }
@@ -266,7 +266,7 @@ public class CitaServiceTests
             _mockRepository = new Mock<IRepositorioCita>();
             _mockValidador = new Mock<IValidate<Cita>>();
 
-            _service = new ServiceVehiculos(
+            _service = new ServiceCitas(
                 _mockRepository.Object,
                 _mockValidador.Object
             );
