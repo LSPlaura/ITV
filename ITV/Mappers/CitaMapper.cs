@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using ITV.Dto;
 using ITV.Entity;
@@ -9,8 +10,8 @@ namespace ITV.Mappers;
 
 public static class CitaMapper
 {
-    // Formato ISO 8601 estándar (yyyy-MM-ddTHH:mm:ss)
     private static readonly string _isoFormat = "s";
+    private static readonly CultureInfo _invariant = CultureInfo.InvariantCulture;
 
     /// <summary>
     /// Transforma un <see cref="Cita"/> en un <see cref="CitaDto"/>
@@ -19,8 +20,8 @@ public static class CitaMapper
     {
         return new CitaDto(
             cita.Id,
-            cita.FechaMatriculacion.ToString(_isoFormat),
-            cita.FechaInspeccion.ToString(_isoFormat),
+            cita.FechaMatriculacion.ToString(_isoFormat, _invariant),
+            cita.FechaInspeccion.ToString(_isoFormat, _invariant),
             cita.Matricula, 
             cita.Marca,
             cita.Modelo,
@@ -28,8 +29,8 @@ public static class CitaMapper
             (int)cita.Motor,
             cita.DniDueño,
             cita.IsDeleted ? 1 : 0,
-            cita.CreatedAt.ToString(_isoFormat),
-            cita.UpdatedAt.ToString(_isoFormat)
+            cita.CreatedAt.ToString(_isoFormat, _invariant),
+            cita.UpdatedAt.ToString(_isoFormat, _invariant)
         );
     }
 
@@ -40,8 +41,8 @@ public static class CitaMapper
     {
         return new Cita(
             dto.Id,
-            DateTime.TryParse(dto.FechaMatriculacion, out var matriculacion) ? matriculacion : DateTime.Today,
-            DateTime.TryParse(dto.FechaInspeccion, out var inspeccion) ? inspeccion : DateTime.Today,
+            DateTime.TryParse(dto.FechaMatriculacion, out var matriculacion) ? matriculacion : DateTime.Now,
+            DateTime.TryParse(dto.FechaInspeccion, out var inspeccion) ? inspeccion : DateTime.Now,
             dto.Matricula,
             dto.Marca,
             dto.Modelo,
@@ -61,17 +62,17 @@ public static class CitaMapper
     {
         return new CitaEntity(
             cita.Id,
-            cita.FechaMatriculacion.ToString(_isoFormat),
-            cita.FechaInspeccion.ToString(_isoFormat),
+            cita.FechaMatriculacion.ToString(_isoFormat, _invariant),
+            cita.FechaInspeccion.ToString(_isoFormat, _invariant),
             cita.Matricula,
-            cita.Marca,   // CORREGIDO: Antes tenías aquí el Modelo
-            cita.Modelo,  // CORREGIDO: Antes tenías aquí la Marca
+            cita.Marca,  
+            cita.Modelo, 
             cita.Cilindrada,
             (int)cita.Motor,
             cita.DniDueño,
             cita.IsDeleted ? 1 : 0,
-            cita.CreatedAt.ToString(_isoFormat),
-            cita.UpdatedAt.ToString(_isoFormat)
+            cita.CreatedAt.ToString(_isoFormat, _invariant),
+            cita.UpdatedAt.ToString(_isoFormat, _invariant)
         );
     }
     
@@ -82,13 +83,13 @@ public static class CitaMapper
     {
         return new Cita(
             entity.Id,
-            DateTime.TryParse(entity.FechaMatriculacion, out var matriculacion) ? matriculacion : DateTime.Today,
-            DateTime.TryParse(entity.FechaInspeccion, out var inspeccion) ? inspeccion : DateTime.Today,
+            DateTime.TryParse(entity.FechaMatriculacion, out var matriculacion) ? matriculacion : DateTime.Now,
+            DateTime.TryParse(entity.FechaInspeccion, out var inspeccion) ? inspeccion : DateTime.Now,
             entity.Matricula,
-            entity.Marca,   // CORREGIDO: Antes tenías aquí el Modelo
-            entity.Modelo,  // CORREGIDO: Antes tenías aquí la Marca
+            entity.Marca,   
+            entity.Modelo, 
             entity.Cilindrada,
-            Enum.IsDefined(typeof(Motor), entity.Motor) ? (Motor)entity.Motor : Motor.Gasolina, // CORREGIDO: Casteo seguro con fallback
+            Enum.IsDefined(typeof(Motor), entity.Motor) ? (Motor)entity.Motor : Motor.Gasolina,
             entity.DniDueño,
             entity.IsDeleted == 1,
             DateTime.TryParse(entity.CreatedAt, out var creado) ? creado : DateTime.Now,

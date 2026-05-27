@@ -1,7 +1,7 @@
 using CSharpFunctionalExtensions;
 using FluentAssertions;
 using ITV.Entity;
-using ITV.Error.Vehiculos;
+using ITV.Error.Citas;
 using ITV.Models;
 using ITV.Repository.Common;
 using ITV.Repository.EFCore;
@@ -18,7 +18,7 @@ public class RepositorioEfTests
     [TestFixture]
     public class CasosValidos
     {
-        private IRepositorioVehiculos _repositorio = null!;
+        private IRepositorioCitas _repositorio = null!;
         private SqliteConnection _connection = null!;
         private AppDbContext _context = null!;
         
@@ -183,7 +183,7 @@ public class RepositorioEfTests
     [TestFixture]
         public class CasosInvalidos()
         {
-            private IRepositorioVehiculos _repositorio = null!;
+            private IRepositorioCitas _repositorio = null!;
             private SqliteConnection _connection = null!;
             private AppDbContext _context = null!;
 

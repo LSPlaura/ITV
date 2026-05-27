@@ -10,16 +10,16 @@ namespace ITV.ViewModels.Citas;
 public partial class ExportCitasModel : ObservableObject
 {
     private Cita _cita;
-    private IExport<Cita> _exportService;
+    private IReportGenerator<Cita> _reportGeneratorService;
     private readonly ILogger _logger = Log.ForContext<ExportCitasModel>();
 
     public IRelayCommand ExportHtmlCommand { get; }
     public IRelayCommand ExportPdfCommand { get; }
     private readonly Action _closeAction;
-    public ExportCitasModel(IExport<Cita> citaService, Cita cita, Action closeAction)
+    public ExportCitasModel(IReportGenerator<Cita> citaService, Cita cita, Action closeAction)
     {
         _cita = cita;
-        _exportService = citaService;
+        _reportGeneratorService = citaService;
         ExportHtmlCommand = new RelayCommand(ExportHtml);
         ExportPdfCommand = new RelayCommand(ExportPdf);
         _closeAction = closeAction;
@@ -27,7 +27,7 @@ public partial class ExportCitasModel : ObservableObject
 
     private void ExportHtml()
     {
-        var result = _exportService.ExportHtml(_cita);
+        var result = _reportGeneratorService.ExportHtml(_cita);
     
         if (result.IsFailure)
         {
@@ -46,7 +46,7 @@ public partial class ExportCitasModel : ObservableObject
     private void ExportPdf()
     {
         _logger.Information("Exportando los datos de la cita con la matricula {Matricula} del dia {Dia} a pdf", _cita.Matricula, _cita.FechaInspeccion);
-        var result = _exportService.ExportPdf(_cita);
+        var result = _reportGeneratorService.ExportPdf(_cita);
         if (result.IsFailure)
         {
             _logger.Error("Error al exportar a pdf: {Error}", result.Error.Message);

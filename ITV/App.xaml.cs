@@ -8,9 +8,6 @@ using Serilog;
 
 namespace ITV;
 
-/// <summary>
-/// Interaction logic for App.xaml
-/// </summary>
 public partial class App : Application
 {
     public static IServiceProvider ServiceProvider { get; private set; } = null!;
@@ -20,13 +17,10 @@ public partial class App : Application
         _logger.Information("Iniciando la aplicaión");
         Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
         Log.Logger = new LoggerConfiguration()
-            .ReadFrom.Configuration(Configuracion.Config)  // ← USA la configuración
+            .ReadFrom.Configuration(Configuracion.Config) 
             .CreateLogger();
         ServiceProvider = DependenciesProvider.BuildServiceProvider();
         
-        //si me da tiempo
-        // var splash = new SplashWindow();
-        // splash.ShowDialog();
         
         var mainWindow = new MainWindow();
         MainWindow = mainWindow;
@@ -36,7 +30,7 @@ public partial class App : Application
     }
 
     protected override void OnExit(ExitEventArgs e) {
-        _logger.Information("👋 Aplicación cerrándose");
+        _logger.Information("Aplicación cerrándose");
         base.OnExit(e);
     }
 }

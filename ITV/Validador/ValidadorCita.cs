@@ -1,7 +1,7 @@
 using System.Text.RegularExpressions;
 using CSharpFunctionalExtensions;
+using ITV.Error.Citas;
 using ITV.Error.Common;
-using ITV.Error.Vehiculos;
 using ITV.Models;
 using Serilog;
 

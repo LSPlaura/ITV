@@ -11,7 +11,6 @@
       UseLayoutRounding="True">
 
     <Page.Resources>
-        <!-- BOTÓN IMPORTAR HD (Verde Corporativo) -->
         <Style x:Key="ImportButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="#36FF6E"/>
             <Setter Property="Foreground" Value="#1A222B"/>
@@ -45,8 +44,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
-
-        <!-- BOTÓN EXPORTAR HD (Rosa Corporativo) -->
+        
         <Style x:Key="ExportButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="#FF63C2"/>
             <Setter Property="Foreground" Value="White"/>
@@ -80,8 +78,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
-
-        <!-- ETIQUETAS ESTRUCTURADAS HD -->
+        
         <Style x:Key="FormatTitleLabel" TargetType="TextBlock">
             <Setter Property="FontSize" Value="16"/>
             <Setter Property="FontWeight" Value="Black"/>
@@ -102,8 +99,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-
-        <!-- 1. HEADER HD -->
+        
         <StackPanel Grid.Row="0" Margin="0,0,0,25" VerticalAlignment="Center">
             <TextBlock Text="GESTIÓN DE DATOS" FontSize="28" FontWeight="Black" Foreground="#3A4242"/>
             <Border Height="3" Width="50" Background="#FF63C2" HorizontalAlignment="Left" Margin="2,6,0,0" CornerRadius="2">
@@ -113,11 +109,11 @@
             </Border>
         </StackPanel>
 
-        <!-- 2. CONTENIDO EN CONTENEDORES HD -->
+      
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,0,-10,0">
             <StackPanel>
 
-                <!-- TARJETA: CSV -->
+              
                 <Border Background="White" CornerRadius="15" BorderBrush="#E0E5E5" BorderThickness="1" Margin="0,0,0,20">
                     <Border.Effect>
                         <DropShadowEffect BlurRadius="30" ShadowDepth="4" Opacity="0.04" Color="Black"/>
@@ -129,8 +125,7 @@
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-
-                        <!-- Icono Identificativo de Formato -->
+                        
                         <TextBlock Grid.Column="0" Text="📊" FontSize="24" Margin="5,0,20,0" VerticalAlignment="Center" Opacity="0.8"/>
 
                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
@@ -152,8 +147,7 @@
                         </Button>
                     </Grid>
                 </Border>
-
-                <!-- TARJETA: JSON -->
+                
                 <Border Background="White" CornerRadius="15" BorderBrush="#E0E5E5" BorderThickness="1" Margin="0,0,0,20">
                     <Border.Effect>
                         <DropShadowEffect BlurRadius="30" ShadowDepth="4" Opacity="0.04" Color="Black"/>
@@ -187,8 +181,7 @@
                         </Button>
                     </Grid>
                 </Border>
-
-                <!-- TARJETA: XML -->
+                
                 <Border Background="White" CornerRadius="15" BorderBrush="#E0E5E5" BorderThickness="1" Margin="0,0,0,20">
                     <Border.Effect>
                         <DropShadowEffect BlurRadius="30" ShadowDepth="4" Opacity="0.04" Color="Black"/>

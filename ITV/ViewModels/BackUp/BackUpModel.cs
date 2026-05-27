@@ -4,13 +4,14 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ITV.Models;
 using ITV.Service.Citas;
+using ITV.Service.DataService;
 using Serilog;
 
 namespace ITV.ViewModels.Backup;
 
 public partial class BackUpModel : ObservableObject
 {
-    private readonly IService<int, Cita> _service;
+    private readonly IDataService<Cita> _service;
     private readonly ILogger _logger = Log.ForContext<BackUpModel>();
 
     [ObservableProperty]
@@ -19,7 +20,7 @@ public partial class BackUpModel : ObservableObject
     [ObservableProperty]
     private string? rutaSeleccionada;
 
-    public BackUpModel(IService<int, Cita> service)
+    public BackUpModel(IDataService<Cita> service)
     {
         _service = service;
         Listar();

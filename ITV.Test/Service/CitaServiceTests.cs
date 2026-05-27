@@ -1,13 +1,10 @@
 using CSharpFunctionalExtensions;
 using FluentAssertions;
+using ITV.Error.Citas;
 using ITV.Error.Common;
-using ITV.Error.Vehiculos;
 using ITV.Models;
 using ITV.Repository.Common;
-using ITV.Service;
 using ITV.Service.Citas;
-using ITV.Service.Export;
-using ITV.Storage.Common;
 using ITV.Validador;
 using Moq;
 
@@ -23,29 +20,18 @@ public class CitaServiceTests
     [TestFixture]
     public class CasosValidos
     {
-        private Mock<IRepositorioVehiculos> _mockRepository = null!;
-        private Mock<IBackUpService<Cita>> _mockBackUpService = null!;
-        private Mock<IExport<Cita>> _mockExportService = null!;
-        private Mock<IStorage<Cita>> _mockStorage = null!;
-        private Mock<ICache<int, Cita>> _mockCacheLru = null!;
+        private Mock<IRepositorioCitas> _mockRepository = null!;
         private Mock<IValidate<Cita>> _mockValidador = null!;
         private IService<int, Cita> _service = null!;
 
-       [SetUp] 
-       public void SetUp()
-       {
-           _mockRepository = new Mock<IRepositorioVehiculos>();
-           _mockBackUpService = new Mock<IBackUpService<Cita>>();
-           _mockExportService = new Mock<IExport<Cita>>();
-           _mockStorage = new Mock<IStorage<Cita>>();
-           _mockCacheLru = new Mock<ICache<int, Cita>>();
-           _mockValidador = new Mock<IValidate<Cita>>();
-           _service = new ServiceVehiculos(
-                      _mockRepository.Object,
-                      _mockBackUpService.Object,
-                      _mockExportService.Object,
-                      _mockCacheLru.Object,
-                      _mockValidador.Object);
+        [SetUp]
+        public void SetUp()
+        {
+            _mockRepository = new Mock<IRepositorioCitas>();
+            _mockValidador = new Mock<IValidate<Cita>>();
+            _service = new ServiceCitas(
+                _mockRepository.Object,
+                _mockValidador.Object);
         }
 
         [Test]
@@ -59,7 +45,8 @@ public class CitaServiceTests
                 .Returns(Result.Success<bool, DomainError>(true));
             _mockRepository.Setup(r => r.Agregar(It.IsAny<Cita>()))
                 .Returns((Cita v) => Result.Success<Cita, DomainError>(
-                    new Cita(1, v.FechaMatriculacion, v.FechaInspeccion, v.Matricula, v.Marca, v.Modelo, v.Cilindrada, v.Motor, v.DniDueño, false, Now, Now)
+                    new Cita(1, v.FechaMatriculacion, v.FechaInspeccion, v.Matricula, v.Marca, v.Modelo, v.Cilindrada,
+                        v.Motor, v.DniDueño, false, Now, Now)
                 ));
 
             var resultado = _service.Agregar(vehiculo);
@@ -79,7 +66,8 @@ public class CitaServiceTests
                 .Returns(Result.Success<bool, DomainError>(true));
             _mockRepository.Setup(r => r.Agregar(It.IsAny<Cita>()))
                 .Returns((Cita v) => Result.Success<Cita, DomainError>(
-                    new Cita(2, v.FechaMatriculacion, v.FechaInspeccion, v.Matricula, v.Marca, v.Modelo, v.Cilindrada, v.Motor, v.DniDueño.ToUpper(), false, Now, Now)
+                    new Cita(2, v.FechaMatriculacion, v.FechaInspeccion, v.Matricula, v.Marca, v.Modelo, v.Cilindrada,
+                        v.Motor, v.DniDueño.ToUpper(), false, Now, Now)
                 ));
 
             var resultado = _service.Agregar(vehiculo);
@@ -117,7 +105,8 @@ public class CitaServiceTests
                 .Returns(Result.Success<bool, DomainError>(true));
             _mockRepository.Setup(r => r.Agregar(It.IsAny<Cita>()))
                 .Returns((Cita v) => Result.Success<Cita, DomainError>(
-                    new Cita(4, v.FechaMatriculacion, v.FechaInspeccion, v.Matricula.ToUpper(), v.Marca, v.Modelo, v.Cilindrada, v.Motor, v.DniDueño, false, Now, Now)
+                    new Cita(4, v.FechaMatriculacion, v.FechaInspeccion, v.Matricula.ToUpper(), v.Marca, v.Modelo,
+                        v.Cilindrada, v.Motor, v.DniDueño, false, Now, Now)
                 ));
 
             var resultado = _service.Agregar(vehiculo);
@@ -130,69 +119,30 @@ public class CitaServiceTests
         public void Borrar_RealizaBorrado()
         {
             var idVehiculo = 5;
-            var vehiculoExistente = new Cita(idVehiculo, FechaMat, FechaInsp, "1111BBB", "Toyota", "Malo", 1.0, Motor.Diesel, "12345678Z", false, Now, Now);
-
-            _mockRepository.Setup(r => r.BuscarId(idVehiculo))
-                .Returns(Result.Success<Cita, DomainError>(vehiculoExistente));
+            var vehiculoExistente = new Cita(idVehiculo, FechaMat, FechaInsp, "1111BBB", "Toyota", "Malo", 1.0,
+                Motor.Diesel, "12345678Z", false, Now, Now);
+            
             _mockRepository.Setup(r => r.Borrar(idVehiculo))
                 .Returns(Result.Success<Cita, DomainError>(vehiculoExistente));
 
             var result = _service.Borrar(idVehiculo);
 
             result.IsSuccess.Should().BeTrue();
-
-            _mockRepository.Verify(r => r.BuscarId(idVehiculo), Times.Once);
+            
             _mockRepository.Verify(r => r.Borrar(idVehiculo), Times.Once);
-            _mockCacheLru.Verify(c => c.Borrar(idVehiculo), Times.Once);
-        }
-
-        [Test]
-        public void GetById_EstaCacheado_NoLlegaAlRepositorio()
-        {
-            var idVehiculo = 6;
-            var vehiculoExistente = new Cita(idVehiculo, FechaMat, FechaInsp, "2222BBB", "Renault", "Clio", 1.2, Motor.Gasolina, "99887766A", false, Now, Now);
-
-            _mockCacheLru.Setup(r => r.Obtener(idVehiculo))
-                .Returns(vehiculoExistente);
-
-            var result = _service.GetById(idVehiculo);
-
-            result.IsSuccess.Should().BeTrue();
-
-            _mockCacheLru.Verify(r => r.Obtener(idVehiculo), Times.Once);
-            _mockRepository.Verify(r => r.BuscarId(It.IsAny<int>()), Times.Never);
-            _mockCacheLru.Verify(c => c.Agregar(idVehiculo, vehiculoExistente), Times.Never);
-        }
-
-        [Test]
-        public void GetById_NoEstaCacheado_AccedeAlRepositorio()
-        {
-            var idVehiculo = 7;
-            var vehiculoExistente = new Cita(idVehiculo, FechaMat, FechaInsp, "3333CCC", "Seat", "Ibiza", 1.4, Motor.Gasolina, "11223344B", false, Now, Now);
-
-            _mockCacheLru.Setup(r => r.Obtener(idVehiculo))
-                .Returns((Cita)null!);
-            _mockRepository.Setup(r => r.BuscarId(idVehiculo))
-                .Returns(Result.Success<Cita, DomainError>(vehiculoExistente));
-
-            var result = _service.GetById(idVehiculo);
-
-            result.IsSuccess.Should().BeTrue();
-
-            _mockCacheLru.Verify(r => r.Obtener(idVehiculo), Times.Once);
-            _mockRepository.Verify(r => r.BuscarId(idVehiculo), Times.Once);
-            _mockCacheLru.Verify(c => c.Agregar(idVehiculo, vehiculoExistente), Times.Once);
         }
 
         [Test]
         public void Actualizar_DebeFuncionarCorrectamente()
         {
             var idVehiculo = 50;
-            var vehiculoNuevo = new Cita(FechaMat, FechaInsp.AddDays(1), "4444DDD", "CITROEN", "Saxo", 1.0, Motor.Diesel, "55443322X");
-            
+            var vehiculoNuevo = new Cita(FechaMat, FechaInsp.AddDays(1), "4444DDD", "CITROEN", "Saxo", 1.0,
+                Motor.Diesel, "55443322X");
+
             var lista = new List<Cita>()
             {
-                new Cita(idVehiculo, FechaMat, FechaInsp, "4444DDD", "Citroen", "Saxo", 1.0, Motor.Diesel, "55443322X", false, Now, Now)
+                new Cita(idVehiculo, FechaMat, FechaInsp, "4444DDD", "Citroen", "Saxo", 1.0, Motor.Diesel, "55443322X",
+                    false, Now, Now)
             };
 
             _mockValidador.Setup(v => v.Validar(It.IsAny<Cita>()))
@@ -211,18 +161,19 @@ public class CitaServiceTests
             _mockRepository.Verify(r => r.ExistId(idVehiculo), Times.Once);
             _mockRepository.Verify(r => r.GetAll(), Times.AtLeastOnce);
             _mockRepository.Verify(r => r.Actualizar(idVehiculo, It.IsAny<Cita>()), Times.Once);
-            _mockCacheLru.Verify(c => c.Borrar(idVehiculo), Times.Once);
         }
-        
+
         [Test]
         public void Actualizar_MismoVehiculoMismaFecha_IsSuccess()
         {
             var idVehiculo = 50;
-            var vehiculoNuevo = new Cita(FechaMat, FechaInsp, "4444DDD", "CITROEN", "Saxo", 1.0, Motor.Diesel, "55443322X");
-            
+            var vehiculoNuevo = new Cita(FechaMat, FechaInsp, "4444DDD", "CITROEN", "Saxo", 1.0, Motor.Diesel,
+                "55443322X");
+
             var lista = new List<Cita>()
             {
-                new Cita(idVehiculo, FechaMat, FechaInsp, "4444DDD", "Citroen", "Saxo", 1.0, Motor.Diesel, "55443322X", false, Now, Now)
+                new Cita(idVehiculo, FechaMat, FechaInsp, "4444DDD", "Citroen", "Saxo", 1.0, Motor.Diesel, "55443322X",
+                    false, Now, Now)
             };
 
             _mockValidador.Setup(v => v.Validar(It.IsAny<Cita>()))
@@ -241,20 +192,24 @@ public class CitaServiceTests
             _mockRepository.Verify(r => r.ExistId(idVehiculo), Times.Once);
             _mockRepository.Verify(r => r.GetAll(), Times.AtLeastOnce);
             _mockRepository.Verify(r => r.Actualizar(idVehiculo, It.IsAny<Cita>()), Times.Once);
-            _mockCacheLru.Verify(c => c.Borrar(idVehiculo), Times.Once);
         }
-        
+
         [Test]
         public void Actualizar_UnaCitaDeUnDniCon3CitasMismoDia_IsSucess()
         {
             var idVehiculo = 31;
             var vehiculoNuevo = new Cita(FechaMat, FechaInsp, "1111AAA", "Guay", "Rojo", 1000, Motor.Electrico, "123z");
-            var vehiculoActualizado = new Cita(FechaMat, FechaInsp, "1111AAA", "Guay", "Rojo", 1000, Motor.Electrico, "123z") {Id = idVehiculo};
+            var vehiculoActualizado =
+                new Cita(FechaMat, FechaInsp, "1111AAA", "Guay", "Rojo", 1000, Motor.Electrico, "123z")
+                    { Id = idVehiculo };
             List<Cita> lista = new()
             {
-                new Cita(31, FechaMat, FechaInsp, "1111AAA", "Exito", "...", 1000, Motor.Gasolina, "123z", false, Now, Now),
-                new Cita(32, FechaMat, FechaInsp, "2222BBB", "Error", "...", 1500, Motor.Diesel, "456x", false, Now, Now),
-                new Cita(33, FechaMat, FechaInsp, "3333CCC", "NoLlega", "...", 1200, Motor.Gasolina, "789y", false, Now, Now)
+                new Cita(31, FechaMat, FechaInsp, "1111AAA", "Exito", "...", 1000, Motor.Gasolina, "123z", false, Now,
+                    Now),
+                new Cita(32, FechaMat, FechaInsp, "2222BBB", "Error", "...", 1500, Motor.Diesel, "456x", false, Now,
+                    Now),
+                new Cita(33, FechaMat, FechaInsp, "3333CCC", "NoLlega", "...", 1200, Motor.Gasolina, "789y", false, Now,
+                    Now)
             };
 
             _mockValidador.Setup(v => v.Validar(It.IsAny<Cita>()))
@@ -272,7 +227,6 @@ public class CitaServiceTests
             _mockRepository.Verify(r => r.ExistId(idVehiculo), Times.Once);
             _mockRepository.Verify(r => r.GetAll(), Times.AtLeastOnce);
             _mockRepository.Verify(r => r.Actualizar(idVehiculo, It.IsAny<Cita>()), Times.Once);
-            _mockCacheLru.Verify(c => c.Borrar(idVehiculo), Times.Once);
         }
 
         [Test]
@@ -280,9 +234,12 @@ public class CitaServiceTests
         {
             List<Cita> lista = new()
             {
-                new Cita(31, FechaMat, FechaInsp, "1111AAA", "Exito", "...", 1000, Motor.Gasolina, "123z", false, Now, Now),
-                new Cita(32, FechaMat, FechaInsp, "2222BBB", "Error", "...", 1500, Motor.Diesel, "456x", false, Now, Now),
-                new Cita(33, FechaMat, FechaInsp, "3333CCC", "NoLlega", "...", 1200, Motor.Gasolina, "789y", false, Now, Now)
+                new Cita(31, FechaMat, FechaInsp, "1111AAA", "Exito", "...", 1000, Motor.Gasolina, "123z", false, Now,
+                    Now),
+                new Cita(32, FechaMat, FechaInsp, "2222BBB", "Error", "...", 1500, Motor.Diesel, "456x", false, Now,
+                    Now),
+                new Cita(33, FechaMat, FechaInsp, "3333CCC", "NoLlega", "...", 1200, Motor.Gasolina, "789y", false, Now,
+                    Now)
             };
             _mockRepository.Setup(r => r.GetAll()).Returns(lista);
             var result = _service.GetAll(1, 1);
@@ -291,65 +248,23 @@ public class CitaServiceTests
             result.Should().Contain(lista[1]);
             _mockRepository.Verify(r => r.GetAll(), Times.Once);
         }
-
-        [Test]
-        public void Guardar_DevuelveRuta()
-        {
-            var lista = new List<Cita>();
-            _mockBackUpService.Setup(bs => bs.Guardar(lista)).Returns("RutaTest.zip");
-
-            var result = _service.GuardarBuckUp();
-            result.IsSuccess.Should().BeTrue();
-            _mockBackUpService.Verify(bs => bs.Guardar(lista), Times.Once);
-        }
-
-        [Test]
-        public void Restaurar_DevuelveCantidadVehiculos()
-        {
-            var lista = new List<Cita>
-            {
-                new Cita(101, FechaMat, FechaInsp, "1234BBB", "Seat", "Ibiza", 1200.0, Motor.Gasolina, "12345678Z", false, Now, Now),
-                new Cita(102, FechaMat, FechaInsp, "9876FGH", "Aston Martin", "Vantage", 4000.0, Motor.Gasolina, "00000000T", false, Now, Now)
-            };
-            var path = "RutaTest.zip";
-            _mockBackUpService.Setup(bs => bs.Restuarar(path))
-                .Returns(Result.Success<IEnumerable<Cita>, DomainError>(lista));
-
-            var result = _service.RestaurarBuckUp(path);
-
-            result.IsSuccess.Should().BeTrue();
-            result.Value.Should().Be(2);
-
-            _mockBackUpService.Verify(bs => bs.Restuarar(path), Times.Once);
-            _mockRepository.Verify(r => r.DeleteAll(), Times.Once);
-        }
     }
 
     [TestFixture]
     public class CasosInvalidos
     {
-        private Mock<IRepositorioVehiculos> _mockRepository = null!;
-        private Mock<IBackUpService<Cita>> _mockBackUpService = null!;
-        private Mock<IExport<Cita>> _mockExportService = null!;
-        private Mock<IStorage<Cita>> _mockStorage = null!;
-        private Mock<ICache<int, Cita>> _mockCacheLru = null!;
+        private Mock<IRepositorioCitas> _mockRepository = null!;
         private Mock<IValidate<Cita>> _mockValidador = null!;
         private IService<int, Cita> _service = null!;
-        
+
         [SetUp]
         public void SetUp()
         {
-            _mockRepository = new Mock<IRepositorioVehiculos>();
-            _mockBackUpService = new Mock<IBackUpService<Cita>>();
-            _mockExportService = new Mock<IExport<Cita>>();
-            _mockStorage = new Mock<IStorage<Cita>>();
-            _mockCacheLru = new Mock<ICache<int, Cita>>();
+            _mockRepository = new Mock<IRepositorioCitas>();
             _mockValidador = new Mock<IValidate<Cita>>();
-            _service = new ServiceVehiculos(
+
+            _service = new ServiceCitas(
                 _mockRepository.Object,
-                _mockBackUpService.Object,
-                _mockExportService.Object,
-                _mockCacheLru.Object,
                 _mockValidador.Object
             );
         }
@@ -358,8 +273,10 @@ public class CitaServiceTests
         public void Agregar_VehiculoInvalido_DevuelveFailure()
         {
             var vehiculo = new Cita(FechaMat, FechaInsp, "BAD", "AAA", "ZZZ", 0, Motor.Gasolina, "00000000B");
+
             _mockValidador.Setup(v => v.Validar(It.IsAny<Cita>()))
-                .Returns(Result.Failure<bool, DomainError>(new CitaError.ValidationError.ValidationMatricula(vehiculo.Matricula)));
+                .Returns(Result.Failure<bool, DomainError>(
+                    new CitaError.ValidationError.ValidationMatricula(vehiculo.Matricula)));
 
             var resultado = _service.Agregar(vehiculo);
 
@@ -367,40 +284,54 @@ public class CitaServiceTests
             _mockValidador.Verify(v => v.Validar(It.IsAny<Cita>()), Times.Once);
             _mockRepository.Verify(r => r.Agregar(It.IsAny<Cita>()), Times.Never);
         }
-        
+
         [Test]
         public void Agregar_MismoVehiculoMismaFecha_Falla()
         {
-            var vehiculo = new Cita(FechaMat, FechaInsp, "1111BBB", "tOYotA", "maLo", 1.0, Motor.Diesel, "12345678z") {Id = 1};
+            var vehiculo = new Cita(FechaMat, FechaInsp, "1111BBB", "tOYotA", "maLo", 1.0, Motor.Diesel, "12345678z")
+            {
+                Id = 1
+            };
+
             var lista = new List<Cita>()
             {
                 new Cita(FechaMat, FechaInsp, "1111BBB", "tOYotA", "maLo", 1.0, Motor.Diesel, "12345678z")
             };
+
             _mockValidador.Setup(v => v.Validar(It.IsAny<Cita>()))
                 .Returns(Result.Success<bool, DomainError>(true));
             _mockRepository.Setup(c => c.GetAll()).Returns(lista.AsEnumerable());
+
             var result = _service.Agregar(vehiculo);
+
             result.IsFailure.Should().BeTrue();
             result.Error.Should().BeOfType<CitaError.FechaYaEstablecida>();
             _mockValidador.Verify(v => v.Validar(It.IsAny<Cita>()), Times.Once);
             _mockRepository.Verify(v => v.GetAll(), Times.Once);
             _mockRepository.Verify(v => v.Agregar(It.IsAny<Cita>()), Times.Never);
         }
-        
+
         [Test]
         public void Agregar_4VehiculosMismFechaMismoDni_Falla()
         {
-            var vehiculo = new Cita(FechaMat, FechaInsp, "4444BBB", "tOYotA", "maLo", 1.0, Motor.Diesel, "12345678z") {Id = 4};
+            var vehiculo = new Cita(FechaMat, FechaInsp, "4444BBB", "tOYotA", "maLo", 1.0, Motor.Diesel, "12345678z")
+            {
+                Id = 4
+            };
+
             var lista = new List<Cita>()
             {
-                new Cita(FechaMat, FechaInsp, "1111BBB", "Algo", "Uno", 1.0, Motor.Diesel, "12345678z") {Id = 1},
-                    new Cita(FechaMat, FechaInsp, "2222BBB", "Feo", "Dos", 1.0, Motor.Diesel, "12345678z") {Id = 2},
-                new Cita(FechaMat, FechaInsp, "3333BBB", "Toto", "Tres", 1.0, Motor.Diesel, "12345678z") {Id = 3}
+                new Cita(FechaMat, FechaInsp, "1111BBB", "Algo", "Uno", 1.0, Motor.Diesel, "12345678z") { Id = 1 },
+                new Cita(FechaMat, FechaInsp, "2222BBB", "Feo", "Dos", 1.0, Motor.Diesel, "12345678z") { Id = 2 },
+                new Cita(FechaMat, FechaInsp, "3333BBB", "Toto", "Tres", 1.0, Motor.Diesel, "12345678z") { Id = 3 }
             };
+
             _mockValidador.Setup(v => v.Validar(It.IsAny<Cita>()))
                 .Returns(Result.Success<bool, DomainError>(true));
             _mockRepository.Setup(c => c.GetAll()).Returns(lista.AsEnumerable());
+
             var result = _service.Agregar(vehiculo);
+
             result.IsFailure.Should().BeTrue();
             result.Error.Should().BeOfType<CitaError.OwnerWithThreeOrMoreCitas>();
             _mockValidador.Verify(v => v.Validar(It.IsAny<Cita>()), Times.Once);
@@ -412,8 +343,10 @@ public class CitaServiceTests
         public void Actualizar_VehiculoNuevoIncorrecto_DevuelveFailure()
         {
             var idVehiculo = 50;
-            var vehiculoAntiguo = new Cita(idVehiculo, FechaMat, FechaInsp, "4444DDD", "Citroen", "Saxo", 1.0, Motor.Diesel, "55443322X", false, Now, Now);
-            var vehiculoNuevo = new Cita(idVehiculo, FechaMat, FechaInsp, "4444DDD", "Citroen", "Saxo", -5.0, Motor.Diesel, "55443322X", false, Now, Now);
+            var vehiculoAntiguo = new Cita(idVehiculo, FechaMat, FechaInsp, "4444DDD", "Citroen", "Saxo", 1.0,
+                Motor.Diesel, "55443322X", false, Now, Now);
+            var vehiculoNuevo = new Cita(idVehiculo, FechaMat, FechaInsp, "4444DDD", "Citroen", "Saxo", -5.0,
+                Motor.Diesel, "55443322X", false, Now, Now);
 
             _mockValidador.Setup(v => v.Validar(It.IsAny<Cita>()))
                 .Returns(Result.Failure<bool, DomainError>(
@@ -425,14 +358,15 @@ public class CitaServiceTests
             _mockValidador.Verify(v => v.Validar(It.IsAny<Cita>()), Times.Once);
             _mockRepository.Verify(r => r.BuscarId(idVehiculo), Times.Never);
             _mockRepository.Verify(r => r.Actualizar(idVehiculo, It.IsAny<Cita>()), Times.Never);
-            _mockCacheLru.Verify(c => c.Borrar(idVehiculo), Times.Never);
         }
 
         [Test]
         public void Actualizar_IdAntiguoNuevoDistintos_DevuelveFailure()
         {
-            var vehiculoAntiguo = new Cita(50, FechaMat, FechaInsp, "4444DDD", "Citroen", "Saxo", 1.0, Motor.Diesel, "55443322X", false, Now, Now);
-            var vehiculoNuevo = new Cita(99, FechaMat, FechaInsp, "4444DDD", "Citroen", "Saxo", 1.0, Motor.Diesel, "55443322X", false, Now, Now);
+            var vehiculoAntiguo = new Cita(50, FechaMat, FechaInsp, "4444DDD", "Citroen", "Saxo", 1.0, Motor.Diesel,
+                "55443322X", false, Now, Now);
+            var vehiculoNuevo = new Cita(99, FechaMat, FechaInsp, "4444DDD", "Citroen", "Saxo", 1.0, Motor.Diesel,
+                "55443322X", false, Now, Now);
 
             var resultado = _service.Actualizar(vehiculoAntiguo.Id, vehiculoNuevo);
 
@@ -440,97 +374,58 @@ public class CitaServiceTests
             _mockValidador.Verify(v => v.Validar(It.IsAny<Cita>()), Times.Once);
             _mockRepository.Verify(r => r.ExistId(vehiculoAntiguo.Id), Times.Once);
             _mockRepository.Verify(r => r.Actualizar(vehiculoAntiguo.Id, It.IsAny<Cita>()), Times.Never);
-            _mockCacheLru.Verify(c => c.Borrar(vehiculoAntiguo.Id), Times.Never);
         }
 
         [Test]
         public void Actualizar_SiNoEncuentraId_DevuelveFailure()
         {
             var idVehiculo = 60;
-            var vehiculoNuevo = new Cita(idVehiculo, FechaMat, FechaInsp, "4444DDD", "Citroen", "Saxo", 1.0, Motor.Diesel, "55443322X", false, Now, Now);
+            var vehiculoNuevo = new Cita(idVehiculo, FechaMat, FechaInsp, "4444DDD", "Citroen", "Saxo", 1.0,
+                Motor.Diesel, "55443322X", false, Now, Now);
 
             _mockValidador.Setup(v => v.Validar(It.IsAny<Cita>()))
                 .Returns(Result.Success<bool, DomainError>(true));
             _mockRepository.Setup(r => r.ExistId(idVehiculo)).Returns(false);
-            
+
             var resultado = _service.Actualizar(idVehiculo, vehiculoNuevo);
 
             resultado.IsFailure.Should().BeTrue();
             _mockValidador.Verify(v => v.Validar(It.IsAny<Cita>()), Times.Once);
             _mockRepository.Verify(r => r.Actualizar(idVehiculo, It.IsAny<Cita>()), Times.Never);
-            _mockCacheLru.Verify(c => c.Borrar(idVehiculo), Times.Never);
-        }
-
-        [Test]
-        public void Borrar_NoEncuentraId_DevuelveFailure()
-        {
-            var idVehiculo = 70;
-            _mockRepository.Setup(r => r.BuscarId(idVehiculo))
-                .Returns(Result.Failure<Cita, DomainError>(new CitaError.CitaNotFoundId(idVehiculo)));
-
-            var result = _service.Borrar(idVehiculo);
-
-            result.IsFailure.Should().BeTrue();
-            _mockRepository.Verify(r => r.BuscarId(idVehiculo), Times.Once);
-            _mockRepository.Verify(r => r.Borrar(It.IsAny<int>()), Times.Never);
-            _mockCacheLru.Verify(c => c.Borrar(idVehiculo), Times.Never);
         }
 
         [Test]
         public void GetById_NoEstaRepositorio_DevuelveFailure()
         {
             var idVehiculo = 80;
-            _mockCacheLru.Setup(r => r.Obtener(idVehiculo))
-                .Returns((Cita)null!);
             _mockRepository.Setup(r => r.BuscarId(idVehiculo))
                 .Returns(Result.Failure<Cita, DomainError>(new CitaError.CitaNotFoundId(idVehiculo)));
 
             var result = _service.GetById(idVehiculo);
 
             result.IsFailure.Should().BeTrue();
-            _mockCacheLru.Verify(r => r.Obtener(idVehiculo), Times.Once);
             _mockRepository.Verify(r => r.BuscarId(idVehiculo), Times.Once);
-            _mockCacheLru.Verify(c => c.Agregar(idVehiculo, It.IsAny<Cita>()), Times.Never);
         }
 
         [Test]
         public void GetAll_PaginacionFueraDeRango_ListaVacia()
         {
-            List<Cita> lista = new()
+            var lista = new List<Cita>()
             {
-                new Cita(91, FechaMat, FechaInsp, "1111AAA", "Exito", "...", 1000, Motor.Gasolina, "123z", false, Now, Now),
-                new Cita(92, FechaMat, FechaInsp, "2222BBB", "Error", "...", 1500, Motor.Diesel, "456x", false, Now, Now),
-                new Cita(93, FechaMat, FechaInsp, "3333CCC", "NoLlega", "...", 1200, Motor.Gasolina, "789y", false, Now, Now)
+                new Cita(91, FechaMat, FechaInsp, "1111AAA", "Exito", "...", 1000, Motor.Gasolina, "123z", false, Now,
+                    Now),
+                new Cita(92, FechaMat, FechaInsp, "2222BBB", "Error", "...", 1500, Motor.Diesel, "456x", false, Now,
+                    Now),
+                new Cita(93, FechaMat, FechaInsp, "3333CCC", "NoLlega", "...", 1200, Motor.Gasolina, "789y", false, Now,
+                    Now)
             };
             _mockRepository.Setup(r => r.GetAll()).Returns(lista);
 
             var result = _service.GetAll(3, 1);
+
             result.Should().NotBeNull();
             result.Should().BeEmpty();
             _mockRepository.Verify(r => r.GetAll(), Times.Once);
-        }
-
-        [Test]
-        public void Restaurar_UnVehiculoDevuelveFailureAlAgregarse_DevuelveFailure()
-        {
-            var vehiculos = new List<Cita>
-            {
-                new Cita(101, FechaMat, FechaInsp, "A", "Exito", "...", 1000, Motor.Gasolina, "A", false, Now, Now),
-                new Cita(102, FechaMat, FechaInsp, "B", "Error", "...", 1500, Motor.Diesel, "B", false, Now, Now),
-                new Cita(103, FechaMat, FechaInsp, "C", "NoLlega", "...", 1200, Motor.Gasolina, "C", false, Now, Now)
-            };
-            var path = "RutaTest.zip";
-            _mockBackUpService.Setup(bs => bs.Restuarar(path))
-                .Returns(Result.Success<IEnumerable<Cita>, DomainError>(vehiculos));
-            _mockRepository.Setup(r => r.Agregar(vehiculos[0]))
-                .Returns(Result.Success<Cita, DomainError>(vehiculos[0]));
-            _mockRepository.Setup(r => r.Agregar(vehiculos[1]))
-                .Returns(Result.Failure<Cita, DomainError>(new CitaError.CitaAlredyExist.IdAlreadyExists(vehiculos[1].Id)));
-
-            var result = _service.RestaurarBuckUp(path);
-
-            result.IsFailure.Should().BeTrue();
-            _mockRepository.Verify(r => r.Agregar(It.IsAny<Cita>()), Times.Exactly(2));
         }
     }
 }

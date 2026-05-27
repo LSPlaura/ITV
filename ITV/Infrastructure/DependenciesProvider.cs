@@ -10,11 +10,13 @@ using ITV.Repository.EFCore;
 using ITV.Service;
 using ITV.Service.BackUp;
 using ITV.Service.Citas;
+using ITV.Service.DataService;
 using ITV.Service.Export;
 using ITV.Storage.Common;
 using ITV.Storage.CSV;
 using ITV.Storage.XML;
 using ITV.Validador;
+using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ITV.Infrastructure;
@@ -37,14 +39,14 @@ public static class DependenciesProvider
 
     private static void RegisterRepository(IServiceCollection services)
     {
-        services.AddSingleton<IRepositorioVehiculos>(sp =>
+        services.AddSingleton<IRepositorioCitas>(sp =>
         {
             var repository = Configuracion.RepositoryType.ToLower();
             return repository switch
             {
-                "dapper" => new DapperRepository(Configuracion.DataBaseString),
+                "dapper" => new DapperRepository(new SqliteConnection(Configuracion.DataBaseString)),
                 "efcore" => new EfCoreRepository(new AppDbContext(Configuracion.DataBaseString)),
-                "ado" => new AdoRepository(Configuracion.DataBaseString),
+                "ado" => new AdoRepository(new SqliteConnection(Configuracion.DataBaseString)),
                 _ => new EfCoreRepository(new AppDbContext(Configuracion.DataBaseString)),
             };
         });
@@ -67,16 +69,21 @@ public static class DependenciesProvider
     
     private static void RegisterServices(IServiceCollection services)
     {
-        services.AddTransient<IBackUpServiceCitas, BackupService>(sp => 
-            new BackupService(sp.GetRequiredService<IStorage<Cita>>(), Configuracion.BackUpFile, Configuracion.BackUpFolder));
+        
+        services.AddTransient<IBackUpService<Cita>, BackupService>(sp => new BackupService(sp.GetRequiredService<IStorage<Cita>>(),
+            Configuracion.BackUpFile, Configuracion.BackUpFolder));
 
-        services.AddTransient<IExport<Cita>, ExportService>(sp => new ExportService());
+        services.AddTransient<IReportGenerator<Cita>, ReportGenerator>(sp => new ReportGenerator());
+        
+        services.AddTransient<IDataService<Cita>, DataService>(sp => 
+            new DataService(
+                sp.GetRequiredService<IBackUpService<Cita>>(),
+                sp.GetRequiredService<IRepositorioCitas>()
+            )
+        );
 
-        services.AddTransient<IService<int, Cita>, ServiceVehiculos>(sp => new ServiceVehiculos(
-            sp.GetRequiredService<IRepositorioVehiculos>(),
-            sp.GetRequiredService<IBackUpServiceCitas>(),
-            sp.GetRequiredService<IExport<Cita>>(),
-            sp.GetRequiredService<ICache<int, Cita>>(),
+        services.AddTransient<IService<int, Cita>, ServiceCitas>(sp => new ServiceCitas(
+            sp.GetRequiredService<IRepositorioCitas>(),
             sp.GetRequiredService<IValidate<Cita>>(),
             Configuracion.ToSeed
         ));
